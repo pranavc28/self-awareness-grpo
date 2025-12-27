@@ -1,0 +1,13 @@
+# Large data files
+fever_data/wiki-pages/
+fever_data/wiki-pages.zip
+fever_data/__MACOSX/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Results (optional - remove if you want to track)
+# grpo_sample_results.json
+
