@@ -1,16 +1,76 @@
-"""GRPO training for FEVER fact verification with self-aware confidence calibration."""
+"""GRPO training for FEVER fact verification with self-aware confidence calibration.
+
+This module implements Group Relative Policy Optimization (GRPO) for training a model
+to perform fact verification on the FEVER dataset. The training incorporates:
+- Classification accuracy rewards
+- Confidence calibration penalties/bonuses  
+- False NA prevention
+- Format compliance checking
+
+The reward function is designed to encourage:
+1. Correct classification (via weighted log-probability rewards)
+2. High confidence on correct predictions, low confidence on incorrect ones
+3. Avoiding false "Not Enough Info" predictions when evidence exists
+4. Alignment between stated confidence and model's internal probability
+"""
 import asyncio, json, random, re, numpy as np
 from dataclasses import dataclass
 import tinker
 from tinker import types
 
+from extract_fever_dataset import WikiReader, download_wiki_pages
+
 MODEL = "moonshotai/Kimi-K2-Thinking"
 SEED = 42
 LABEL_MAP = {"NOT ENOUGH INFO": "NA", "SUPPORTS": "PASS", "REFUTES": "FAIL"}
-REV_MAP = {v: k for k, v in LABEL_MAP.items()}
+
+# Global WikiReader instance for evidence lookup
+_wiki_reader: WikiReader | None = None
+
+
+def get_wiki_reader() -> WikiReader:
+    """
+    Get or create the global WikiReader instance.
+    
+    Lazily initializes the WikiReader on first call to avoid loading the full
+    Wikipedia index unless needed. The WikiReader provides access to evidence
+    sentences from the FEVER Wikipedia dump.
+    
+    Returns:
+        WikiReader: Initialized reader for looking up evidence texts.
+    """
+    global _wiki_reader
+    if _wiki_reader is None:
+        print("Initializing WikiReader...")
+        wiki_dir = download_wiki_pages()
+        _wiki_reader = WikiReader(wiki_dir)
+    return _wiki_reader
+
 
 @dataclass
 class Config:
+    """
+    Configuration for GRPO training hyperparameters.
+    
+    Reward function parameters:
+        w_na: Weight for NOT ENOUGH INFO classification reward (higher to emphasize)
+        w_pass: Weight for SUPPORTS classification reward
+        w_fail: Weight for REFUTES classification reward
+        gamma: Bonus coefficient for confidence when prediction is correct
+        delta: Penalty coefficient for confidence when prediction is incorrect
+        lambda_false_na: Penalty for incorrectly predicting NA when gold is SUPPORTS/REFUTES
+        eta_align: Penalty coefficient for confidence-probability misalignment
+        format_penalty: Penalty for invalid output format
+        beta_kl: KL divergence regularization weight
+    
+    Training parameters:
+        batch_size: Number of examples per training step
+        group_size: Number of samples per example for GRPO advantage estimation
+        max_tokens: Maximum tokens to generate per sample
+        temperature: Sampling temperature for exploration
+        lr: Learning rate for AdamW optimizer
+        steps: Total training steps
+    """
     batch_size: int = 8
     group_size: int = 8
     max_tokens: int = 96
@@ -27,7 +87,31 @@ class Config:
     format_penalty: float = 2.0
     beta_kl: float = 0.02
 
-def load_dataset():
+_NOT_ENOUGH_INFO_COUNT = 500
+_SUPPORTS_COUNT = 250
+_REFUTES_COUNT = 250
+
+def load_dataset(not_enough_info_count: int = _NOT_ENOUGH_INFO_COUNT, supports_count: int = _SUPPORTS_COUNT, refutes_count: int = _REFUTES_COUNT):
+    """
+    Load and sample a balanced subset of the FEVER development set.
+    
+    Creates a balanced dataset with:
+    - not_enough_info_count NOT ENOUGH INFO examples (mapped to NA)
+    - supports_count SUPPORTS examples (mapped to PASS)  
+    - refutes_count REFUTES examples (mapped to FAIL)
+    
+    Each example includes the original evidence field for WikiReader lookup,
+    which is used during prompt construction to provide supporting context.
+    
+    Returns:
+        list[dict]: List of examples with keys:
+            - prompt: The claim text
+            - label: Mapped label (NA/PASS/FAIL)
+            - evidence: Original evidence list for WikiReader lookup
+    
+    Raises:
+        ValueError: If insufficient examples exist for any label category.
+    """
     random.seed(SEED)
     with open("fever_data/fever_dev.json", "r") as f:
         examples = json.load(f)
@@ -35,29 +119,80 @@ def load_dataset():
     for ex in examples:
         if ex.get("label") in by_label:
             by_label[ex["label"]].append(ex)
-    for lbl, lst in by_label.items():
-        if lbl == "NOT ENOUGH INFO" and len(lst) < 500:
-            raise ValueError(f"Not enough {lbl}: {len(lst)}")
-        if lbl != "NOT ENOUGH INFO" and len(lst) < 250:
-            raise ValueError(f"Not enough {lbl}: {len(lst)}")
-    random.shuffle(by_label["NOT ENOUGH INFO"])
-    random.shuffle(by_label["SUPPORTS"])
-    random.shuffle(by_label["REFUTES"])
-    sampled = by_label["NOT ENOUGH INFO"][:500] + by_label["SUPPORTS"][:250] + by_label["REFUTES"][:250]
+    sampled = []
+    for lbl, count in [("NOT ENOUGH INFO", not_enough_info_count), ("SUPPORTS", supports_count), ("REFUTES", refutes_count)]:
+        sampled.extend(random.sample(by_label[lbl], count))
     random.shuffle(sampled)
-    return [{"prompt": ex["claim"], "label": LABEL_MAP[ex["label"]]} for ex in sampled]
+    return [{"prompt": ex["claim"], "label": LABEL_MAP[ex["label"]], "evidence": ex.get("evidence", [])} for ex in sampled]
+
 
 def build_prompt(example):
-    return f"""Claim: {example['prompt']}
+    """
+    Build the classification prompt with claim and evidence context.
+    
+    Constructs a prompt that includes:
+    1. The claim to be verified
+    2. Retrieved evidence sentences from Wikipedia (via WikiReader)
+    3. Instructions for outputting LABEL, CONF, and RATIONALE
+    
+    The evidence helps the model make informed predictions. For NA cases,
+    evidence may be empty or insufficient, which the model should recognize.
+    This affects the reward function: the model should express lower confidence
+    when evidence is weak and avoid false NA predictions when evidence exists.
+    
+    Args:
+        example: Dict with 'prompt' (claim text) and 'evidence' (evidence list)
+    
+    Returns:
+        str: Formatted prompt string for the model.
+    """
+    wiki_reader = get_wiki_reader()
+    evidence_texts = wiki_reader.get_evidence_text(example.get("evidence", []))
+    
+    if evidence_texts:
+        evidence = "\n".join(f"- {t}" for t in evidence_texts)
+    else:
+        evidence = "No specific evidence provided."
+    
+    return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
 
-Classify as NA (not enough info), PASS (supports), or FAIL (refutes).
-Return EXACTLY:
+Claim: {example['prompt']}
+
+You have additional evidence to consider in case you need it:
+{evidence}
+
+Classify into exactly one category:
+- PASS: Evidence supports the claim (SUPPORTS)
+- FAIL: Evidence contradicts the claim (REFUTES)
+- NA: Insufficient evidence (NOT ENOUGH INFO)
+
+Respond with EXACTLY this format:
 LABEL=<NA|PASS|FAIL>
 CONF=<float 0-1, 2 decimals>
 RATIONALE=<one sentence or empty>
 """
 
 def parse_output(text):
+    """
+    Parse model output to extract label, confidence, and format validity.
+    
+    Extracts structured output from the model's response text. The expected format:
+        LABEL=<NA|PASS|FAIL>
+        CONF=<float 0-1>
+        RATIONALE=<text>
+    
+    Format validity affects the reward function via format_penalty. Invalid outputs
+    receive a penalty to encourage the model to follow the specified format.
+    
+    Args:
+        text: Raw model output string.
+    
+    Returns:
+        tuple: (label, conf, valid) where:
+            - label: Extracted label (NA/PASS/FAIL) or None if missing
+            - conf: Confidence float clamped to [0,1], default 0.5 if missing
+            - valid: Boolean indicating if output format was correct
+    """
     label, conf, valid = None, 0.5, True
     m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
     if m:
@@ -76,13 +211,69 @@ def parse_output(text):
     return label, conf, valid
 
 def compute_probs_from_logits(logprobs_dict):
-    eps = 1e-10
+    """
+    Convert log-probabilities to normalized probabilities using softmax.
+    
+    Uses the log-sum-exp trick for numerical stability. The resulting probabilities
+    are used in the reward function to:
+    1. Compute r_cls: Weighted log-probability of the gold label
+    2. Determine y_hat: The model's most likely prediction
+    3. Compute r_align: Penalize mismatch between stated confidence and p_hat
+    
+    Args:
+        logprobs_dict: Dict mapping labels (NA/PASS/FAIL) to their log-probabilities.
+    
+    Returns:
+        dict: Normalized probability distribution over labels summing to 1.
+    """
     max_lp = max(logprobs_dict.values())
     exp_sum = sum(np.exp(lp - max_lp) for lp in logprobs_dict.values())
     probs = {k: np.exp(v - max_lp) / exp_sum for k, v in logprobs_dict.items()}
     return probs
 
-def compute_reward(gold, pred_label, pred_conf, probs, cfg: Config, format_valid):
+def compute_reward(gold, pred_conf, probs, cfg: Config, format_valid):
+    """
+    Compute the total reward for a single model prediction.
+    
+    The reward function combines five components to encourage self-aware,
+    well-calibrated fact verification:
+    
+    1. r_cls (Classification Reward):
+       w[gold] * log(p_gold)
+       Weighted log-probability of the correct label. Higher weights (w_na=2.0)
+       for NA encourage the model to properly identify insufficient evidence.
+    
+    2. r_conf (Confidence Reward/Penalty):
+       - If correct (y_hat == gold): +gamma * max(0, conf - 0.5)
+         Rewards high confidence on correct predictions.
+       - If incorrect: -delta * max(0, conf - 0.5)  
+         Penalizes overconfidence on wrong predictions.
+       This teaches calibration: be confident when right, uncertain when wrong.
+    
+    3. r_false_na (False NA Penalty):
+       -lambda_false_na if gold != NA and y_hat == NA
+       Penalizes predicting "not enough info" when evidence exists.
+       Prevents the model from taking the easy way out.
+    
+    4. r_align (Alignment Penalty):
+       -eta_align * |pred_conf - p_hat|
+       Penalizes mismatch between stated confidence and model's internal
+       probability. Encourages honest confidence reporting.
+    
+    5. r_format (Format Penalty):
+       -format_penalty if output format is invalid
+       Encourages adherence to the LABEL/CONF/RATIONALE format.
+    
+    Args:
+        gold: Ground truth label (NA/PASS/FAIL).
+        pred_conf: Stated confidence from parsed output [0,1].
+        probs: Probability distribution from probe_label_logprobs.
+        cfg: Config with reward function hyperparameters.
+        format_valid: Whether the output format was valid.
+    
+    Returns:
+        float: Total reward (sum of all components).
+    """
     eps = 1e-10
     w_map = {"NA": cfg.w_na, "PASS": cfg.w_pass, "FAIL": cfg.w_fail}
     p_gold = probs.get(gold, eps)
@@ -98,24 +289,122 @@ def compute_reward(gold, pred_label, pred_conf, probs, cfg: Config, format_valid
     r_format = 0.0 if format_valid else -cfg.format_penalty
     return r_cls + r_conf + r_false_na + r_align + r_format
 
-async def probe_label_logprobs(sampling_client, tokenizer, prompt_text, renderer=None):
-    logprobs = {}
+async def probe_label_logprobs(training_client, tokenizer, prompt_text):
+    """
+    Probe the model's log-probabilities for each label given the prompt.
+    
+    Uses the correct Tinker approach: teacher-forcing with cross_entropy loss
+    and weights=0 to extract per-token logprobs without applying gradients.
+    
+    For each possible label (NA/PASS/FAIL), this function:
+    1. Constructs: prefix + label where prefix = prompt + "LABEL="
+    2. Teacher-forces this sequence through forward_backward with cross_entropy
+    3. Extracts logprobs for ONLY the label token positions
+    4. Sums those logprobs to get log p(label | prefix)
+    
+    The resulting log-probabilities are converted to probabilities via
+    compute_probs_from_logits, which are then used in the reward function to:
+    - Compute r_cls: log(p_gold) weighted by label importance
+    - Determine y_hat: the model's most probable prediction
+    - Compute r_align: penalize confidence-probability mismatch
+    
+    This correctly measures the model's belief AT THE LABEL DECISION,
+    not after generating extra tokens like newlines or rationales.
+    
+    Args:
+        training_client: Tinker training client for forward_backward.
+        tokenizer: Tokenizer for encoding prompt + label.
+        prompt_text: The full prompt string.
+    
+    Returns:
+        dict: Mapping of labels (NA/PASS/FAIL) to their log-probabilities.
+    """
+    # The decision prefix: we measure p(label | prefix)
+    # Use add_special_tokens=False to avoid BOS/EOS shifting indices
+    prefix = prompt_text + "LABEL="
+    prefix_tokens = tokenizer.encode(prefix, add_special_tokens=False)
+    prefix_len = len(prefix_tokens)
+    
+    # Build probe data for all three labels
+    probe_data = []
+    label_info = []  # Track (label, start_idx, end_idx) for each probe
+    
     for label in ["NA", "PASS", "FAIL"]:
-        full_text = prompt_text + f"LABEL={label}\n"
-        tokens = tokenizer.encode(full_text)
-        model_input = types.ModelInput.from_ints(tokens)
-        try:
-            result = await sampling_client.compute_logprobs_async(model_input)
-            lp_list = result.result() if hasattr(result, 'result') else result
-            if hasattr(lp_list, 'logprobs'):
-                lp_list = lp_list.logprobs
-            valid_lps = [lp for lp in lp_list if lp is not None]
-            logprobs[label] = sum(valid_lps[-5:]) if valid_lps else -10.0
-        except Exception as e:
-            logprobs[label] = -10.0
-    return logprobs
+        # Encode the label tokens (no space prefix - matches prompt format "LABEL=NA")
+        label_tokens = tokenizer.encode(label, add_special_tokens=False)
+        
+        # Full sequence: prefix + label (no newline needed for probing)
+        full_tokens = prefix_tokens + label_tokens
+        
+        # For cross_entropy: input is tokens[:-1], target is tokens[1:]
+        input_tokens = full_tokens[:-1]
+        target_tokens = np.array(full_tokens[1:], dtype=np.int64)
+        
+        # Weights = 0 everywhere (we just want logprobs, no gradient)
+        weights = np.zeros(len(target_tokens), dtype=np.float32)
+        
+        # Record which positions correspond to the label tokens
+        # In the target sequence, label tokens start at (prefix_len - 1)
+        # because target is shifted by 1
+        label_start_idx = prefix_len - 1
+        label_end_idx = label_start_idx + len(label_tokens)
+        
+        datum = types.Datum(
+            model_input=types.ModelInput.from_ints(input_tokens),
+            loss_fn_inputs={
+                "target_tokens": target_tokens,
+                "weights": weights,
+            }
+        )
+        probe_data.append(datum)
+        label_info.append((label, label_start_idx, label_end_idx))
+    
+    # Run forward_backward with cross_entropy (weights=0 means no gradient applied)
+    try:
+        fwd_result = await training_client.forward_backward_async(probe_data, loss_fn="cross_entropy")
+        fwd_output = fwd_result.result() if hasattr(fwd_result, 'result') else fwd_result
+        
+        logprobs = {}
+        for i, (label, start_idx, end_idx) in enumerate(label_info):
+            # Extract logprobs from the output
+            output_logprobs = fwd_output.loss_fn_outputs[i]['logprobs']
+            if hasattr(output_logprobs, 'tolist'):
+                output_logprobs = output_logprobs.tolist()
+            
+            # Sum only the label token logprobs
+            label_logprobs = output_logprobs[start_idx:end_idx]
+            logprobs[label] = sum(label_logprobs) if label_logprobs else -10.0
+        
+        return logprobs
+    except Exception as e:
+        # Fallback to uniform if probing fails
+        return {"NA": -1.1, "PASS": -1.1, "FAIL": -1.1}
 
 async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Config):
+    """
+    Sample multiple completions from the model for GRPO advantage estimation.
+    
+    GRPO (Group Relative Policy Optimization) requires multiple samples per prompt
+    to estimate relative advantages. This function generates cfg.group_size samples
+    with temperature-based exploration to discover diverse completion strategies.
+    
+    Each sample is parsed (via parse_output) to extract label, confidence, and
+    format validity. Rewards are computed for each sample, and advantages are
+    calculated relative to the group mean. This enables learning which sampled
+    behaviors are better/worse than the baseline.
+    
+    Args:
+        sampling_client: Tinker sampling client for generation.
+        tokenizer: Tokenizer for prompt encoding and response decoding.
+        prompt_text: The full prompt string (claim + evidence + instructions).
+        cfg: Config with sampling parameters (max_tokens, temperature, group_size).
+    
+    Returns:
+        list[dict]: List of samples, each containing:
+            - text: Decoded response text
+            - tokens: Raw token IDs
+            - logprob: Sum of token log-probabilities (for PPO loss)
+    """
     tokens = tokenizer.encode(prompt_text)
     model_input = types.ModelInput.from_ints(tokens)
     params = types.SamplingParams(
@@ -137,6 +426,33 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
     return samples
 
 async def run_training():
+    """
+    Main GRPO training loop for FEVER fact verification.
+    
+    Training Process:
+    1. Load balanced FEVER dataset (500 NA, 250 PASS, 250 FAIL)
+    2. Initialize LoRA training client and sampling client
+    3. For each training step:
+       a. Sample a batch of examples
+       b. For each example:
+          - Generate group_size completions with temperature sampling
+          - Probe label log-probabilities for reward computation
+          - Compute rewards using the multi-component reward function
+          - Calculate advantages relative to group mean
+       c. Perform PPO-style forward-backward pass with advantages
+       d. Update model weights with AdamW optimizer
+    4. Periodically checkpoint and log metrics
+    
+    Reward Function Summary (see compute_reward for details):
+    - r_cls: Weighted log-probability of correct label
+    - r_conf: Confidence bonus/penalty based on correctness
+    - r_false_na: Penalty for false "not enough info" predictions
+    - r_align: Penalty for confidence-probability mismatch
+    - r_format: Penalty for invalid output format
+    
+    Returns:
+        str: Path to the final saved checkpoint.
+    """
     cfg = Config()
     print(f"Loading dataset...")
     dataset = load_dataset()
@@ -163,20 +479,20 @@ async def run_training():
         if len(batch) < cfg.batch_size:
             batch = batch + dataset[:cfg.batch_size - len(batch)]
         
-        all_data, all_advantages = [], []
+        all_data = []
         step_rewards = {"NA": [], "PASS": [], "FAIL": []}
         correct, total = 0, 0
         
         for ex in batch:
             prompt = build_prompt(ex)
             samples = await sample_completions(sampling_client, tokenizer, prompt, cfg)
-            label_lps = await probe_label_logprobs(sampling_client, tokenizer, prompt)
+            label_lps = await probe_label_logprobs(training_client, tokenizer, prompt)
             probs = compute_probs_from_logits(label_lps)
             
             rewards = []
             for s in samples:
                 pred_label, pred_conf, valid = parse_output(s["text"])
-                r = compute_reward(ex["label"], pred_label, pred_conf, probs, cfg, valid)
+                r = compute_reward(ex["label"], pred_conf, probs, cfg, valid)
                 rewards.append(r)
                 step_rewards[ex["label"]].append(r)
                 if pred_label == ex["label"]:
@@ -193,8 +509,6 @@ async def run_training():
                 full_tokens = tokenizer.encode(prompt) + list(s["tokens"])
                 prompt_len = len(tokenizer.encode(prompt))
                 target_tokens = full_tokens[1:]
-                weights = [0.0] * (prompt_len - 1) + [1.0] * len(s["tokens"])
-                weights = weights[:len(target_tokens)]
                 adv_per_token = [advantages[i]] * len(s["tokens"])
                 adv_full = [0.0] * (prompt_len - 1) + adv_per_token
                 adv_full = adv_full[:len(target_tokens)]
