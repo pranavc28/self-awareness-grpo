@@ -15,6 +15,7 @@ The reward function is designed to encourage:
 """
 import asyncio, json, random, re, numpy as np
 from dataclasses import dataclass
+from functools import wraps
 import tinker
 from tinker import types
 
@@ -23,6 +24,43 @@ from extract_fever_dataset import WikiReader, download_wiki_pages
 MODEL = "moonshotai/Kimi-K2-Thinking"
 SEED = 42
 LABEL_MAP = {"NOT ENOUGH INFO": "NA", "SUPPORTS": "PASS", "REFUTES": "FAIL"}
+
+# Retry configuration
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 1.0  # seconds
+RETRY_MAX_DELAY = 10.0  # seconds
+
+
+def async_retry(max_retries: int = MAX_RETRIES, base_delay: float = RETRY_BASE_DELAY):
+    """
+    Decorator for async functions that retries on failure with exponential backoff.
+    
+    Uses jitter to avoid thundering herd when multiple requests retry simultaneously.
+    
+    Args:
+        max_retries: Maximum number of retry attempts
+        base_delay: Initial delay between retries (doubles each attempt)
+    """
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries + 1):
+                try:
+                    return await func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < max_retries:
+                        # Exponential backoff with jitter
+                        delay = min(base_delay * (2 ** attempt), RETRY_MAX_DELAY)
+                        jitter = random.uniform(0.5, 1.5)
+                        wait_time = delay * jitter
+                        print(f"Retry {attempt + 1}/{max_retries} for {func.__name__} after {wait_time:.1f}s: {e}")
+                        await asyncio.sleep(wait_time)
+            # All retries exhausted
+            raise last_exception
+        return wrapper
+    return decorator
 
 # Global WikiReader instance for evidence lookup
 _wiki_reader: WikiReader | None = None
@@ -71,8 +109,8 @@ class Config:
         lr: Learning rate for AdamW optimizer
         steps: Total training steps
     """
-    batch_size: int = 8
-    group_size: int = 8
+    batch_size: int = 64  # 64 examples × 4 samples = 256 completions per step
+    group_size: int = 4
     max_tokens: int = 96
     temperature: float = 0.8
     lr: float = 2e-6
@@ -81,15 +119,14 @@ class Config:
     w_pass: float = 1.0
     w_fail: float = 1.0
     gamma: float = 0.25
-    delta: float = 2.0
+    delta: float = 1.5
     lambda_false_na: float = 1.5
     eta_align: float = 0.5
-    format_penalty: float = 2.0
     beta_kl: float = 0.02
 
-_NOT_ENOUGH_INFO_COUNT = 10
-_SUPPORTS_COUNT = 5
-_REFUTES_COUNT = 5
+_NOT_ENOUGH_INFO_COUNT = 500
+_SUPPORTS_COUNT = 250
+_REFUTES_COUNT = 250
 
 def load_dataset(not_enough_info_count: int = _NOT_ENOUGH_INFO_COUNT, supports_count: int = _SUPPORTS_COUNT, refutes_count: int = _REFUTES_COUNT):
     """
@@ -272,7 +309,13 @@ def compute_reward(gold, pred_conf, probs, cfg: Config, format_valid):
         format_valid: Whether the output format was valid.
     
     Returns:
-        float: Total reward (sum of all components).
+        dict: Reward breakdown with keys:
+            - total: Sum of all components
+            - r_cls: Classification reward
+            - r_conf: Confidence reward/penalty
+            - r_false_na: False NA penalty
+            - r_align: Alignment penalty
+            - r_format: Format penalty
     """
     eps = 1e-10
     w_map = {"NA": cfg.w_na, "PASS": cfg.w_pass, "FAIL": cfg.w_fail}
@@ -286,100 +329,85 @@ def compute_reward(gold, pred_conf, probs, cfg: Config, format_valid):
         r_conf = -cfg.delta * max(0.0, pred_conf - 0.5)
     r_false_na = -cfg.lambda_false_na if (gold != "NA" and y_hat == "NA") else 0.0
     r_align = -cfg.eta_align * abs(pred_conf - p_hat)
-    r_format = 0.0 if format_valid else -cfg.format_penalty
-    return r_cls + r_conf + r_false_na + r_align + r_format
+    r_format = 0.0
+    total = r_cls + r_conf + r_false_na + r_align + r_format
+    return {
+        "total": total,
+        "r_cls": r_cls,
+        "r_conf": r_conf,
+        "r_false_na": r_false_na,
+        "r_align": r_align,
+        "r_format": r_format,
+    }
 
-async def probe_label_logprobs(training_client, tokenizer, prompt_text):
+@async_retry()
+async def probe_batch_logprobs(training_client, tokenizer, prompts):
     """
-    Probe the model's log-probabilities for each label given the prompt.
+    Probe the model's log-probabilities for all labels across a batch of prompts.
     
-    Uses the correct Tinker approach: teacher-forcing with cross_entropy loss
-    and weights=0 to extract per-token logprobs without applying gradients.
-    
-    For each possible label (NA/PASS/FAIL), this function:
-    1. Constructs: prefix + label where prefix = prompt + "LABEL="
-    2. Teacher-forces this sequence through forward_backward with cross_entropy
-    3. Extracts logprobs for ONLY the label token positions
-    4. Sums those logprobs to get log p(label | prefix)
-    
-    The resulting log-probabilities are converted to probabilities via
-    compute_probs_from_logits, which are then used in the reward function to:
-    - Compute r_cls: log(p_gold) weighted by label importance
-    - Determine y_hat: the model's most probable prediction
-    - Compute r_align: penalize confidence-probability mismatch
-    
-    This correctly measures the model's belief AT THE LABEL DECISION,
-    not after generating extra tokens like newlines or rationales.
+    This is highly optimized: it sends all probe Datums for the entire batch 
+    in a single forward_backward call, maximizing GPU throughput.
     
     Args:
-        training_client: Tinker training client for forward_backward.
-        tokenizer: Tokenizer for encoding prompt + label.
-        prompt_text: The full prompt string.
-    
+        training_client: Tinker training client.
+        tokenizer: Tokenizer instance.
+        prompts: List of prompt strings for the batch.
+        
     Returns:
-        dict: Mapping of labels (NA/PASS/FAIL) to their log-probabilities.
+        list[dict]: A list (one per prompt) of label-to-logprob mappings.
     """
-    # The decision prefix: we measure p(label | prefix)
-    # Use add_special_tokens=False to avoid BOS/EOS shifting indices
-    prefix = prompt_text + "LABEL="
-    prefix_tokens = tokenizer.encode(prefix, add_special_tokens=False)
-    prefix_len = len(prefix_tokens)
+    all_probe_data = []
+    all_label_info = [] # List of (label, start, end) per prompt
     
-    # Build probe data for all three labels
-    probe_data = []
-    label_info = []  # Track (label, start_idx, end_idx) for each probe
+    for prompt_text in prompts:
+        prefix = prompt_text + "LABEL="
+        prefix_tokens = tokenizer.encode(prefix, add_special_tokens=False)
+        prefix_len = len(prefix_tokens)
+        
+        prompt_labels = []
+        for label in ["NA", "PASS", "FAIL"]:
+            label_tokens = tokenizer.encode(label, add_special_tokens=False)
+            full_tokens = prefix_tokens + label_tokens
+            
+            input_tokens = full_tokens[:-1]
+            target_tokens = np.array(full_tokens[1:], dtype=np.int64)
+            weights = np.zeros(len(target_tokens), dtype=np.float32)
+            
+            label_start_idx = prefix_len - 1
+            label_end_idx = label_start_idx + len(label_tokens)
+            
+            datum = types.Datum(
+                model_input=types.ModelInput.from_ints(input_tokens),
+                loss_fn_inputs={
+                    "target_tokens": target_tokens,
+                    "weights": weights,
+                }
+            )
+            all_probe_data.append(datum)
+            prompt_labels.append((label, label_start_idx, label_end_idx))
+        all_label_info.append(prompt_labels)
     
-    for label in ["NA", "PASS", "FAIL"]:
-        # Encode the label tokens (no space prefix - matches prompt format "LABEL=NA")
-        label_tokens = tokenizer.encode(label, add_special_tokens=False)
-        
-        # Full sequence: prefix + label (no newline needed for probing)
-        full_tokens = prefix_tokens + label_tokens
-        
-        # For cross_entropy: input is tokens[:-1], target is tokens[1:]
-        input_tokens = full_tokens[:-1]
-        target_tokens = np.array(full_tokens[1:], dtype=np.int64)
-        
-        # Weights = 0 everywhere (we just want logprobs, no gradient)
-        weights = np.zeros(len(target_tokens), dtype=np.float32)
-        
-        # Record which positions correspond to the label tokens
-        # In the target sequence, label tokens start at (prefix_len - 1)
-        # because target is shifted by 1
-        label_start_idx = prefix_len - 1
-        label_end_idx = label_start_idx + len(label_tokens)
-        
-        datum = types.Datum(
-            model_input=types.ModelInput.from_ints(input_tokens),
-            loss_fn_inputs={
-                "target_tokens": target_tokens,
-                "weights": weights,
-            }
-        )
-        probe_data.append(datum)
-        label_info.append((label, label_start_idx, label_end_idx))
+    # Run a single batch forward_backward for all 3 * batch_size datums
+    fwd_result = await training_client.forward_backward_async(all_probe_data, loss_fn="cross_entropy")
+    fwd_output = fwd_result.result() if hasattr(fwd_result, 'result') else fwd_result
     
-    # Run forward_backward with cross_entropy (weights=0 means no gradient applied)
-    try:
-        fwd_result = await training_client.forward_backward_async(probe_data, loss_fn="cross_entropy")
-        fwd_output = fwd_result.result() if hasattr(fwd_result, 'result') else fwd_result
-        
+    results = []
+    datum_idx = 0
+    for prompt_labels in all_label_info:
         logprobs = {}
-        for i, (label, start_idx, end_idx) in enumerate(label_info):
-            # Extract logprobs from the output
-            output_logprobs = fwd_output.loss_fn_outputs[i]['logprobs']
+        for label, start_idx, end_idx in prompt_labels:
+            output_logprobs = fwd_output.loss_fn_outputs[datum_idx]['logprobs']
             if hasattr(output_logprobs, 'tolist'):
                 output_logprobs = output_logprobs.tolist()
             
-            # Sum only the label token logprobs
             label_logprobs = output_logprobs[start_idx:end_idx]
             logprobs[label] = sum(label_logprobs) if label_logprobs else -10.0
+            datum_idx += 1
+        results.append(logprobs)
         
-        return logprobs
-    except Exception as e:
-        # Fallback to uniform if probing fails
-        return {"NA": -1.1, "PASS": -1.1, "FAIL": -1.1}
+    return results
 
+@async_retry()
 async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Config):
     """
     Sample multiple completions from the model for GRPO advantage estimation.
@@ -425,32 +453,6 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
         samples.append({"text": text, "tokens": seq.tokens, "logprob": total_lp})
     return samples
 
-async def process_example(ex, sampling_client, training_client, tokenizer, cfg: Config):
-    """
-    Process a single example: sample completions and probe logprobs in parallel.
-    
-    Args:
-        ex: Example dict with 'prompt', 'label', 'evidence'
-        sampling_client: Tinker sampling client
-        training_client: Tinker training client
-        tokenizer: Tokenizer instance
-        cfg: Training config
-    
-    Returns:
-        tuple: (example, prompt, samples, probs)
-    """
-    prompt = build_prompt(ex)
-    
-    # Run sampling and logprob probing in parallel
-    samples_task = sample_completions(sampling_client, tokenizer, prompt, cfg)
-    logprobs_task = probe_label_logprobs(training_client, tokenizer, prompt)
-    
-    samples, label_lps = await asyncio.gather(samples_task, logprobs_task)
-    probs = compute_probs_from_logits(label_lps)
-    
-    return ex, prompt, samples, probs
-
-
 async def run_training():
     """
     Main GRPO training loop for FEVER fact verification.
@@ -491,7 +493,6 @@ async def run_training():
     
     print("Running sanity check...")
     test_batch = dataset[:5]
-    # Parallelize sanity check sampling
     sanity_tasks = [
         sample_completions(sampling_client, tokenizer, build_prompt(ex), cfg)
         for ex in test_batch
@@ -502,31 +503,60 @@ async def run_training():
             label, conf, valid = parse_output(s["text"])
             print(f"  Gold={ex['label']} Pred={label} Conf={conf:.2f} Valid={valid}")
     
+    metrics_history = []
+    reward_components = ["total", "r_cls", "r_conf", "r_false_na", "r_align", "r_format"]
+    
     print(f"\nStarting GRPO training for {cfg.steps} steps...")
     for step in range(cfg.steps):
         batch_idx = (step * cfg.batch_size) % len(dataset)
         batch = dataset[batch_idx:batch_idx + cfg.batch_size]
         if len(batch) < cfg.batch_size:
             batch = batch + dataset[:cfg.batch_size - len(batch)]
+
+        # 1. Build prompts for the whole batch
+        prompts = [build_prompt(ex) for ex in batch]
         
-        # Process all examples in parallel: sampling + logprob probing
-        process_tasks = [
-            process_example(ex, sampling_client, training_client, tokenizer, cfg)
-            for ex in batch
-        ]
-        batch_results = await asyncio.gather(*process_tasks)
+        # 2. Launch all sampling and probing tasks concurrently
+        # We launch batch_size sampling tasks (each doing group_size samples)
+        # and ONE big probing task for the entire batch.
+        try:
+            sampling_tasks = [
+                sample_completions(sampling_client, tokenizer, prompt, cfg)
+                for prompt in prompts
+            ]
+            probing_task = probe_batch_logprobs(training_client, tokenizer, prompts)
+            
+            # Wait for everything in this batch to complete
+            all_batch_results = await asyncio.gather(*sampling_tasks, probing_task)
+            
+            # Unpack results: first N are samples, last is the batch logprobs
+            batch_samples = all_batch_results[:-1]
+            batch_label_lps = all_batch_results[-1]
+        except Exception as e:
+            print(f"WARNING: Batch processing failed at step {step}: {e}")
+            continue
         
         all_data = []
-        step_rewards = {"NA": [], "PASS": [], "FAIL": []}
+        step_rewards_by_outcome = {
+            label: {comp: [] for comp in reward_components}
+            for label in ["NA", "PASS", "FAIL"]
+        }
+        step_rewards_cumulative = {comp: [] for comp in reward_components}
         correct, total = 0, 0
         
-        for ex, prompt, samples, probs in batch_results:
+        # 3. Process each example in the batch
+        for ex, prompt, samples, label_lps in zip(batch, prompts, batch_samples, batch_label_lps):
+            probs = compute_probs_from_logits(label_lps)
             rewards = []
             for s in samples:
                 pred_label, pred_conf, valid = parse_output(s["text"])
-                r = compute_reward(ex["label"], pred_conf, probs, cfg, valid)
-                rewards.append(r)
-                step_rewards[ex["label"]].append(r)
+                reward_breakdown = compute_reward(ex["label"], pred_conf, probs, cfg, valid)
+                rewards.append(reward_breakdown["total"])
+                
+                for comp in reward_components:
+                    step_rewards_by_outcome[ex["label"]][comp].append(reward_breakdown[comp])
+                    step_rewards_cumulative[comp].append(reward_breakdown[comp])
+                
                 if pred_label == ex["label"]:
                     correct += 1
                 total += 1
@@ -561,13 +591,44 @@ async def run_training():
             await fwd_future
             await opt_future
         
+        acc = correct / max(total, 1)
+        step_metrics = {
+            "step": step,
+            "accuracy": acc,
+            "by_outcome": {},
+            "cumulative": {}
+        }
+        
+        for label in ["NA", "PASS", "FAIL"]:
+            step_metrics["by_outcome"][label] = {
+                comp: float(np.mean(step_rewards_by_outcome[label][comp])) 
+                      if step_rewards_by_outcome[label][comp] else 0.0
+                for comp in reward_components
+            }
+        
+        step_metrics["cumulative"] = {
+            comp: float(np.mean(step_rewards_cumulative[comp])) 
+                  if step_rewards_cumulative[comp] else 0.0
+            for comp in reward_components
+        }
+        
+        metrics_history.append(step_metrics)
+        
         if step % 10 == 0:
-            avg_r = {k: np.mean(v) if v else 0 for k, v in step_rewards.items()}
-            acc = correct / max(total, 1)
-            print(f"Step {step}: Acc={acc:.3f} R_NA={avg_r['NA']:.3f} R_PASS={avg_r['PASS']:.3f} R_FAIL={avg_r['FAIL']:.3f}")
+            cum = step_metrics["cumulative"]
+            print(f"Step {step}: Acc={acc:.3f} | "
+                  f"r_cls={cum['r_cls']:.3f} r_conf={cum['r_conf']:.3f} "
+                  f"r_false_na={cum['r_false_na']:.3f} r_align={cum['r_align']:.3f} "
+                  f"r_format={cum['r_format']:.3f} | total={cum['total']:.3f}")
         
         if step % 50 == 0 and step > 0:
             sampling_client = await training_client.save_weights_and_get_sampling_client_async(name=f"step_{step}")
+            with open("training_metrics.json", "w") as f:
+                json.dump(metrics_history, f, indent=2)
+    
+    with open("training_metrics.json", "w") as f:
+        json.dump(metrics_history, f, indent=2)
+    print(f"Saved training metrics to training_metrics.json")
     
     final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-test")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
