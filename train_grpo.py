@@ -87,9 +87,9 @@ class Config:
     format_penalty: float = 2.0
     beta_kl: float = 0.02
 
-_NOT_ENOUGH_INFO_COUNT = 500
-_SUPPORTS_COUNT = 250
-_REFUTES_COUNT = 250
+_NOT_ENOUGH_INFO_COUNT = 10
+_SUPPORTS_COUNT = 5
+_REFUTES_COUNT = 5
 
 def load_dataset(not_enough_info_count: int = _NOT_ENOUGH_INFO_COUNT, supports_count: int = _SUPPORTS_COUNT, refutes_count: int = _REFUTES_COUNT):
     """
@@ -425,6 +425,32 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
         samples.append({"text": text, "tokens": seq.tokens, "logprob": total_lp})
     return samples
 
+async def process_example(ex, sampling_client, training_client, tokenizer, cfg: Config):
+    """
+    Process a single example: sample completions and probe logprobs in parallel.
+    
+    Args:
+        ex: Example dict with 'prompt', 'label', 'evidence'
+        sampling_client: Tinker sampling client
+        training_client: Tinker training client
+        tokenizer: Tokenizer instance
+        cfg: Training config
+    
+    Returns:
+        tuple: (example, prompt, samples, probs)
+    """
+    prompt = build_prompt(ex)
+    
+    # Run sampling and logprob probing in parallel
+    samples_task = sample_completions(sampling_client, tokenizer, prompt, cfg)
+    logprobs_task = probe_label_logprobs(training_client, tokenizer, prompt)
+    
+    samples, label_lps = await asyncio.gather(samples_task, logprobs_task)
+    probs = compute_probs_from_logits(label_lps)
+    
+    return ex, prompt, samples, probs
+
+
 async def run_training():
     """
     Main GRPO training loop for FEVER fact verification.
@@ -434,7 +460,7 @@ async def run_training():
     2. Initialize LoRA training client and sampling client
     3. For each training step:
        a. Sample a batch of examples
-       b. For each example:
+       b. For each example (in parallel):
           - Generate group_size completions with temperature sampling
           - Probe label log-probabilities for reward computation
           - Compute rewards using the multi-component reward function
@@ -465,9 +491,13 @@ async def run_training():
     
     print("Running sanity check...")
     test_batch = dataset[:5]
-    for ex in test_batch:
-        prompt = build_prompt(ex)
-        samples = await sample_completions(sampling_client, tokenizer, prompt, cfg)
+    # Parallelize sanity check sampling
+    sanity_tasks = [
+        sample_completions(sampling_client, tokenizer, build_prompt(ex), cfg)
+        for ex in test_batch
+    ]
+    sanity_results = await asyncio.gather(*sanity_tasks)
+    for ex, samples in zip(test_batch, sanity_results):
         for s in samples[:2]:
             label, conf, valid = parse_output(s["text"])
             print(f"  Gold={ex['label']} Pred={label} Conf={conf:.2f} Valid={valid}")
@@ -479,16 +509,18 @@ async def run_training():
         if len(batch) < cfg.batch_size:
             batch = batch + dataset[:cfg.batch_size - len(batch)]
         
+        # Process all examples in parallel: sampling + logprob probing
+        process_tasks = [
+            process_example(ex, sampling_client, training_client, tokenizer, cfg)
+            for ex in batch
+        ]
+        batch_results = await asyncio.gather(*process_tasks)
+        
         all_data = []
         step_rewards = {"NA": [], "PASS": [], "FAIL": []}
         correct, total = 0, 0
         
-        for ex in batch:
-            prompt = build_prompt(ex)
-            samples = await sample_completions(sampling_client, tokenizer, prompt, cfg)
-            label_lps = await probe_label_logprobs(training_client, tokenizer, prompt)
-            probs = compute_probs_from_logits(label_lps)
-            
+        for ex, prompt, samples, probs in batch_results:
             rewards = []
             for s in samples:
                 pred_label, pred_conf, valid = parse_output(s["text"])
@@ -537,7 +569,7 @@ async def run_training():
         if step % 50 == 0 and step > 0:
             sampling_client = await training_client.save_weights_and_get_sampling_client_async(name=f"step_{step}")
     
-    final_path = (await training_client.save_weights_for_sampler_async(name="final")).result().path
+    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-test")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
     return final_path
 
