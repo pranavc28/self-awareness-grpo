@@ -81,17 +81,40 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = 10):
         prompt = build_prompt(ex["claim"], evidence_texts)
         tokens = tokenizer.encode(prompt)
         model_input = types.ModelInput.from_ints(tokens)
-        params = types.SamplingParams(max_tokens=96, temperature=0.0, stop=["\n\n"])
+        params = types.SamplingParams(max_tokens=2048, temperature=0.0)
         
         result = await sampling_client.sample_async(prompt=model_input, num_samples=1, sampling_params=params)
-        response = tokenizer.decode(result.sequences[0].tokens)
+        output_ids = list(result.sequences[0].tokens)
         
+        index = 0
+        for i, tid in enumerate(output_ids):
+            decoded_token = tokenizer.decode([tid], skip_special_tokens=False).strip()
+            if decoded_token in ["</think>", "<|thought_end|>", "### Response:"]:
+                index = i + 1
+                break
+                
+        if index > 0:
+            thinking = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip()
+            content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip()
+        else:
+            full_text = tokenizer.decode(output_ids, skip_special_tokens=True)
+            # Robust split logic
+            match = re.search(r"(?:LABEL|STANCE|Classification)\s*[=:]", full_text, re.IGNORECASE)
+            if match:
+                split_idx = match.start()
+                thinking = full_text[:split_idx].strip()
+                content = full_text[split_idx:].strip()
+            else:
+                thinking = ""
+                content = full_text.strip()
+                
         results.append({
             "id": ex["id"],
             "claim": ex["claim"],
             "evidence_texts": evidence_texts,
             "golden_label": ex["golden_label"],
-            "grpo_response": response.strip()
+            "grpo_response": content,
+            "thinking": thinking
         })
         print(f"ID {ex['id']}: Golden={ex['golden_label']}")
         print(f"  Response: {response.strip()[:100]}")

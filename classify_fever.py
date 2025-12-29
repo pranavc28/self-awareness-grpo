@@ -17,7 +17,7 @@ LABELS = ["SUPPORTS", "REFUTES", "NOT ENOUGH INFO"]
 class FEVERClassifier:
     """FEVER fact verification classifier using Tinker API."""
     
-    def __init__(self, model_name: str = "moonshotai/Kimi-K2-Thinking"):
+    def __init__(self, model_name: str = "Qwen/Qwen3-30B-A3B-Instruct-2507"):
         self.model_name = model_name
         self.service_client = tinker.ServiceClient()
         self.sampling_client: Optional[tinker.SamplingClient] = None
@@ -74,15 +74,37 @@ Classification:"""
         model_input = types.ModelInput.from_ints(prompt_tokens)
         
         sampling_params = types.SamplingParams(
-            max_tokens=50, temperature=0.0, stop=["\n", "\n\n"]
+            max_tokens=2048, temperature=0.0
         )
         
         result = await self.sampling_client.sample_async(
             prompt=model_input, num_samples=1, sampling_params=sampling_params
         )
         
-        raw_response = self.tokenizer.decode(result.sequences[0].tokens, skip_special_tokens=True)
-        return self.parse_classification(raw_response), raw_response
+        output_ids = list(result.sequences[0].tokens)
+        index = 0
+        for i, tid in enumerate(output_ids):
+            decoded_token = self.tokenizer.decode([tid], skip_special_tokens=False).strip()
+            if decoded_token in ["</think>", "<|thought_end|>", "### Response:"]:
+                index = i + 1
+                break
+        
+        if index > 0:
+            thinking = self.tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip()
+            content = self.tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip()
+        else:
+            full_text = self.tokenizer.decode(output_ids, skip_special_tokens=True)
+            # Robust split logic
+            match = re.search(r"(?:Classification|LABEL|STANCE)\s*[=:]", full_text, re.IGNORECASE)
+            if match:
+                split_idx = match.start()
+                thinking = full_text[:split_idx].strip()
+                content = full_text[split_idx:].strip()
+            else:
+                thinking = ""
+                content = full_text.strip()
+                
+        return self.parse_classification(content), content
     
     async def classify_batch(self, examples: list[dict], wiki_reader: WikiReader) -> list[dict]:
         """Classify a batch of examples concurrently."""
@@ -115,7 +137,7 @@ async def main():
     wiki_reader = WikiReader(download_wiki_pages())
     
     print("Sampling FEVER examples...")
-    samples = get_balanced_sample(num_nei=500, num_supports=250, num_refutes=250, seed=SEED)
+    samples = get_balanced_sample(num_nei=10, num_supports=5, num_refutes=5, seed=SEED)
     
     print("Initializing Kimi-K2...")
     classifier = FEVERClassifier()

@@ -21,7 +21,7 @@ from tinker import types
 
 from extract_fever_dataset import WikiReader, download_wiki_pages
 
-MODEL = "moonshotai/Kimi-K2-Thinking"
+MODEL = "Qwen/Qwen3-30B-A3B"
 SEED = 42
 LABEL_MAP = {"NOT ENOUGH INFO": "NA", "SUPPORTS": "PASS", "REFUTES": "FAIL"}
 
@@ -111,10 +111,10 @@ class Config:
     """
     batch_size: int = 64  # 64 examples × 4 samples = 256 completions per step
     group_size: int = 4
-    max_tokens: int = 96
+    max_tokens: int = 30000
     temperature: float = 0.8
     lr: float = 2e-6
-    steps: int = 500
+    steps: int = 160
     w_na: float = 2.0
     w_pass: float = 1.0
     w_fail: float = 1.0
@@ -201,12 +201,23 @@ You have additional evidence to consider in case you need it:
 Classify into exactly one category:
 - PASS: Evidence supports the claim (SUPPORTS)
 - FAIL: Evidence contradicts the claim (REFUTES)
-- NA: Insufficient evidence (NOT ENOUGH INFO)
+- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
 
-Respond with EXACTLY this format:
-LABEL=<NA|PASS|FAIL>
-CONF=<float 0-1, 2 decimals>
-RATIONALE=<one sentence or empty>
+For the confidence, output a number between 0 and 1 with 2 decimal places. 0 being the lowest confidence and 1 being the highest confidence. This is a confidence score for your classification.
+
+For the rationale, output a one sentence or empty string. This is your reasoning for your classification.
+
+Look at the following as an example of the output format, respond with EXACTLY this format:
+LABEL=PASS
+CONF=0.65
+RATIONALE=The evidence supports the claim since the claim is about the US president and the evidence is about the US president.
+
+You must have the LABEL, CONF, and RATIONALE in your response. DO NOT hallucinate the keys for the response, e.g. STANCE instead of LABEL is incorrect. Or CONFIDENCE instead of CONF is incorrect.
+
+It is ok to return NA if the evidence is insufficient to make a decision. Do not make up evidence that is not provided.
+
+The number for confidence can be less than 0.5 if you are not very confident in your classification. If greater than 0.5, you are confident in your classification just varying levels of strong confidence.
+For example, if you do not see enough evidence to support the claim, you can return a confidence of 0.9 for NA outcomes if the claim is not supported by the evidence. If you are not as sure but are leaning more towards NA than PASS or FAIL, you can return a confidence of less than 0.5 for NA outcomes.
 """
 
 def parse_output(text):
@@ -231,12 +242,24 @@ def parse_output(text):
             - valid: Boolean indicating if output format was correct
     """
     label, conf, valid = None, 0.5, True
-    m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
+    print(f"Parsing text: {text}")
+    
+    # Handle common hallucinations and clean text
+    text = text.replace("<", "").replace(">", "")
+    
+    # Extract Label (support STANCE= or LABEL=)
+    m = re.search(r"(?:LABEL|STANCE)\s*[=:]\s*(NA|PASS|FAIL|SUPPORT|REFUTE|NOT ENOUGH INFO)", text, re.IGNORECASE)
     if m:
-        label = m.group(1).upper()
+        val = m.group(1).upper()
+        if "SUPPORT" in val: label = "PASS"
+        elif "REFUTE" in val: label = "FAIL"
+        elif "NOT ENOUGH INFO" in val: label = "NA"
+        else: label = val
     else:
         valid = False
-    m = re.search(r"CONF\s*=\s*([\d.]+)", text)
+        
+    # Extract Confidence
+    m = re.search(r"CONF\s*[=:]\s*([\d.]+)", text, re.IGNORECASE)
     if m:
         try:
             conf = float(m.group(1))
@@ -244,7 +267,15 @@ def parse_output(text):
         except:
             valid = False
     else:
+        # Try a more generic fallback for confidence if key is missing
+        m = re.search(r"confidence\s*is\s*([\d.]+)", text, re.IGNORECASE)
+        if m:
+            try:
+                conf = float(m.group(1))
+                conf = max(0.0, min(1.0, conf))
+            except: pass
         valid = False
+        
     return label, conf, valid
 
 def compute_probs_from_logits(logprobs_dict):
@@ -438,7 +469,7 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
     params = types.SamplingParams(
         max_tokens=cfg.max_tokens,
         temperature=cfg.temperature,
-        stop=["\n\n", "RATIONALE="]
+        stop=["RATIONALE="]
     )
     result = await sampling_client.sample_async(
         prompt=model_input,
@@ -447,10 +478,43 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
     )
     samples = []
     for seq in result.sequences:
-        text = tokenizer.decode(seq.tokens)
+        output_ids = list(seq.tokens)
+        
+        # Find the split index for thinking tokens
+        # We look for common markers or use a heuristic
+        index = 0
+        for i, tid in enumerate(output_ids):
+            # Decode one token at a time to find the marker
+            decoded_token = tokenizer.decode([tid], skip_special_tokens=False).strip()
+            if decoded_token in ["</think>", "<|thought_end|>", "### Response:"]:
+                index = i + 1
+                break
+        
+        if index > 0:
+            thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
+            content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
+        else:
+            # Fallback if no specific token was found
+            full_text = tokenizer.decode(output_ids, skip_special_tokens=True)
+            # Look for the start of the structured output with regex
+            # Matches LABEL=, STANCE=, or LABEL: (case insensitive)
+            match = re.search(r"(?:LABEL|STANCE|Classification)\s*[=:]", full_text, re.IGNORECASE)
+            if match:
+                split_idx = match.start()
+                thinking_content = full_text[:split_idx].strip()
+                content = full_text[split_idx:].strip()
+            else:
+                thinking_content = ""
+                content = full_text.strip()
+
         lps = seq.logprobs if hasattr(seq, 'logprobs') else []
         total_lp = sum(lps) if lps else 0.0
-        samples.append({"text": text, "tokens": seq.tokens, "logprob": total_lp})
+        samples.append({
+            "text": content, 
+            "thinking": thinking_content, 
+            "tokens": seq.tokens, 
+            "logprob": total_lp
+        })
     return samples
 
 async def run_training():
@@ -505,7 +569,7 @@ async def run_training():
     
     metrics_history = []
     reward_components = ["total", "r_cls", "r_conf", "r_false_na", "r_align", "r_format"]
-    
+    return
     print(f"\nStarting GRPO training for {cfg.steps} steps...")
     for step in range(cfg.steps):
         batch_idx = (step * cfg.batch_size) % len(dataset)
@@ -630,7 +694,7 @@ async def run_training():
         json.dump(metrics_history, f, indent=2)
     print(f"Saved training metrics to training_metrics.json")
     
-    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-test")).result().path
+    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-trial-1")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
     return final_path
 
