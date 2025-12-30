@@ -1,4 +1,8 @@
-"""Classify FEVER examples using Kimi-K2 via Tinker API with async sampling."""
+"""Classify FEVER examples using openai/gpt-oss-20b via Tinker API with async sampling.
+
+Uses evaluation examples that are NOT in the training set to ensure clean separation.
+Output format is compatible with calculate_f1.py.
+"""
 
 import asyncio
 import json
@@ -9,15 +13,17 @@ import tinker
 from tinker import types
 from transformers import AutoTokenizer
 
-from extract_fever_dataset import get_balanced_sample, WikiReader, download_wiki_pages
+from extract_fever_dataset import get_eval_examples, WikiReader, download_wiki_pages
 
-LABELS = ["SUPPORTS", "REFUTES", "NOT ENOUGH INFO"]
+# Label mapping: FEVER labels -> simplified labels
+LABEL_MAP = {"NOT ENOUGH INFO": "NA", "SUPPORTS": "PASS", "REFUTES": "FAIL"}
+REVERSE_LABEL_MAP = {"NA": "NOT ENOUGH INFO", "PASS": "SUPPORTS", "FAIL": "REFUTES"}
 
 
 class FEVERClassifier:
     """FEVER fact verification classifier using Tinker API."""
     
-    def __init__(self, model_name: str = "Qwen/Qwen3-30B-A3B-Instruct-2507"):
+    def __init__(self, model_name: str = "openai/gpt-oss-20b"):
         self.model_name = model_name
         self.service_client = tinker.ServiceClient()
         self.sampling_client: Optional[tinker.SamplingClient] = None
@@ -31,7 +37,7 @@ class FEVERClassifier:
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
     
     def build_prompt(self, claim: str, evidence_texts: list[str]) -> str:
-        """Build classification prompt with claim and evidence."""
+        """Build classification prompt with claim and evidence (simplified, label only)."""
         if evidence_texts:
             evidence = "\n".join(f"- {t}" for t in evidence_texts)
         else:
@@ -45,13 +51,13 @@ You have additional evidence to consider in case you need it:
 {evidence}
 
 Classify into exactly one category:
-- SUPPORTS: Evidence supports the claim
-- REFUTES: Evidence contradicts the claim  
-- NOT ENOUGH INFO: Insufficient evidence
+- PASS: Evidence supports the claim (SUPPORTS)
+- FAIL: Evidence contradicts the claim (REFUTES)
+- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
 
-Respond with ONLY: SUPPORTS, REFUTES, or NOT ENOUGH INFO. There is no need to explain your reasoning, just return the classification.
+It is ok to return NA if the evidence is insufficient to make a decision. Do not make up evidence that is not provided.
 
-It is ok to return NOT ENOUGH INFO if the evidence is insufficient to make a decision. Do not make up evidence that is not provided.
+Respond with ONLY one word: PASS, FAIL, or NA
 
 Classification:"""
     
@@ -59,13 +65,21 @@ Classification:"""
         """Extract classification label from model response."""
         response_upper = response.upper().strip()
         
-        if "NOT ENOUGH INFO" in response_upper:
-            return "NOT ENOUGH INFO"
+        # Check for simplified labels first
+        if "NA" in response_upper:
+            return "NA"
+        elif "FAIL" in response_upper:
+            return "FAIL"
+        elif "PASS" in response_upper:
+            return "PASS"
+        # Fallback to original labels
+        elif "NOT ENOUGH INFO" in response_upper:
+            return "NA"
         elif "REFUTES" in response_upper:
-            return "REFUTES"
+            return "FAIL"
         elif "SUPPORTS" in response_upper:
-            return "SUPPORTS"
-        return "NOT ENOUGH INFO"
+            return "PASS"
+        return "NA"  # Default
     
     async def classify_single(self, claim: str, evidence_texts: list[str]) -> tuple[str, str]:
         """Classify a single claim asynchronously."""
@@ -74,37 +88,15 @@ Classification:"""
         model_input = types.ModelInput.from_ints(prompt_tokens)
         
         sampling_params = types.SamplingParams(
-            max_tokens=2048, temperature=0.0
+            max_tokens=10, temperature=0.0, stop=["\n", "\n\n"]
         )
         
         result = await self.sampling_client.sample_async(
             prompt=model_input, num_samples=1, sampling_params=sampling_params
         )
         
-        output_ids = list(result.sequences[0].tokens)
-        index = 0
-        for i, tid in enumerate(output_ids):
-            decoded_token = self.tokenizer.decode([tid], skip_special_tokens=False).strip()
-            if decoded_token in ["</think>", "<|thought_end|>", "### Response:"]:
-                index = i + 1
-                break
-        
-        if index > 0:
-            thinking = self.tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip()
-            content = self.tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip()
-        else:
-            full_text = self.tokenizer.decode(output_ids, skip_special_tokens=True)
-            # Robust split logic
-            match = re.search(r"(?:Classification|LABEL|STANCE)\s*[=:]", full_text, re.IGNORECASE)
-            if match:
-                split_idx = match.start()
-                thinking = full_text[:split_idx].strip()
-                content = full_text[split_idx:].strip()
-            else:
-                thinking = ""
-                content = full_text.strip()
-                
-        return self.parse_classification(content), content
+        raw_response = self.tokenizer.decode(result.sequences[0].tokens, skip_special_tokens=True)
+        return self.parse_classification(raw_response), raw_response
     
     async def classify_batch(self, examples: list[dict], wiki_reader: WikiReader) -> list[dict]:
         """Classify a batch of examples concurrently."""
@@ -113,14 +105,17 @@ Classification:"""
             evidence_texts = wiki_reader.get_evidence_text(example.get("evidence", []))
             predicted, raw = await self.classify_single(example["claim"], evidence_texts)
             
-            status = "✓" if predicted == example["label"] else "✗"
+            # Convert golden label to simplified format
+            golden_label = LABEL_MAP.get(example["label"], example["label"])
+            
+            status = "✓" if predicted == golden_label else "✗"
             print(f"[{idx+1}/{len(examples)}] {status} {example['claim'][:50]}...")
             
             return {
                 "id": example["id"],
                 "claim": example["claim"],
                 "evidence_texts": evidence_texts,
-                "golden_label": example["label"],
+                "golden_label": golden_label,
                 "predicted_label": predicted,
                 "raw_response": raw.strip()
             }
@@ -130,27 +125,44 @@ Classification:"""
 
 
 async def main():
-    SEED = 42
+    SEED = 43  # Different from training seed (42) to get different examples
     random.seed(SEED)
     
     print("Loading Wikipedia evidence...")
     wiki_reader = WikiReader(download_wiki_pages())
     
-    print("Sampling FEVER examples...")
-    samples = get_balanced_sample(num_nei=10, num_supports=5, num_refutes=5, seed=SEED)
+    print("Getting evaluation examples (excluding training set)...")
+    samples = get_eval_examples(
+        num_nei=500,
+        num_supports=250,
+        num_refutes=250,
+        seed=SEED
+    )
     
-    print("Initializing Kimi-K2...")
+    print("Initializing openai/gpt-oss-20b...")
     classifier = FEVERClassifier()
     await classifier.initialize()
     
     print(f"Classifying {len(samples)} examples...")
     results = await classifier.classify_batch(samples, wiki_reader)
     
-    output = {"model": "moonshotai/Kimi-K2-Thinking", "results": results}
-    with open("fever_classification_results.json", "w") as f:
+    # Calculate accuracy
+    correct = sum(1 for r in results if r["golden_label"] == r["predicted_label"])
+    accuracy = correct / len(results) * 100
+    print(f"\nAccuracy: {accuracy:.1f}% ({correct}/{len(results)})")
+    
+    output = {
+        "model": "openai/gpt-oss-20b",
+        "source": "classify_fever",
+        "num_examples": len(results),
+        "results": results
+    }
+    
+    output_path = "fever_classification_results.json"
+    with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
     
-    print(f"\nSaved to fever_classification_results.json")
+    print(f"Saved to {output_path}")
 
 
 if __name__ == "__main__":

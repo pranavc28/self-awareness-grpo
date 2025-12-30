@@ -21,7 +21,7 @@ from tinker import types
 
 from extract_fever_dataset import WikiReader, download_wiki_pages
 
-MODEL = "Qwen/Qwen3-30B-A3B"
+MODEL = "openai/gpt-oss-20b"
 SEED = 42
 LABEL_MAP = {"NOT ENOUGH INFO": "NA", "SUPPORTS": "PASS", "REFUTES": "FAIL"}
 
@@ -91,14 +91,10 @@ class Config:
     Configuration for GRPO training hyperparameters.
     
     Reward function parameters:
-        w_na: Weight for NOT ENOUGH INFO classification reward (higher to emphasize)
-        w_pass: Weight for SUPPORTS classification reward
-        w_fail: Weight for REFUTES classification reward
         gamma: Bonus coefficient for confidence when prediction is correct
         delta: Penalty coefficient for confidence when prediction is incorrect
         lambda_false_na: Penalty for incorrectly predicting NA when gold is SUPPORTS/REFUTES
         eta_align: Penalty coefficient for confidence-probability misalignment
-        format_penalty: Penalty for invalid output format
         beta_kl: KL divergence regularization weight
     
     Training parameters:
@@ -111,13 +107,10 @@ class Config:
     """
     batch_size: int = 64  # 64 examples × 4 samples = 256 completions per step
     group_size: int = 4
-    max_tokens: int = 30000
-    temperature: float = 0.8
+    max_tokens: int = 10000
+    temperature: float = 0.6
     lr: float = 2e-6
     steps: int = 160
-    w_na: float = 2.0
-    w_pass: float = 1.0
-    w_fail: float = 1.0
     gamma: float = 0.25
     delta: float = 1.5
     lambda_false_na: float = 1.5
@@ -160,6 +153,13 @@ def load_dataset(not_enough_info_count: int = _NOT_ENOUGH_INFO_COUNT, supports_c
     for lbl, count in [("NOT ENOUGH INFO", not_enough_info_count), ("SUPPORTS", supports_count), ("REFUTES", refutes_count)]:
         sampled.extend(random.sample(by_label[lbl], count))
     random.shuffle(sampled)
+
+    # Save training IDs to a separate JSON file for future reference
+    training_ids = [ex["id"] for ex in sampled]
+    with open("training_ids.json", "w") as f:
+        json.dump(training_ids, f, indent=2)
+    print(f"Saved {len(training_ids)} training IDs to training_ids.json")
+
     return [{"prompt": ex["claim"], "label": LABEL_MAP[ex["label"]], "evidence": ex.get("evidence", [])} for ex in sampled]
 
 
@@ -205,19 +205,22 @@ Classify into exactly one category:
 
 For the confidence, output a number between 0 and 1 with 2 decimal places. 0 being the lowest confidence and 1 being the highest confidence. This is a confidence score for your classification.
 
-For the rationale, output a one sentence or empty string. This is your reasoning for your classification.
-
-Look at the following as an example of the output format, respond with EXACTLY this format:
-LABEL=PASS
-CONF=0.65
-RATIONALE=The evidence supports the claim since the claim is about the US president and the evidence is about the US president.
+For the rationale, output an empty string. There is no need to explain your reasoning.
 
 You must have the LABEL, CONF, and RATIONALE in your response. DO NOT hallucinate the keys for the response, e.g. STANCE instead of LABEL is incorrect. Or CONFIDENCE instead of CONF is incorrect.
 
 It is ok to return NA if the evidence is insufficient to make a decision. Do not make up evidence that is not provided.
 
 The number for confidence can be less than 0.5 if you are not very confident in your classification. If greater than 0.5, you are confident in your classification just varying levels of strong confidence.
-For example, if you do not see enough evidence to support the claim, you can return a confidence of 0.9 for NA outcomes if the claim is not supported by the evidence. If you are not as sure but are leaning more towards NA than PASS or FAIL, you can return a confidence of less than 0.5 for NA outcomes.
+For example, if you do not see enough evidence to support the claim, you can return a confidence of 0.9 for NA outcomes if the claim is not supported by the evidence. If you are not as sure but are leaning
+more towards NA than PASS or FAIL, you can return a confidence of less than 0.5 for NA outcomes.
+
+<Response Format>
+Return only the following respone format. DO NOT add reasoning or thinking content. Look at the following as an example of the output format, respond with EXACTLY this format:
+LABEL=PASS
+CONF=0.65
+RATIONALE=
+</Response Format>
 """
 
 def parse_output(text):
@@ -242,24 +245,13 @@ def parse_output(text):
             - valid: Boolean indicating if output format was correct
     """
     label, conf, valid = None, 0.5, True
-    print(f"Parsing text: {text}")
-    
-    # Handle common hallucinations and clean text
     text = text.replace("<", "").replace(">", "")
-    
-    # Extract Label (support STANCE= or LABEL=)
-    m = re.search(r"(?:LABEL|STANCE)\s*[=:]\s*(NA|PASS|FAIL|SUPPORT|REFUTE|NOT ENOUGH INFO)", text, re.IGNORECASE)
+    m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
     if m:
-        val = m.group(1).upper()
-        if "SUPPORT" in val: label = "PASS"
-        elif "REFUTE" in val: label = "FAIL"
-        elif "NOT ENOUGH INFO" in val: label = "NA"
-        else: label = val
+        label = m.group(1).upper()
     else:
         valid = False
-        
-    # Extract Confidence
-    m = re.search(r"CONF\s*[=:]\s*([\d.]+)", text, re.IGNORECASE)
+    m = re.search(r"CONF\s*=\s*([\d.]+)", text)
     if m:
         try:
             conf = float(m.group(1))
@@ -267,15 +259,7 @@ def parse_output(text):
         except:
             valid = False
     else:
-        # Try a more generic fallback for confidence if key is missing
-        m = re.search(r"confidence\s*is\s*([\d.]+)", text, re.IGNORECASE)
-        if m:
-            try:
-                conf = float(m.group(1))
-                conf = max(0.0, min(1.0, conf))
-            except: pass
         valid = False
-        
     return label, conf, valid
 
 def compute_probs_from_logits(logprobs_dict):
@@ -303,32 +287,35 @@ def compute_reward(gold, pred_conf, probs, cfg: Config, format_valid):
     """
     Compute the total reward for a single model prediction.
     
-    The reward function combines five components to encourage self-aware,
+    The reward function combines six components to encourage self-aware,
     well-calibrated fact verification:
     
-    1. r_cls (Classification Reward):
-       w[gold] * log(p_gold)
-       Weighted log-probability of the correct label. Higher weights (w_na=2.0)
-       for NA encourage the model to properly identify insufficient evidence.
+    1. r_correct (Accuracy Reward) - NEW:
+       +1.0 if prediction matches gold, -0.5 otherwise.
+       This is the PRIMARY learning signal for classification accuracy.
     
-    2. r_conf (Confidence Reward/Penalty):
+    2. r_cls (Classification Calibration):
+       0.25 * log(p_gold) - soft calibration bonus for high probability on gold.
+       Scaled down to not dominate the accuracy signal.
+    
+    3. r_conf (Confidence Reward/Penalty):
        - If correct (y_hat == gold): +gamma * max(0, conf - 0.5)
          Rewards high confidence on correct predictions.
        - If incorrect: -delta * max(0, conf - 0.5)  
          Penalizes overconfidence on wrong predictions.
        This teaches calibration: be confident when right, uncertain when wrong.
     
-    3. r_false_na (False NA Penalty):
+    4. r_false_na (False NA Penalty):
        -lambda_false_na if gold != NA and y_hat == NA
        Penalizes predicting "not enough info" when evidence exists.
        Prevents the model from taking the easy way out.
     
-    4. r_align (Alignment Penalty):
+    5. r_align (Alignment Penalty):
        -eta_align * |pred_conf - p_hat|
        Penalizes mismatch between stated confidence and model's internal
        probability. Encourages honest confidence reporting.
     
-    5. r_format (Format Penalty):
+    6. r_format (Format Penalty):
        -format_penalty if output format is invalid
        Encourages adherence to the LABEL/CONF/RATIONALE format.
     
@@ -342,28 +329,43 @@ def compute_reward(gold, pred_conf, probs, cfg: Config, format_valid):
     Returns:
         dict: Reward breakdown with keys:
             - total: Sum of all components
-            - r_cls: Classification reward
+            - r_correct: Accuracy reward (+1 correct, -0.5 incorrect)
+            - r_cls: Classification calibration (scaled log-prob)
             - r_conf: Confidence reward/penalty
             - r_false_na: False NA penalty
             - r_align: Alignment penalty
             - r_format: Format penalty
     """
     eps = 1e-10
-    w_map = {"NA": cfg.w_na, "PASS": cfg.w_pass, "FAIL": cfg.w_fail}
     p_gold = probs.get(gold, eps)
-    r_cls = w_map[gold] * np.log(p_gold + eps)
     y_hat = max(probs, key=probs.get)
     p_hat = probs[y_hat]
+    
+    # PRIMARY SIGNAL: Direct accuracy reward (positive for correct!)
+    r_correct = 1.0 if y_hat == gold else -0.5
+    
+    # Calibration bonus: encourage high probability on gold label (scaled down)
+    r_cls = 0.25 * np.log(p_gold + eps)
+    
+    # Confidence reward/penalty
     if y_hat == gold:
         r_conf = cfg.gamma * max(0.0, pred_conf - 0.5)
     else:
         r_conf = -cfg.delta * max(0.0, pred_conf - 0.5)
+    
+    # False NA penalty
     r_false_na = -cfg.lambda_false_na if (gold != "NA" and y_hat == "NA") else 0.0
+    
+    # Alignment penalty
     r_align = -cfg.eta_align * abs(pred_conf - p_hat)
-    r_format = 0.0
-    total = r_cls + r_conf + r_false_na + r_align + r_format
+    
+    # Format penalty
+    r_format = -1.0 if not format_valid else 0.0
+    
+    total = r_correct + r_cls + r_conf + r_false_na + r_align + r_format
     return {
         "total": total,
+        "r_correct": r_correct,
         "r_cls": r_cls,
         "r_conf": r_conf,
         "r_false_na": r_false_na,
@@ -478,43 +480,10 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
     )
     samples = []
     for seq in result.sequences:
-        output_ids = list(seq.tokens)
-        
-        # Find the split index for thinking tokens
-        # We look for common markers or use a heuristic
-        index = 0
-        for i, tid in enumerate(output_ids):
-            # Decode one token at a time to find the marker
-            decoded_token = tokenizer.decode([tid], skip_special_tokens=False).strip()
-            if decoded_token in ["</think>", "<|thought_end|>", "### Response:"]:
-                index = i + 1
-                break
-        
-        if index > 0:
-            thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
-            content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
-        else:
-            # Fallback if no specific token was found
-            full_text = tokenizer.decode(output_ids, skip_special_tokens=True)
-            # Look for the start of the structured output with regex
-            # Matches LABEL=, STANCE=, or LABEL: (case insensitive)
-            match = re.search(r"(?:LABEL|STANCE|Classification)\s*[=:]", full_text, re.IGNORECASE)
-            if match:
-                split_idx = match.start()
-                thinking_content = full_text[:split_idx].strip()
-                content = full_text[split_idx:].strip()
-            else:
-                thinking_content = ""
-                content = full_text.strip()
-
+        text = tokenizer.decode(seq.tokens)
         lps = seq.logprobs if hasattr(seq, 'logprobs') else []
         total_lp = sum(lps) if lps else 0.0
-        samples.append({
-            "text": content, 
-            "thinking": thinking_content, 
-            "tokens": seq.tokens, 
-            "logprob": total_lp
-        })
+        samples.append({"text": text, "tokens": seq.tokens, "logprob": total_lp})
     return samples
 
 async def run_training():
@@ -553,7 +522,7 @@ async def run_training():
     service_client = tinker.ServiceClient()
     training_client = await service_client.create_lora_training_client_async(base_model=MODEL, rank=32)
     tokenizer = training_client.get_tokenizer()
-    sampling_client = await training_client.save_weights_and_get_sampling_client_async(name="init")
+    sampling_client = await training_client.save_weights_and_get_sampling_client_async(name="init2")
     
     print("Running sanity check...")
     test_batch = dataset[:5]
@@ -568,8 +537,8 @@ async def run_training():
             print(f"  Gold={ex['label']} Pred={label} Conf={conf:.2f} Valid={valid}")
     
     metrics_history = []
-    reward_components = ["total", "r_cls", "r_conf", "r_false_na", "r_align", "r_format"]
-    return
+    reward_components = ["total", "r_correct", "r_cls", "r_conf", "r_false_na", "r_align", "r_format"]
+
     print(f"\nStarting GRPO training for {cfg.steps} steps...")
     for step in range(cfg.steps):
         batch_idx = (step * cfg.batch_size) % len(dataset)
@@ -681,9 +650,9 @@ async def run_training():
         if step % 10 == 0:
             cum = step_metrics["cumulative"]
             print(f"Step {step}: Acc={acc:.3f} | "
-                  f"r_cls={cum['r_cls']:.3f} r_conf={cum['r_conf']:.3f} "
-                  f"r_false_na={cum['r_false_na']:.3f} r_align={cum['r_align']:.3f} "
-                  f"r_format={cum['r_format']:.3f} | total={cum['total']:.3f}")
+                  f"r_correct={cum['r_correct']:.3f} r_cls={cum['r_cls']:.3f} "
+                  f"r_conf={cum['r_conf']:.3f} r_false_na={cum['r_false_na']:.3f} "
+                  f"r_align={cum['r_align']:.3f} | total={cum['total']:.3f}")
         
         if step % 50 == 0 and step > 0:
             sampling_client = await training_client.save_weights_and_get_sampling_client_async(name=f"step_{step}")

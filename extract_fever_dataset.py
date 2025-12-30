@@ -318,6 +318,84 @@ def print_examples(examples: list, num: int = 5, wiki_reader: WikiReader = None)
                 print("Evidence: (none available)")
 
 
+def get_eval_examples(
+    output_dir: str = "fever_data",
+    num_nei: int = 500,
+    num_supports: int = 250,
+    num_refutes: int = 250,
+    training_ids_path: str = "training_ids.json",
+    seed: int = 43  # Different seed from training to get different examples
+) -> list[dict]:
+    """
+    Get evaluation examples that are NOT in the training set.
+    
+    This ensures a clean separation between training and evaluation data.
+    Uses a different random seed than training to get a distinct sample.
+    
+    Args:
+        output_dir: Directory containing fever_dev.json
+        num_nei: Number of NOT ENOUGH INFO examples
+        num_supports: Number of SUPPORTS examples  
+        num_refutes: Number of REFUTES examples
+        training_ids_path: Path to JSON file with training example IDs
+        seed: Random seed (should differ from training seed)
+    
+    Returns:
+        List of examples with id, claim, label, evidence (not in training set)
+    """
+    random.seed(seed)
+    
+    # Load training IDs to exclude
+    training_ids = set()
+    if os.path.exists(training_ids_path):
+        with open(training_ids_path, 'r') as f:
+            training_ids = set(json.load(f))
+        print(f"Excluding {len(training_ids)} training IDs from evaluation")
+    
+    # Load dev set
+    json_path = os.path.join(output_dir, "fever_dev.json")
+    if os.path.exists(json_path):
+        with open(json_path, 'r', encoding='utf-8') as f:
+            examples = json.load(f)
+    else:
+        examples = download_fever(output_dir, split="dev")
+    
+    # Group by label, excluding training IDs
+    by_label = {
+        "NOT ENOUGH INFO": [],
+        "SUPPORTS": [],
+        "REFUTES": []
+    }
+    
+    for ex in examples:
+        if ex.get("id") in training_ids:
+            continue
+        label = ex.get("label")
+        if label in by_label:
+            by_label[label].append(ex)
+    
+    print(f"Available (excluding training): NEI={len(by_label['NOT ENOUGH INFO'])}, "
+          f"SUPPORTS={len(by_label['SUPPORTS'])}, "
+          f"REFUTES={len(by_label['REFUTES'])}")
+    
+    # Verify we have enough examples
+    for label, count in [("NOT ENOUGH INFO", num_nei), ("SUPPORTS", num_supports), ("REFUTES", num_refutes)]:
+        if len(by_label[label]) < count:
+            raise ValueError(f"Not enough {label} examples: need {count}, have {len(by_label[label])}")
+    
+    # Sample from each
+    sampled = []
+    sampled.extend(random.sample(by_label["NOT ENOUGH INFO"], num_nei))
+    sampled.extend(random.sample(by_label["SUPPORTS"], num_supports))
+    sampled.extend(random.sample(by_label["REFUTES"], num_refutes))
+    
+    random.shuffle(sampled)
+    
+    print(f"Sampled {len(sampled)} eval examples: {num_nei} NEI, {num_supports} SUPPORTS, {num_refutes} REFUTES")
+    
+    return sampled
+
+
 if __name__ == "__main__":
     # Download wiki pages first
     wiki_dir = download_wiki_pages()
