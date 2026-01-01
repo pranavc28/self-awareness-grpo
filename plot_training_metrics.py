@@ -20,13 +20,29 @@ def load_metrics(path: str = "training_metrics.json") -> list[dict]:
 def plot_cumulative_rewards(metrics: list[dict], output_path: str = "rewards_cumulative.png"):
     """Plot cumulative rewards per component over training steps."""
     steps = [m["step"] for m in metrics]
-    components = ["r_cls", "r_conf", "r_false_na", "r_align", "r_format", "total"]
-    colors = ["#2ecc71", "#3498db", "#e74c3c", "#9b59b6", "#f39c12", "#1a1a2e"]
+    desired = ["r_correct", "r_cls", "r_cal", "r_conf", "r_false_na", "r_align", "r_inconsistent", "r_format", "total"]
+    # Backward compatible: only plot keys that exist in the metrics file.
+    available = set(metrics[0].get("cumulative", {}).keys()) if metrics else set()
+    components = [c for c in desired if c in available]
+    palette = {
+        "r_correct": "#27ae60",
+        "r_cls": "#2ecc71",
+        "r_cal": "#3498db",
+        "r_conf": "#3498db",
+        "r_false_na": "#e74c3c",
+        "r_align": "#9b59b6",
+        "r_inconsistent": "#34495e",
+        "r_format": "#f39c12",
+        "total": "#1a1a2e",
+    }
+    colors = [palette[c] for c in components]
     
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
     
-    # Plot individual components
-    for comp, color in zip(components[:-1], colors[:-1]):
+    # Plot individual components (everything except total, if present)
+    comps_wo_total = [c for c in components if c != "total"]
+    for comp in comps_wo_total:
+        color = palette[comp]
         values = [m["cumulative"][comp] for m in metrics]
         ax1.plot(steps, values, label=comp, color=color, linewidth=2, alpha=0.8)
     
@@ -37,10 +53,11 @@ def plot_cumulative_rewards(metrics: list[dict], output_path: str = "rewards_cum
     ax1.grid(True, alpha=0.3)
     ax1.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
     
-    # Plot total reward
-    total_values = [m["cumulative"]["total"] for m in metrics]
-    ax2.plot(steps, total_values, label="Total Reward", color=colors[-1], linewidth=2.5)
-    ax2.fill_between(steps, total_values, alpha=0.3, color=colors[-1])
+    # Plot total reward (if present)
+    if "total" in available:
+        total_values = [m["cumulative"]["total"] for m in metrics]
+        ax2.plot(steps, total_values, label="Total Reward", color=palette["total"], linewidth=2.5)
+        ax2.fill_between(steps, total_values, alpha=0.3, color=palette["total"])
     
     ax2.set_xlabel("Training Step", fontsize=12)
     ax2.set_ylabel("Total Reward", fontsize=12)
@@ -57,11 +74,17 @@ def plot_cumulative_rewards(metrics: list[dict], output_path: str = "rewards_cum
 def plot_rewards_by_outcome(metrics: list[dict], output_path: str = "rewards_by_outcome.png"):
     """Plot rewards per component for each outcome (NA, PASS, FAIL)."""
     steps = [m["step"] for m in metrics]
-    components = ["r_cls", "r_conf", "r_false_na", "r_align", "r_format", "total"]
+    desired = ["r_correct", "r_cls", "r_cal", "r_conf", "r_false_na", "r_align", "r_inconsistent", "r_format", "total"]
+    available = set(metrics[0].get("by_outcome", {}).get("NA", {}).keys()) if metrics else set()
+    components = [c for c in desired if c in available]
     outcomes = ["NA", "PASS", "FAIL"]
     outcome_colors = {"NA": "#e74c3c", "PASS": "#2ecc71", "FAIL": "#3498db"}
     
-    fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+    # Grid size depends on component count
+    n = max(len(components), 1)
+    cols = 4
+    rows = int(np.ceil(n / cols))
+    fig, axes = plt.subplots(rows, cols, figsize=(18, 4 * rows))
     axes = axes.flatten()
     
     for idx, comp in enumerate(components):
@@ -76,6 +99,10 @@ def plot_rewards_by_outcome(metrics: list[dict], output_path: str = "rewards_by_
         ax.legend(loc="best", fontsize=9)
         ax.grid(True, alpha=0.3)
         ax.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    
+    # Hide unused subplots
+    for j in range(len(components), len(axes)):
+        axes[j].set_visible(False)
     
     plt.suptitle("Reward Components by Outcome Over Training", fontsize=14, fontweight="bold", y=1.02)
     plt.tight_layout()
@@ -118,8 +145,20 @@ def plot_accuracy(metrics: list[dict], output_path: str = "accuracy.png"):
 def plot_component_contribution(metrics: list[dict], output_path: str = "component_contribution.png"):
     """Plot stacked area chart showing how each component contributes to total reward."""
     steps = [m["step"] for m in metrics]
-    components = ["r_cls", "r_conf", "r_false_na", "r_align", "r_format"]
-    colors = ["#2ecc71", "#3498db", "#e74c3c", "#9b59b6", "#f39c12"]
+    desired = ["r_correct", "r_cls", "r_cal", "r_conf", "r_false_na", "r_align", "r_inconsistent", "r_format"]
+    available = set(metrics[0].get("cumulative", {}).keys()) if metrics else set()
+    components = [c for c in desired if c in available]
+    palette = {
+        "r_correct": "#27ae60",
+        "r_cls": "#2ecc71",
+        "r_cal": "#3498db",
+        "r_conf": "#3498db",
+        "r_false_na": "#e74c3c",
+        "r_align": "#9b59b6",
+        "r_inconsistent": "#34495e",
+        "r_format": "#f39c12",
+    }
+    colors = [palette[c] for c in components]
     
     fig, ax = plt.subplots(figsize=(14, 6))
     
@@ -176,8 +215,9 @@ def main():
         print(f"Steps: {first['step']} → {last['step']}")
         print(f"Accuracy: {first['accuracy']:.3f} → {last['accuracy']:.3f}")
         print(f"\nFinal Cumulative Rewards:")
-        for comp in ["r_cls", "r_conf", "r_false_na", "r_align", "r_format", "total"]:
-            print(f"  {comp}: {last['cumulative'][comp]:.4f}")
+        for comp in ["r_correct", "r_cls", "r_cal", "r_conf", "r_false_na", "r_align", "r_inconsistent", "r_format", "total"]:
+            if comp in last.get("cumulative", {}):
+                print(f"  {comp}: {last['cumulative'][comp]:.4f}")
 
 
 if __name__ == "__main__":

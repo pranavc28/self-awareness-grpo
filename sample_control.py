@@ -1,7 +1,7 @@
 """Classify FEVER examples using openai/gpt-oss-20b via Tinker API with async sampling.
 
-Uses evaluation examples that are NOT in the training set to ensure clean separation.
-Output format is compatible with calculate_f1.py.
+IMPORTANT: This uses the SAME output format as `train_grpo.py` (LABEL/CONF/RATIONALE)
+to avoid evaluation/prompt mismatch when comparing to GRPO checkpoints.
 """
 
 import asyncio
@@ -37,7 +37,7 @@ class FEVERClassifier:
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
     
     def build_prompt(self, claim: str, evidence_texts: list[str]) -> str:
-        """Build classification prompt with claim and evidence (simplified, label only)."""
+        """Build the same prompt format used during GRPO training."""
         if evidence_texts:
             evidence = "\n".join(f"- {t}" for t in evidence_texts)
         else:
@@ -55,31 +55,40 @@ Classify into exactly one category:
 - FAIL: Evidence contradicts the claim (REFUTES)
 - NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
 
-It is ok to return NA if the evidence is insufficient to make a decision. Do not make up evidence that is not provided.
+Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
 
-Respond with ONLY one word: PASS, FAIL, or NA
+Return only the label as N
 
-Classification:"""
+<Response Format>
+Return ONLY the following response format. Do not add any other text:
+LABEL=PASS
+CONF=0.65
+RATIONALE=
+</Response Format>
+"""
     
-    def parse_classification(self, response: str) -> str:
-        """Extract classification label from model response."""
-        response_upper = response.upper().strip()
-        
-        # Check for simplified labels first
-        if "NA" in response_upper:
-            return "NA"
-        elif "FAIL" in response_upper:
-            return "FAIL"
-        elif "PASS" in response_upper:
-            return "PASS"
-        # Fallback to original labels
-        elif "NOT ENOUGH INFO" in response_upper:
-            return "NA"
-        elif "REFUTES" in response_upper:
-            return "FAIL"
-        elif "SUPPORTS" in response_upper:
-            return "PASS"
-        return "NA"  # Default
+    def parse_output(self, text: str) -> tuple[str, float, bool]:
+        """Parse LABEL/CONF from the model output."""
+        import re
+
+        label, conf, valid = None, 0.5, True
+        text = text.replace("<", "").replace(">", "")
+        m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
+        if m:
+            label = m.group(1).upper()
+        else:
+            print()
+            valid = False
+        m = re.search(r"CONF\s*=\s*([\d.]+)", text)
+        if m:
+            try:
+                conf = float(m.group(1))
+                conf = max(0.0, min(1.0, conf))
+            except Exception:
+                valid = False
+        else:
+            valid = False
+        return (label or "NA"), conf, valid
     
     async def classify_single(self, claim: str, evidence_texts: list[str]) -> tuple[str, str]:
         """Classify a single claim asynchronously."""
@@ -88,7 +97,7 @@ Classification:"""
         model_input = types.ModelInput.from_ints(prompt_tokens)
         
         sampling_params = types.SamplingParams(
-            max_tokens=10, temperature=0.0, stop=["\n", "\n\n"]
+            max_tokens=10000, temperature=0.1, stop=["RATIONALE="]
         )
         
         result = await self.sampling_client.sample_async(
@@ -96,7 +105,8 @@ Classification:"""
         )
         
         raw_response = self.tokenizer.decode(result.sequences[0].tokens, skip_special_tokens=True)
-        return self.parse_classification(raw_response), raw_response
+        label, conf, valid = self.parse_output(raw_response)
+        return label, raw_response
     
     async def classify_batch(self, examples: list[dict], wiki_reader: WikiReader) -> list[dict]:
         """Classify a batch of examples concurrently."""

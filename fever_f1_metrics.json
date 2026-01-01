@@ -1,22 +1,28 @@
 {
-  "accuracy": 50.5,
-  "macro_f1": 0.265660195240806,
-  "weighted_f1": 0.36534337289718016,
+  "model": "openai/gpt-oss-20b",
+  "source": "classify_fever",
+  "checkpoint": "",
+  "num_total": 1000,
+  "num_valid": 940,
+  "num_invalid_skipped": 60,
+  "accuracy": 65.95744680851064,
+  "macro_f1": 0.6653626313754076,
+  "weighted_f1": 0.634531367699393,
   "per_label": {
-    "SUPPORTS": {
-      "precision": 0.8333333333333334,
-      "recall": 0.02,
-      "f1": 0.0390625
+    "PASS": {
+      "precision": 0.7420382165605095,
+      "recall": 0.9357429718875502,
+      "f1": 0.8277087033747779
     },
-    "REFUTES": {
-      "precision": 0.4642857142857143,
-      "recall": 0.052,
-      "f1": 0.0935251798561151
+    "FAIL": {
+      "precision": 0.510158013544018,
+      "recall": 0.9076305220883534,
+      "f1": 0.653179190751445
     },
-    "NOT ENOUGH INFO": {
-      "precision": 0.5041407867494824,
-      "recall": 0.974,
-      "f1": 0.6643929058663028
+    "NA": {
+      "precision": 0.8797814207650273,
+      "recall": 0.36425339366515835,
+      "f1": 0.5152
     }
   }
 }

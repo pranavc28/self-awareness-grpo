@@ -1,0 +1,28 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "source": "sample_grpo",
+  "checkpoint": "tinker://6efde1e3-8308-5266-b4aa-9dcc48f0d1f0:train:0/sampler_weights/self-aware-grpo-trial-3",
+  "num_total": 1000,
+  "num_valid": 851,
+  "num_invalid_skipped": 149,
+  "accuracy": 71.56286721504112,
+  "macro_f1": 0.7193194389521312,
+  "weighted_f1": 0.6993153939690255,
+  "per_label": {
+    "PASS": {
+      "precision": 0.8284671532846716,
+      "recall": 0.9380165289256198,
+      "f1": 0.8798449612403101
+    },
+    "FAIL": {
+      "precision": 0.5681818181818182,
+      "recall": 0.9109311740890689,
+      "f1": 0.6998444790046657
+    },
+    "NA": {
+      "precision": 0.8674033149171271,
+      "recall": 0.43370165745856354,
+      "f1": 0.578268876611418
+    }
+  }
+}

@@ -1,8 +1,7 @@
 """Sample from trained GRPO checkpoint on FEVER examples.
 
-This module provides utilities for sampling from a trained GRPO checkpoint
-on FEVER fact verification examples. Uses evaluation examples that are NOT
-in the training set, with the same prompt format as classify_fever.py.
+IMPORTANT: This uses the SAME output format as `train_grpo.py` (LABEL/CONF/RATIONALE)
+to avoid evaluation/prompt mismatch, which can otherwise make GRPO look worse than it is.
 """
 import asyncio
 import json
@@ -33,11 +32,7 @@ def get_wiki_reader() -> WikiReader:
 
 
 def build_prompt(claim: str, evidence_texts: list[str]) -> str:
-    """
-    Build the classification prompt with claim and evidence context.
-    
-    Uses the same simplified format as classify_fever.py (label only output).
-    """
+    """Build the same prompt format used during GRPO training."""
     if evidence_texts:
         evidence = "\n".join(f"- {t}" for t in evidence_texts)
     else:
@@ -55,32 +50,40 @@ Classify into exactly one category:
 - FAIL: Evidence contradicts the claim (REFUTES)
 - NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
 
-It is ok to return NA if the evidence is insufficient to make a decision. Do not make up evidence that is not provided.
+Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
 
-Respond with ONLY one word: PASS, FAIL, or NA
+CONF should represent your probability (0 to 1) that your chosen LABEL is correct. Use 2 decimal places.
 
-Classification:"""
+<Response Format>
+Return ONLY the following response format. Do not add any other text:
+LABEL=PASS
+CONF=0.65
+RATIONALE=
+</Response Format>
+"""
 
 
-def parse_classification(response: str) -> str:
-    """Extract classification label from model response."""
-    response_upper = response.upper().strip()
-    
-    # Check for simplified labels first
-    if "NA" in response_upper:
-        return "NA"
-    elif "FAIL" in response_upper:
-        return "FAIL"
-    elif "PASS" in response_upper:
-        return "PASS"
-    # Fallback to original labels
-    elif "NOT ENOUGH INFO" in response_upper:
-        return "NA"
-    elif "REFUTES" in response_upper:
-        return "FAIL"
-    elif "SUPPORTS" in response_upper:
-        return "PASS"
-    return "NA"  # Default
+def parse_output(text: str) -> tuple[str, float, bool]:
+    """Parse LABEL/CONF from the model output."""
+    import re
+
+    label, conf, valid = None, 0.5, True
+    text = text.replace("<", "").replace(">", "")
+    m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
+    if m:
+        label = m.group(1).upper()
+    else:
+        valid = False
+    m = re.search(r"CONF\s*=\s*([\d.]+)", text)
+    if m:
+        try:
+            conf = float(m.group(1))
+            conf = max(0.0, min(1.0, conf))
+        except Exception:
+            valid = False
+    else:
+        valid = False
+    return (label or "NA"), conf, valid
 
 
 async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None):
@@ -102,10 +105,10 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
     service_client = tinker.ServiceClient()
     if checkpoint_path:
         print(f"Loading checkpoint: {checkpoint_path}")
-        sampling_client = service_client.create_sampling_client(model_path=checkpoint_path)
+        sampling_client = await service_client.create_sampling_client_async(model_path=checkpoint_path)
     else:
         print(f"Using base model: {MODEL}")
-        sampling_client = service_client.create_sampling_client(base_model=MODEL)
+        sampling_client = await service_client.create_sampling_client_async(base_model=MODEL)
     
     tokenizer_client = await service_client.create_lora_training_client_async(base_model=MODEL, rank=32)
     tokenizer = tokenizer_client.get_tokenizer()
@@ -113,10 +116,8 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
     # Initialize WikiReader for evidence lookup
     wiki_reader = get_wiki_reader()
     
-    results = []
-    correct = 0
-    
-    for idx, ex in enumerate(examples):
+    async def classify_one(idx: int, ex: dict) -> dict:
+        """Classify a single example asynchronously."""
         # Get evidence texts
         evidence_texts = wiki_reader.get_evidence_text(ex.get("evidence", []))
         
@@ -126,29 +127,32 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
         prompt = build_prompt(ex["claim"], evidence_texts)
         tokens = tokenizer.encode(prompt)
         model_input = types.ModelInput.from_ints(tokens)
-        params = types.SamplingParams(max_tokens=10, temperature=0.0, stop=["\n", "\n\n"])
+        params = types.SamplingParams(max_tokens=10000, temperature=0.1, stop=["RATIONALE="])
         
         result = await sampling_client.sample_async(prompt=model_input, num_samples=1, sampling_params=params)
         raw_response = tokenizer.decode(result.sequences[0].tokens)
-        predicted_label = parse_classification(raw_response)
+        predicted_label, predicted_conf, valid = parse_output(raw_response)
         
-        if predicted_label == golden_label:
-            correct += 1
-            status = "✓"
-        else:
-            status = "✗"
+        status = "✓" if predicted_label == golden_label else "✗"
+        print(f"[{idx+1}/{len(examples)}] {status} Golden={golden_label} Pred={predicted_label} Conf={predicted_conf:.2f} Valid={valid} | {ex['claim'][:40]}...")
         
-        results.append({
+        return {
             "id": ex["id"],
             "claim": ex["claim"],
             "evidence_texts": evidence_texts,
             "golden_label": golden_label,
             "predicted_label": predicted_label,
+            "predicted_conf": predicted_conf,
+            "format_valid": valid,
             "raw_response": raw_response.strip()
-        })
-        
-        print(f"[{idx+1}/{len(examples)}] {status} Golden={golden_label} Pred={predicted_label} | {ex['claim'][:40]}...")
+        }
     
+    print(f"Classifying {len(examples)} examples concurrently...")
+    tasks = [classify_one(i, ex) for i, ex in enumerate(examples)]
+    results = await asyncio.gather(*tasks)
+    
+    # Calculate accuracy
+    correct = sum(1 for r in results if r["golden_label"] == r["predicted_label"])
     accuracy = correct / len(results) * 100
     print(f"\nAccuracy: {accuracy:.1f}% ({correct}/{len(results)})")
     
@@ -168,6 +172,6 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
 
 
 if __name__ == "__main__":
-    checkpoint = sys.argv[1] if len(sys.argv) > 1 else ""
+    checkpoint = sys.argv[1] if len(sys.argv) > 1 else "tinker://6efde1e3-8308-5266-b4aa-9dcc48f0d1f0:train:0/sampler_weights/self-aware-grpo-trial-3"
     num_examples = int(sys.argv[2]) if len(sys.argv) > 2 else None
     asyncio.run(sample_from_checkpoint(checkpoint, num_examples))
