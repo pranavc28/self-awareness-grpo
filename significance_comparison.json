@@ -1,0 +1,81 @@
+{
+  "filtering": {
+    "valid1": 940,
+    "valid2": 951,
+    "paired": 907
+  },
+  "mcnemar_test": {
+    "n01": 85,
+    "n10": 28,
+    "chi2": 27.75221238938053,
+    "p_value": 1.3789042162628443e-07
+  },
+  "paired_bootstrap_tests": {
+    "macro_f1": {
+      "metric": "macro_f1",
+      "n_paired": 907,
+      "model1_value": 0.6807589695157276,
+      "model2_value": 0.7484533271448789,
+      "observed_diff": 0.06769435762915132,
+      "ci_lower": 0.044657709844049855,
+      "ci_upper": 0.09113396140004044,
+      "p_value": 0.0,
+      "significant": true
+    },
+    "accuracy": {
+      "metric": "accuracy",
+      "n_paired": 907,
+      "model1_value": 0.6780595369349504,
+      "model2_value": 0.74090407938258,
+      "observed_diff": 0.0628445424476296,
+      "ci_lower": 0.040793825799338435,
+      "ci_upper": 0.08599779492833515,
+      "p_value": 0.0,
+      "significant": true
+    },
+    "PASS_f1": {
+      "metric": "PASS_f1",
+      "n_paired": 907,
+      "model1_value": 0.8351254480286738,
+      "model2_value": 0.8705440900562852,
+      "observed_diff": 0.03541864202761136,
+      "ci_lower": 0.014693191292009,
+      "ci_upper": 0.057635245150730464,
+      "p_value": 0.0016,
+      "significant": true
+    },
+    "FAIL_f1": {
+      "metric": "FAIL_f1",
+      "n_paired": 907,
+      "model1_value": 0.6756352765321375,
+      "model2_value": 0.7101910828025477,
+      "observed_diff": 0.034555806270410216,
+      "ci_lower": 0.012376882685041352,
+      "ci_upper": 0.05693212840100617,
+      "p_value": 0.002,
+      "significant": true
+    },
+    "NA_f1": {
+      "metric": "NA_f1",
+      "n_paired": 907,
+      "model1_value": 0.5315161839863713,
+      "model2_value": 0.6646248085758039,
+      "observed_diff": 0.1331086245894325,
+      "ci_lower": 0.09077746809664672,
+      "ci_upper": 0.17736549707108373,
+      "p_value": 0.0,
+      "significant": true
+    },
+    "NA_recall": {
+      "metric": "NA_recall",
+      "n_paired": 907,
+      "model1_value": 0.38141809290953543,
+      "model2_value": 0.530562347188264,
+      "observed_diff": 0.14914425427872857,
+      "ci_lower": 0.10416540556900729,
+      "ci_upper": 0.19483820645391337,
+      "p_value": 0.0,
+      "significant": true
+    }
+  }
+}

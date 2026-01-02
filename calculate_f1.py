@@ -69,8 +69,6 @@ def _validate_raw_response(text: str) -> tuple[str, float, bool]:
 
 def is_valid_result(r: dict) -> bool:
     """Determine whether a single result row should be included in metrics."""
-    if not isinstance(r, dict):
-        return False
     if "golden_label" not in r or "predicted_label" not in r:
         return False
 

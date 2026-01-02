@@ -5,6 +5,7 @@ to avoid evaluation/prompt mismatch, which can otherwise make GRPO look worse th
 """
 import asyncio
 import json
+import re
 import sys
 
 import tinker
@@ -50,41 +51,67 @@ Classify into exactly one category:
 - FAIL: Evidence contradicts the claim (REFUTES)
 - NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
 
+For the confidence, output a number between 0 and 1 with 2 decimal places. 0 being the lowest confidence and 1 being the highest confidence. This is a confidence score for your classification.
+
+For the rationale, output an empty string. There is no need to explain your reasoning.
+
+You must have the LABEL, CONF, and RATIONALE in your response. DO NOT hallucinate the keys for the response, e.g. STANCE instead of LABEL is incorrect. Or CONFIDENCE instead of CONF is incorrect.
+
 Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
 
 CONF should represent your probability (0 to 1) that your chosen LABEL is correct. Use 2 decimal places.
 
 <Response Format>
-Return ONLY the following response format. Do not add any other text:
+Return ONLY the following response format. Output exactly 3 lines and nothing else. Do not add any other text. Example:
+
 LABEL=PASS
 CONF=0.65
 RATIONALE=
+
 </Response Format>
+
+Now begin your response. Do not write anything before LABEL.
+LABEL=
 """
 
-
-def parse_output(text: str) -> tuple[str, float, bool]:
-    """Parse LABEL/CONF from the model output."""
-    import re
-
+def parse_output(text):
+    """
+    Parse model output to extract label, confidence, and format validity.
+    
+    Extracts structured output from the model's response text. The expected format:
+        LABEL=<NA|PASS|FAIL>
+        CONF=<float 0-1>
+        RATIONALE=<text>
+    
+    Format validity affects the reward function via format_penalty. Invalid outputs
+    receive a penalty to encourage the model to follow the specified format.
+    
+    Args:
+        text: Raw model output string.
+    
+    Returns:
+        tuple: (label, conf, valid) where:
+            - label: Extracted label (NA/PASS/FAIL) or None if missing
+            - conf: Confidence float clamped to [0,1], default 0.5 if missing
+            - valid: Boolean indicating if output format was correct
+    """
     label, conf, valid = None, 0.5, True
     text = text.replace("<", "").replace(">", "")
-    m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
+    m = re.search(r"LABEL\s*[:=]\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
     if m:
         label = m.group(1).upper()
     else:
         valid = False
-    m = re.search(r"CONF\s*=\s*([\d.]+)", text)
+    m = re.search(r"CONF\s*[:=]\s*([\d.]+)", text)
     if m:
         try:
             conf = float(m.group(1))
             conf = max(0.0, min(1.0, conf))
-        except Exception:
+        except:
             valid = False
     else:
         valid = False
-    return (label or "NA"), conf, valid
-
+    return label, conf, valid
 
 async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None):
     """Sample from a trained checkpoint on FEVER evaluation examples."""
@@ -127,7 +154,7 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
         prompt = build_prompt(ex["claim"], evidence_texts)
         tokens = tokenizer.encode(prompt)
         model_input = types.ModelInput.from_ints(tokens)
-        params = types.SamplingParams(max_tokens=10000, temperature=0.1, stop=["RATIONALE="])
+        params = types.SamplingParams(max_tokens=10000, temperature=0.1, stop=["\nRATIONALE="])
         
         result = await sampling_client.sample_async(prompt=model_input, num_samples=1, sampling_params=params)
         raw_response = tokenizer.decode(result.sequences[0].tokens)
@@ -172,6 +199,6 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
 
 
 if __name__ == "__main__":
-    checkpoint = sys.argv[1] if len(sys.argv) > 1 else "tinker://6efde1e3-8308-5266-b4aa-9dcc48f0d1f0:train:0/sampler_weights/self-aware-grpo-trial-3"
+    checkpoint = sys.argv[1] if len(sys.argv) > 1 else "tinker://9d4915f4-ed1d-5df7-b60a-56bb4e50a284:train:0/sampler_weights/self-aware-grpo-trial-4"
     num_examples = int(sys.argv[2]) if len(sys.argv) > 2 else None
     asyncio.run(sample_from_checkpoint(checkpoint, num_examples))

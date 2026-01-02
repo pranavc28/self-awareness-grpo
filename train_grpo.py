@@ -514,7 +514,7 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
     params = types.SamplingParams(
         max_tokens=cfg.max_tokens,
         temperature=cfg.temperature,
-        stop=["RATIONALE="]
+        stop=["\nRATIONALE="]
     )
     result = await sampling_client.sample_async(
         prompt=model_input,
