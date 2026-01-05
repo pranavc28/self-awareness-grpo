@@ -1,7 +1,14 @@
-"""Sample from trained GRPO checkpoint on FEVER examples.
+"""Sample from trained GRPO checkpoint on FEVER/VitaminC/ClimateFEVER examples.
 
 IMPORTANT: This uses the SAME output format as `train_grpo.py` (LABEL/CONF/RATIONALE)
 to avoid evaluation/prompt mismatch, which can otherwise make GRPO look worse than it is.
+
+Usage:
+    python sample_grpo.py [dataset] [checkpoint] [num_examples]
+    
+    dataset: fever (default), vitaminc, or climatefever
+    checkpoint: Path to GRPO checkpoint (has default)
+    num_examples: Optional limit on number of examples
 """
 import asyncio
 import json
@@ -32,46 +39,76 @@ def get_wiki_reader() -> WikiReader:
     return _wiki_reader
 
 
+def load_dataset(dataset: str = "fever", seed: int = 43):
+    """
+    Load examples from the specified dataset.
+    
+    Returns:
+        tuple: (examples, needs_wiki) where needs_wiki indicates if WikiReader is needed
+    """
+    if dataset == "fever":
+        return get_eval_examples(num_nei=500, num_supports=250, num_refutes=250, seed=seed), True
+    elif dataset == "vitaminc":
+        with open("vitaminc_eval_data.json", "r") as f:
+            return json.load(f), False
+    elif dataset == "climatefever":
+        with open("climatefever_eval_data.json", "r") as f:
+            return json.load(f), False
+    else:
+        raise ValueError(f"Unknown dataset: {dataset}. Use fever, vitaminc, or climatefever")
+
+
 def build_prompt(claim: str, evidence_texts: list[str]) -> str:
-    """Build the same prompt format used during GRPO training."""
+    """Build the same generalizable NLI-based prompt format used during GRPO training."""
     if evidence_texts:
         evidence = "\n".join(f"- {t}" for t in evidence_texts)
     else:
-        evidence = "No specific evidence provided."
+        evidence = "No relevant evidence available."
     
-    return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
+    return f"""You are an expert at Natural Language Inference. Your task is to determine the logical relationship between evidence and a claim.
 
-Claim: {claim}
+CLAIM: {claim}
 
-You have additional evidence to consider in case you need it:
+EVIDENCE:
 {evidence}
 
-Classify into exactly one category:
-- PASS: Evidence supports the claim (SUPPORTS)
-- FAIL: Evidence contradicts the claim (REFUTES)
-- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
+Determine the relationship between the evidence and the claim:
 
-For the confidence, output a number between 0 and 1 with 2 decimal places. 0 being the lowest confidence and 1 being the highest confidence. This is a confidence score for your classification.
+- PASS: The evidence ENTAILS the claim. The claim logically follows from the evidence. If the evidence is true, the claim must be true.
+- FAIL: The evidence CONTRADICTS the claim. The claim is logically inconsistent with the evidence. If the evidence is true, the claim must be false.
+- NA: The evidence is NEUTRAL. The evidence neither entails nor contradicts the claim. The claim could be true or false independent of this evidence.
 
-For the rationale, output an empty string. There is no need to explain your reasoning.
+Decision guidelines:
+1. Focus ONLY on what the evidence explicitly states or directly implies.
+2. Choose PASS only if the evidence provides clear support for the claim being true.
+3. Choose FAIL only if the evidence provides clear support for the claim being false.
+4. Choose NA when the evidence is unrelated, insufficient, or does not bear on the claim's truth value.
+5. Do not use external knowledge beyond what is stated in the evidence.
 
-You must have the LABEL, CONF, and RATIONALE in your response. DO NOT hallucinate the keys for the response, e.g. STANCE instead of LABEL is incorrect. Or CONFIDENCE instead of CONF is incorrect.
+<Output Format>
+The LABEL should be one of PASS, FAIL, or NA based on the decision guidelines.
 
-Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
+CONF is your probability estimate (0.00 to 1.00) that your chosen LABEL is correct. Calibrate carefully:
+- 0.90-0.99: Evidence is explicit and unambiguous. You are highly certain.
+- 0.75-0.89: Evidence strongly suggests the answer but requires minor inference.
+- 0.60-0.74: Evidence is relevant but the conclusion requires interpretation or has some ambiguity.
+- 0.50-0.59: Borderline case. Evidence is weak, indirect, or you are genuinely uncertain.
 
-CONF should represent your probability (0 to 1) that your chosen LABEL is correct. Use 2 decimal places.
+IMPORTANT: Do NOT default to high confidence. Use lower confidence when:
+- The evidence requires multiple inferential steps
+- Key details are missing or ambiguous  
+- The claim uses vague language ("only", "always", "some")
+- You are choosing NA due to insufficient evidence
 
-<Response Format>
-Return ONLY the following response format. Output exactly 3 lines and nothing else. Do not add any other text. Example:
+Return the LABEL, CONF, and RATIONALE each on a separate line. The RATIONALE should be an empty string.
 
+Return only 3 lines. Your output should be in the following format:
 LABEL=PASS
-CONF=0.65
+CONF=0.75
 RATIONALE=
 
-</Response Format>
-
 Now begin your response. Do not write anything before LABEL.
-LABEL=
+</Output Format>
 """
 
 def parse_output(text):
@@ -113,18 +150,12 @@ def parse_output(text):
         valid = False
     return label, conf, valid
 
-async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None):
-    """Sample from a trained checkpoint on FEVER evaluation examples."""
+async def sample_from_checkpoint(checkpoint_path: str, dataset: str = "fever", num_examples: int = None):
+    """Sample from a trained checkpoint on evaluation examples."""
     
-    # Get evaluation examples (same as classify_fever.py)
-    SEED = 43  # Same seed as classify_fever.py to get the same examples
-    print("Getting evaluation examples (excluding training set)...")
-    examples = get_eval_examples(
-        num_nei=500,
-        num_supports=250,
-        num_refutes=250,
-        seed=SEED
-    )
+    SEED = 43  # Same seed as sample_control.py to get the same examples
+    print(f"Loading {dataset} dataset...")
+    examples, needs_wiki = load_dataset(dataset, SEED)
     
     if num_examples is not None:
         examples = examples[:num_examples]
@@ -140,16 +171,21 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
     tokenizer_client = await service_client.create_lora_training_client_async(base_model=MODEL, rank=32)
     tokenizer = tokenizer_client.get_tokenizer()
     
-    # Initialize WikiReader for evidence lookup
-    wiki_reader = get_wiki_reader()
+    # Initialize WikiReader only if needed (for FEVER)
+    wiki_reader = get_wiki_reader() if needs_wiki else None
     
     async def classify_one(idx: int, ex: dict) -> dict:
         """Classify a single example asynchronously."""
-        # Get evidence texts
-        evidence_texts = wiki_reader.get_evidence_text(ex.get("evidence", []))
+        # Get evidence based on dataset type
+        if needs_wiki and wiki_reader:
+            evidence_texts = wiki_reader.get_evidence_text(ex.get("evidence", []))
+        else:
+            # VitaminC/ClimateFever: evidence is already a string in the example
+            ev = ex.get("evidence", "")
+            evidence_texts = [ev] if ev else []
         
         # Convert golden label to simplified format
-        golden_label = LABEL_MAP.get(ex["label"], ex["label"])
+        golden_label = LABEL_MAP.get(ex.get("label", ""), ex.get("label", ""))
         
         prompt = build_prompt(ex["claim"], evidence_texts)
         tokens = tokenizer.encode(prompt)
@@ -164,7 +200,7 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
         print(f"[{idx+1}/{len(examples)}] {status} Golden={golden_label} Pred={predicted_label} Conf={predicted_conf:.2f} Valid={valid} | {ex['claim'][:40]}...")
         
         return {
-            "id": ex["id"],
+            "id": ex.get("id", idx),
             "claim": ex["claim"],
             "evidence_texts": evidence_texts,
             "golden_label": golden_label,
@@ -185,13 +221,14 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
     
     output = {
         "model": MODEL,
-        "source": "sample_grpo",
+        "source": f"sample_grpo_{dataset}",
+        "dataset": dataset,
         "checkpoint": checkpoint_path or "base",
         "num_examples": len(results),
         "results": results
     }
     
-    output_path = "grpo_sample_results.json"
+    output_path = f"{dataset}_grpo_results.json"
     with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
     
@@ -199,6 +236,7 @@ async def sample_from_checkpoint(checkpoint_path: str, num_examples: int = None)
 
 
 if __name__ == "__main__":
-    checkpoint = sys.argv[1] if len(sys.argv) > 1 else "tinker://9d4915f4-ed1d-5df7-b60a-56bb4e50a284:train:0/sampler_weights/self-aware-grpo-trial-4"
-    num_examples = int(sys.argv[2]) if len(sys.argv) > 2 else None
-    asyncio.run(sample_from_checkpoint(checkpoint, num_examples))
+    dataset = sys.argv[1] if len(sys.argv) > 1 else "fever"
+    checkpoint = sys.argv[2] if len(sys.argv) > 2 else "tinker://d2ef4187-9b4e-5a01-902e-9bbcef8a2d65:train:0/sampler_weights/self-aware-grpo-trial-4"
+    num_examples = int(sys.argv[3]) if len(sys.argv) > 3 else None
+    asyncio.run(sample_from_checkpoint(checkpoint, dataset, num_examples))

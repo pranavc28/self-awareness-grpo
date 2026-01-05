@@ -1,12 +1,18 @@
-"""Classify FEVER examples using openai/gpt-oss-20b via Tinker API with async sampling.
+"""Classify FEVER/VitaminC/ClimateFEVER examples using openai/gpt-oss-20b via Tinker API.
 
 IMPORTANT: This uses the SAME output format as `train_grpo.py` (LABEL/CONF/RATIONALE)
 to avoid evaluation/prompt mismatch when comparing to GRPO checkpoints.
+
+Usage:
+    python sample_control.py [dataset]
+    
+    dataset: fever (default), vitaminc, or climatefever
 """
 
 import asyncio
 import json
 import random
+import sys
 from typing import Optional
 
 import tinker
@@ -18,6 +24,25 @@ from extract_fever_dataset import get_eval_examples, WikiReader, download_wiki_p
 # Label mapping: FEVER labels -> simplified labels
 LABEL_MAP = {"NOT ENOUGH INFO": "NA", "SUPPORTS": "PASS", "REFUTES": "FAIL"}
 REVERSE_LABEL_MAP = {"NA": "NOT ENOUGH INFO", "PASS": "SUPPORTS", "FAIL": "REFUTES"}
+
+
+def load_dataset(dataset: str = "fever", seed: int = 43):
+    """
+    Load examples from the specified dataset.
+    
+    Returns:
+        tuple: (examples, needs_wiki) where needs_wiki indicates if WikiReader is needed
+    """
+    if dataset == "fever":
+        return get_eval_examples(num_nei=500, num_supports=250, num_refutes=250, seed=seed), True
+    elif dataset == "vitaminc":
+        with open("vitaminc_eval_data.json", "r") as f:
+            return json.load(f), False
+    elif dataset == "climatefever":
+        with open("climatefever_eval_data.json", "r") as f:
+            return json.load(f), False
+    else:
+        raise ValueError(f"Unknown dataset: {dataset}. Use fever, vitaminc, or climatefever")
 
 
 class FEVERClassifier:
@@ -37,34 +62,56 @@ class FEVERClassifier:
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
     
     def build_prompt(self, claim: str, evidence_texts: list[str]) -> str:
-        """Build the same prompt format used during GRPO training."""
+        """Build the same generalizable NLI-based prompt format used during GRPO training."""
         if evidence_texts:
             evidence = "\n".join(f"- {t}" for t in evidence_texts)
         else:
-            evidence = "No specific evidence provided."
+            evidence = "No relevant evidence available."
         
-        return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
+        return f"""You are an expert at Natural Language Inference. Your task is to determine the logical relationship between evidence and a claim.
 
-Claim: {claim}
+CLAIM: {claim}
 
-You have additional evidence to consider in case you need it:
+EVIDENCE:
 {evidence}
 
-Classify into exactly one category:
-- PASS: Evidence supports the claim (SUPPORTS)
-- FAIL: Evidence contradicts the claim (REFUTES)
-- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
+Determine the relationship between the evidence and the claim:
 
-Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
+- PASS: The evidence ENTAILS the claim. The claim logically follows from the evidence. If the evidence is true, the claim must be true.
+- FAIL: The evidence CONTRADICTS the claim. The claim is logically inconsistent with the evidence. If the evidence is true, the claim must be false.
+- NA: The evidence is NEUTRAL. The evidence neither entails nor contradicts the claim. The claim could be true or false independent of this evidence.
 
-Return only the label as N
+Decision guidelines:
+1. Focus ONLY on what the evidence explicitly states or directly implies.
+2. Choose PASS only if the evidence provides clear support for the claim being true.
+3. Choose FAIL only if the evidence provides clear support for the claim being false.
+4. Choose NA when the evidence is unrelated, insufficient, or does not bear on the claim's truth value.
+5. Do not use external knowledge beyond what is stated in the evidence.
 
-<Response Format>
-Return ONLY the following response format. Do not add any other text:
+<Output Format>
+The LABEL should be one of PASS, FAIL, or NA based on the decision guidelines.
+
+CONF is your probability estimate (0.00 to 1.00) that your chosen LABEL is correct. Calibrate carefully:
+- 0.90-0.99: Evidence is explicit and unambiguous. You are highly certain.
+- 0.75-0.89: Evidence strongly suggests the answer but requires minor inference.
+- 0.60-0.74: Evidence is relevant but the conclusion requires interpretation or has some ambiguity.
+- 0.50-0.59: Borderline case. Evidence is weak, indirect, or you are genuinely uncertain.
+
+IMPORTANT: Do NOT default to high confidence. Use lower confidence when:
+- The evidence requires multiple inferential steps
+- Key details are missing or ambiguous  
+- The claim uses vague language ("only", "always", "some")
+- You are choosing NA due to insufficient evidence
+
+Return the LABEL, CONF, and RATIONALE each on a separate line. The RATIONALE should be an empty string.
+
+Return only 3 lines. Your output should be in the following format:
 LABEL=PASS
-CONF=0.65
+CONF=0.75
 RATIONALE=
-</Response Format>
+
+Now begin your response. Do not write anything before LABEL.
+</Output Format>
 """
     
     def parse_output(self, text: str) -> tuple[str, float, bool]:
@@ -108,21 +155,28 @@ RATIONALE=
         label, conf, valid = self.parse_output(raw_response)
         return label, raw_response
     
-    async def classify_batch(self, examples: list[dict], wiki_reader: WikiReader) -> list[dict]:
+    async def classify_batch(self, examples: list[dict], wiki_reader: Optional[WikiReader], dataset: str) -> list[dict]:
         """Classify a batch of examples concurrently."""
         
         async def classify_one(idx: int, example: dict) -> dict:
-            evidence_texts = wiki_reader.get_evidence_text(example.get("evidence", []))
+            # Get evidence based on dataset type
+            if dataset == "fever" and wiki_reader:
+                evidence_texts = wiki_reader.get_evidence_text(example.get("evidence", []))
+            else:
+                # VitaminC/ClimateFever: evidence is already a string in the example
+                ev = example.get("evidence", "")
+                evidence_texts = [ev] if ev else []
+            
             predicted, raw = await self.classify_single(example["claim"], evidence_texts)
             
             # Convert golden label to simplified format
-            golden_label = LABEL_MAP.get(example["label"], example["label"])
+            golden_label = LABEL_MAP.get(example.get("label", ""), example.get("label", ""))
             
             status = "✓" if predicted == golden_label else "✗"
             print(f"[{idx+1}/{len(examples)}] {status} {example['claim'][:50]}...")
             
             return {
-                "id": example["id"],
+                "id": example.get("id", idx),
                 "claim": example["claim"],
                 "evidence_texts": evidence_texts,
                 "golden_label": golden_label,
@@ -134,27 +188,24 @@ RATIONALE=
         return await asyncio.gather(*tasks)
 
 
-async def main():
+async def main(dataset: str = "fever"):
     SEED = 43  # Different from training seed (42) to get different examples
     random.seed(SEED)
     
-    print("Loading Wikipedia evidence...")
-    wiki_reader = WikiReader(download_wiki_pages())
+    print(f"Loading {dataset} dataset...")
+    samples, needs_wiki = load_dataset(dataset, SEED)
     
-    print("Getting evaluation examples (excluding training set)...")
-    samples = get_eval_examples(
-        num_nei=500,
-        num_supports=250,
-        num_refutes=250,
-        seed=SEED
-    )
+    wiki_reader = None
+    if needs_wiki:
+        print("Loading Wikipedia evidence...")
+        wiki_reader = WikiReader(download_wiki_pages())
     
     print("Initializing openai/gpt-oss-20b...")
     classifier = FEVERClassifier()
     await classifier.initialize()
     
     print(f"Classifying {len(samples)} examples...")
-    results = await classifier.classify_batch(samples, wiki_reader)
+    results = await classifier.classify_batch(samples, wiki_reader, dataset)
     
     # Calculate accuracy
     correct = sum(1 for r in results if r["golden_label"] == r["predicted_label"])
@@ -163,12 +214,13 @@ async def main():
     
     output = {
         "model": "openai/gpt-oss-20b",
-        "source": "classify_fever",
+        "source": f"sample_control_{dataset}",
+        "dataset": dataset,
         "num_examples": len(results),
         "results": results
     }
     
-    output_path = "fever_classification_results.json"
+    output_path = f"{dataset}_control_results.json"
     with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
     
@@ -176,4 +228,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    dataset = sys.argv[1] if len(sys.argv) > 1 else "fever"
+    asyncio.run(main(dataset))

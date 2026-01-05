@@ -1,80 +1,80 @@
 {
   "filtering": {
-    "valid1": 940,
-    "valid2": 951,
-    "paired": 907
+    "valid1": 968,
+    "valid2": 986,
+    "paired": 956
   },
   "mcnemar_test": {
-    "n01": 85,
-    "n10": 28,
-    "chi2": 27.75221238938053,
-    "p_value": 1.3789042162628443e-07
+    "n01": 45,
+    "n10": 65,
+    "chi2": 3.2818181818181817,
+    "p_value": 0.07005128462163267
   },
   "paired_bootstrap_tests": {
     "macro_f1": {
       "metric": "macro_f1",
-      "n_paired": 907,
-      "model1_value": 0.6807589695157276,
-      "model2_value": 0.7484533271448789,
-      "observed_diff": 0.06769435762915132,
-      "ci_lower": 0.044657709844049855,
-      "ci_upper": 0.09113396140004044,
-      "p_value": 0.0,
-      "significant": true
+      "n_paired": 956,
+      "model1_value": 0.5988910357445283,
+      "model2_value": 0.5839692030555358,
+      "observed_diff": -0.014921832688992498,
+      "ci_lower": -0.03688650718425191,
+      "ci_upper": 0.0061140763011804595,
+      "p_value": 0.1702,
+      "significant": false
     },
     "accuracy": {
       "metric": "accuracy",
-      "n_paired": 907,
-      "model1_value": 0.6780595369349504,
-      "model2_value": 0.74090407938258,
-      "observed_diff": 0.0628445424476296,
-      "ci_lower": 0.040793825799338435,
-      "ci_upper": 0.08599779492833515,
-      "p_value": 0.0,
-      "significant": true
+      "n_paired": 956,
+      "model1_value": 0.6255230125523012,
+      "model2_value": 0.604602510460251,
+      "observed_diff": -0.02092050209205021,
+      "ci_lower": -0.04184100418410042,
+      "ci_upper": 0.0,
+      "p_value": 0.0532,
+      "significant": false
     },
     "PASS_f1": {
       "metric": "PASS_f1",
-      "n_paired": 907,
-      "model1_value": 0.8351254480286738,
-      "model2_value": 0.8705440900562852,
-      "observed_diff": 0.03541864202761136,
-      "ci_lower": 0.014693191292009,
-      "ci_upper": 0.057635245150730464,
-      "p_value": 0.0016,
-      "significant": true
+      "n_paired": 956,
+      "model1_value": 0.49599999999999994,
+      "model2_value": 0.5038167938931297,
+      "observed_diff": 0.007816793893129781,
+      "ci_lower": -0.028189642329470733,
+      "ci_upper": 0.04347978224748246,
+      "p_value": 0.6734,
+      "significant": false
     },
     "FAIL_f1": {
       "metric": "FAIL_f1",
-      "n_paired": 907,
-      "model1_value": 0.6756352765321375,
-      "model2_value": 0.7101910828025477,
-      "observed_diff": 0.034555806270410216,
-      "ci_lower": 0.012376882685041352,
-      "ci_upper": 0.05693212840100617,
-      "p_value": 0.002,
-      "significant": true
+      "n_paired": 956,
+      "model1_value": 0.6273062730627306,
+      "model2_value": 0.6000000000000001,
+      "observed_diff": -0.02730627306273048,
+      "ci_lower": -0.05895925319866271,
+      "ci_upper": 0.0036300880197306673,
+      "p_value": 0.0856,
+      "significant": false
     },
     "NA_f1": {
       "metric": "NA_f1",
-      "n_paired": 907,
-      "model1_value": 0.5315161839863713,
-      "model2_value": 0.6646248085758039,
-      "observed_diff": 0.1331086245894325,
-      "ci_lower": 0.09077746809664672,
-      "ci_upper": 0.17736549707108373,
-      "p_value": 0.0,
-      "significant": true
+      "n_paired": 956,
+      "model1_value": 0.6733668341708543,
+      "model2_value": 0.6480908152734778,
+      "observed_diff": -0.025276018897376518,
+      "ci_lower": -0.04858946095522739,
+      "ci_upper": -0.00257974251812455,
+      "p_value": 0.032,
+      "significant": false
     },
     "NA_recall": {
       "metric": "NA_recall",
-      "n_paired": 907,
-      "model1_value": 0.38141809290953543,
-      "model2_value": 0.530562347188264,
-      "observed_diff": 0.14914425427872857,
-      "ci_lower": 0.10416540556900729,
-      "ci_upper": 0.19483820645391337,
-      "p_value": 0.0,
+      "n_paired": 956,
+      "model1_value": 0.7023060796645703,
+      "model2_value": 0.6582809224318659,
+      "observed_diff": -0.04402515723270439,
+      "ci_lower": -0.07644978479845202,
+      "ci_upper": -0.011108663729809102,
+      "p_value": 0.0094,
       "significant": true
     }
   }

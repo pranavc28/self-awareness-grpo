@@ -94,7 +94,7 @@ class Config:
         correct_pos: Reward for correct label emission (parsed output)
         correct_neg: Penalty for incorrect label emission (parsed output)
         alpha_logp: Weight on log(p_gold) shaping term from probed label distribution
-        eta_cal: Proper-scoring calibration weight (Brier-style)
+        eta_cal: Log-scoring calibration weight (penalizes overconfidence when wrong)
         eta_align: Confidence-vs-probed-probability alignment weight
         lambda_false_na: Penalty for emitting NA when evidence exists and gold is PASS/FAIL
         lambda_inconsistent: Penalty when emitted label != probed argmax label (discourages reward hacking)
@@ -122,10 +122,11 @@ class Config:
     correct_neg: float = 1.0
     alpha_logp: float = 0.10
     # These are the *end* values; we ramp up from 0 over warmup_steps.
-    eta_cal: float = 0.25
+    # Note: eta_cal is lower for log scoring since log(0.01) ≈ -4.6 (vs Brier max of 1.0)
+    eta_cal: float = 0.10
     eta_align: float = 0.15
     warmup_steps: int = 50
-    lambda_false_na: float = 2.0
+    lambda_false_na: float = 0.5
     lambda_inconsistent: float = 0.25
     format_penalty: float = 0.25
     beta_kl: float = 0.02
@@ -178,17 +179,17 @@ def load_dataset(not_enough_info_count: int = _NOT_ENOUGH_INFO_COUNT, supports_c
 
 def build_prompt(example):
     """
-    Build the classification prompt with claim and evidence context.
+    Build a generalizable classification prompt with claim and evidence context.
     
-    Constructs a prompt that includes:
-    1. The claim to be verified
-    2. Retrieved evidence sentences from Wikipedia (via WikiReader)
-    3. Instructions for outputting LABEL, CONF, and RATIONALE
+    Uses Natural Language Inference (NLI) framing for better cross-dataset
+    generalization. The prompt focuses on logical relationships between
+    evidence and claim rather than dataset-specific terminology.
     
-    The evidence helps the model make informed predictions. For NA cases,
-    evidence may be empty or insufficient, which the model should recognize.
-    This affects the reward function: the model should express lower confidence
-    when evidence is weak and avoid false NA predictions when evidence exists.
+    Key design principles from fact verification literature:
+    1. NLI framing (entailment/contradiction/neutral) generalizes better
+    2. First-principles logical reasoning over dataset-specific patterns
+    3. Clear abstention criteria based on evidence sufficiency
+    4. No dataset-specific terminology hints
     
     Args:
         example: Dict with 'prompt' (claim text) and 'evidence' (evidence list)
@@ -202,41 +203,52 @@ def build_prompt(example):
     if evidence_texts:
         evidence = "\n".join(f"- {t}" for t in evidence_texts)
     else:
-        evidence = "No specific evidence provided."
+        evidence = "No relevant evidence available."
     
-    return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
+    return f"""You are an expert at Natural Language Inference. Your task is to determine the logical relationship between evidence and a claim.
 
-Claim: {example['prompt']}
+CLAIM: {example['prompt']}
 
-You have additional evidence to consider in case you need it:
+EVIDENCE:
 {evidence}
 
-Classify into exactly one category:
-- PASS: Evidence supports the claim (SUPPORTS)
-- FAIL: Evidence contradicts the claim (REFUTES)
-- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
+Determine the relationship between the evidence and the claim:
 
-For the confidence, output a number between 0 and 1 with 2 decimal places. 0 being the lowest confidence and 1 being the highest confidence. This is a confidence score for your classification.
+- PASS: The evidence ENTAILS the claim. The claim logically follows from the evidence. If the evidence is true, the claim must be true.
+- FAIL: The evidence CONTRADICTS the claim. The claim is logically inconsistent with the evidence. If the evidence is true, the claim must be false.
+- NA: The evidence is NEUTRAL. The evidence neither entails nor contradicts the claim. The claim could be true or false independent of this evidence.
 
-For the rationale, output an empty string. There is no need to explain your reasoning.
+Decision guidelines:
+1. Focus ONLY on what the evidence explicitly states or directly implies.
+2. Choose PASS only if the evidence provides clear support for the claim being true.
+3. Choose FAIL only if the evidence provides clear support for the claim being false.
+4. Choose NA when the evidence is unrelated, insufficient, or does not bear on the claim's truth value.
+5. Do not use external knowledge beyond what is stated in the evidence.
 
-You must have the LABEL, CONF, and RATIONALE in your response. DO NOT hallucinate the keys for the response, e.g. STANCE instead of LABEL is incorrect. Or CONFIDENCE instead of CONF is incorrect.
+<Output Format>
+The LABEL should be one of PASS, FAIL, or NA based on the decision guidelines.
 
-Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
+CONF is your probability estimate (0.00 to 1.00) that your chosen LABEL is correct. Calibrate carefully:
+- 0.90-0.99: Evidence is explicit and unambiguous. You are highly certain.
+- 0.75-0.89: Evidence strongly suggests the answer but requires minor inference.
+- 0.60-0.74: Evidence is relevant but the conclusion requires interpretation or has some ambiguity.
+- 0.50-0.59: Borderline case. Evidence is weak, indirect, or you are genuinely uncertain.
 
-CONF should represent your probability (0 to 1) that your chosen LABEL is correct. Use 2 decimal places.
+IMPORTANT: Do NOT default to high confidence. Use lower confidence when:
+- The evidence requires multiple inferential steps
+- Key details are missing or ambiguous  
+- The claim uses vague language ("only", "always", "some")
+- You are choosing NA due to insufficient evidence
 
-<Response Format>
-Return ONLY the following response format. Output exactly 3 lines and nothing else. Do not add any other text. Example:
+Return the LABEL, CONF, and RATIONALE each on a separate line. The RATIONALE should be an empty string.
 
+Return only 3 lines. Your output should be in the following format:
 LABEL=PASS
-CONF=0.65
+CONF=0.75
 RATIONALE=
 
-</Response Format>
-
 Now begin your response. Do not write anything before LABEL.
-LABEL=
+</Output Format>
 """
 
 def parse_output(text):
@@ -322,9 +334,11 @@ def compute_reward(
        alpha_logp * log(p_gold) to softly encourage the probed distribution
        to put probability mass on the gold label.
     
-    3. r_cal (Calibration via proper scoring rule):
-       -eta_cal * (conf - 1)^2 if correct, -eta_cal * (conf - 0)^2 if incorrect.
-       Encourages well-calibrated confidence rather than thresholded bonuses.
+    3. r_cal (Calibration via log scoring):
+       eta_cal * log(conf) if correct, eta_cal * log(1-conf) if incorrect.
+       Log scoring HEAVILY penalizes overconfidence when wrong (log(0.01) ≈ -4.6)
+       while only mildly penalizing high confidence when correct (log(0.99) ≈ -0.01).
+       This prevents the model from always outputting 0.99.
     
     4. r_false_na (False NA Penalty):
        -lambda_false_na if evidence exists, gold != NA, and the model emits NA.
@@ -382,10 +396,15 @@ def compute_reward(
     # Warm up calibration/alignment to avoid overpowering the accuracy signal early.
     # (Used by run_training via optional overrides; defaults to cfg values.)
     #
-    # Calibration: proper scoring rule (Brier-style) for confidence vs correctness
-    target = 1.0 if pred_label == gold else 0.0
+    # Calibration: LOG SCORING (proper scoring rule that heavily penalizes overconfidence)
+    # - When correct: reward log(conf) → small penalty for high conf
+    # - When wrong: reward log(1-conf) → HUGE penalty for high conf when wrong
+    # This prevents the model from always outputting 0.99
     eta_cal = getattr(cfg, "eta_cal", 0.0)
-    r_cal = -eta_cal * float((pred_conf - target) ** 2)
+    if pred_label == gold:
+        r_cal = eta_cal * float(np.log(pred_conf + eps))  # log(0.99) ≈ -0.01
+    else:
+        r_cal = eta_cal * float(np.log(1 - pred_conf + eps))  # log(0.01) ≈ -4.6!
 
     # Alignment: stated confidence should match probed probability of the *emitted* label
     eta_align = getattr(cfg, "eta_align", 0.0)

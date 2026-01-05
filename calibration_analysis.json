@@ -1,0 +1,78 @@
+{
+  "baseline": {
+    "name": "sample_control_vitaminc",
+    "n": 916,
+    "accuracy": 0.767467248908297,
+    "ece": 0.14211790393013107,
+    "auroc": 0.5143950473824455,
+    "brier": 0.1991764192139738,
+    "separation": {
+      "n_correct": 703,
+      "n_wrong": 213,
+      "mean_conf_correct": 0.8465007112375534,
+      "mean_conf_wrong": 0.8323474178403757,
+      "median_conf_correct": 0.95,
+      "median_conf_wrong": 0.95,
+      "std_conf_correct": 0.1411504838933782,
+      "std_conf_wrong": 0.14222290068497384,
+      "separation": 0.014153293397177746,
+      "cohens_d": 0.09989076473307706
+    },
+    "distribution": {
+      "mean": 0.8432096069868994,
+      "median": 0.95,
+      "std": 0.14152693416971457,
+      "min": 0.55,
+      "max": 0.95,
+      "p10": 0.65,
+      "p25": 0.65,
+      "p75": 0.95,
+      "p90": 0.95,
+      "pct_above_90": 60.480349344978166,
+      "pct_above_95": 0.0,
+      "pct_above_99": 0.0
+    }
+  },
+  "grpo": {
+    "name": "sample_grpo_vitaminc",
+    "n": 998,
+    "accuracy": 0.7595190380761523,
+    "ece": 0.1763026052104208,
+    "auroc": 0.48915457343887425,
+    "brier": 0.21362474949899798,
+    "separation": {
+      "n_correct": 758,
+      "n_wrong": 240,
+      "mean_conf_correct": 0.853825857519789,
+      "mean_conf_wrong": 0.8531249999999999,
+      "median_conf_correct": 0.95,
+      "median_conf_wrong": 0.95,
+      "std_conf_correct": 0.15087215670599904,
+      "std_conf_wrong": 0.14534665817165066,
+      "separation": 0.0007008575197890998,
+      "cohens_d": 0.004731202641352572
+    },
+    "distribution": {
+      "mean": 0.8536573146292583,
+      "median": 0.95,
+      "std": 0.14956232339316183,
+      "min": 0.5,
+      "max": 0.95,
+      "p10": 0.65,
+      "p25": 0.75,
+      "p75": 0.95,
+      "p90": 0.95,
+      "pct_above_90": 66.73346693386773,
+      "pct_above_95": 0.0,
+      "pct_above_99": 0.0
+    }
+  },
+  "test_conf_when_wrong": {
+    "baseline_separation": 0.014153293397177746,
+    "grpo_separation": 0.0007008575197890998,
+    "baseline_conf_when_wrong": 0.8323474178403757,
+    "grpo_conf_when_wrong": 0.8531249999999999,
+    "p_value_conf_wrong": 0.08877875269975184,
+    "grpo_less_confident_when_wrong": false
+  }
+}
