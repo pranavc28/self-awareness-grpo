@@ -2,6 +2,9 @@
 fever_data/wiki-pages/
 fever_data/wiki-pages.zip
 fever_data/__MACOSX/
+vitaminc_data/vitaminc/
+vitaminc_data/*.zip
+climatefever_data/
 
 # Python
 venv/
