@@ -68,52 +68,40 @@ class FEVERClassifier:
         else:
             evidence = "No relevant evidence available."
         
-        return f"""You are an expert at Natural Language Inference. Your task is to determine the logical relationship between evidence and a claim.
+        return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
 
-CLAIM: {claim}
+Claim: {claim}
 
-EVIDENCE:
+You have additional evidence to consider in case you need it:
 {evidence}
 
-Determine the relationship between the evidence and the claim:
+Classify into exactly one category:
+- PASS: Evidence supports the claim (SUPPORTS)
+- FAIL: Evidence contradicts the claim (REFUTES)
+- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
 
-- PASS: The evidence ENTAILS the claim. The claim logically follows from the evidence. If the evidence is true, the claim must be true.
-- FAIL: The evidence CONTRADICTS the claim. The claim is logically inconsistent with the evidence. If the evidence is true, the claim must be false.
-- NA: The evidence is NEUTRAL. The evidence neither entails nor contradicts the claim. The claim could be true or false independent of this evidence.
+For the confidence, output a number between 0 and 1 with 2 decimal places. 0 being the lowest confidence and 1 being the highest confidence. This is a confidence score for your classification.
 
-Decision guidelines:
-1. Focus ONLY on what the evidence explicitly states or directly implies.
-2. Choose PASS only if the evidence provides clear support for the claim being true.
-3. Choose FAIL only if the evidence provides clear support for the claim being false.
-4. Choose NA when the evidence is unrelated, insufficient, or does not bear on the claim's truth value.
-5. Do not use external knowledge beyond what is stated in the evidence.
+For the rationale, output an empty string. There is no need to explain your reasoning.
 
-<Output Format>
-The LABEL should be one of PASS, FAIL, or NA based on the decision guidelines.
+You must have the LABEL, CONF, and RATIONALE in your response. DO NOT hallucinate the keys for the response, e.g. STANCE instead of LABEL is incorrect. Or CONFIDENCE instead of CONF is incorrect.
 
-CONF is your probability estimate (0.00 to 1.00) that your chosen LABEL is correct. Calibrate carefully:
-- 0.90-0.99: Evidence is explicit and unambiguous. You are highly certain.
-- 0.75-0.89: Evidence strongly suggests the answer but requires minor inference.
-- 0.60-0.74: Evidence is relevant but the conclusion requires interpretation or has some ambiguity.
-- 0.50-0.59: Borderline case. Evidence is weak, indirect, or you are genuinely uncertain.
+Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
 
-IMPORTANT: Do NOT default to high confidence. Use lower confidence when:
-- The evidence requires multiple inferential steps
-- Key details are missing or ambiguous  
-- The claim uses vague language ("only", "always", "some")
-- You are choosing NA due to insufficient evidence
+CONF should represent your probability (0 to 1) that your chosen LABEL is correct. Use 2 decimal places.
 
-Return the LABEL, CONF, and RATIONALE each on a separate line. The RATIONALE should be an empty string.
+<Response Format>
+Return ONLY the following response format. Output exactly 3 lines and nothing else. Do not add any other text. Example:
 
-Return only 3 lines. Your output should be in the following format:
 LABEL=PASS
-CONF=0.75
+CONF=0.65
 RATIONALE=
 
+</Response Format>
+
 Now begin your response. Do not write anything before LABEL.
-</Output Format>
+LABEL=
 """
-    
     def parse_output(self, text: str) -> tuple[str, float, bool]:
         """Parse LABEL/CONF from the model output."""
         import re
