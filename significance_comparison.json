@@ -1,81 +1,81 @@
 {
   "filtering": {
     "valid1": 968,
-    "valid2": 986,
-    "paired": 956
+    "valid2": 969,
+    "paired": 938
   },
   "mcnemar_test": {
-    "n01": 45,
-    "n10": 65,
-    "chi2": 3.2818181818181817,
-    "p_value": 0.07005128462163267
+    "n01": 35,
+    "n10": 61,
+    "chi2": 6.510416666666667,
+    "p_value": 0.010724437603060147
   },
   "paired_bootstrap_tests": {
     "macro_f1": {
       "metric": "macro_f1",
-      "n_paired": 956,
-      "model1_value": 0.5988910357445283,
-      "model2_value": 0.5839692030555358,
-      "observed_diff": -0.014921832688992498,
-      "ci_lower": -0.03688650718425191,
-      "ci_upper": 0.0061140763011804595,
-      "p_value": 0.1702,
+      "n_paired": 938,
+      "model1_value": 0.5936630143254028,
+      "model2_value": 0.5682140256228009,
+      "observed_diff": -0.025448988702601927,
+      "ci_lower": -0.04686843444001515,
+      "ci_upper": -0.00398812384524102,
+      "p_value": 0.0182,
       "significant": false
     },
     "accuracy": {
       "metric": "accuracy",
-      "n_paired": 956,
-      "model1_value": 0.6255230125523012,
-      "model2_value": 0.604602510460251,
-      "observed_diff": -0.02092050209205021,
-      "ci_lower": -0.04184100418410042,
-      "ci_upper": 0.0,
-      "p_value": 0.0532,
-      "significant": false
+      "n_paired": 938,
+      "model1_value": 0.6204690831556503,
+      "model2_value": 0.5927505330490405,
+      "observed_diff": -0.02771855010660984,
+      "ci_lower": -0.04797441364605548,
+      "ci_upper": -0.007462686567164201,
+      "p_value": 0.0076,
+      "significant": true
     },
     "PASS_f1": {
       "metric": "PASS_f1",
-      "n_paired": 956,
-      "model1_value": 0.49599999999999994,
-      "model2_value": 0.5038167938931297,
-      "observed_diff": 0.007816793893129781,
-      "ci_lower": -0.028189642329470733,
-      "ci_upper": 0.04347978224748246,
-      "p_value": 0.6734,
+      "n_paired": 938,
+      "model1_value": 0.4891304347826087,
+      "model2_value": 0.4648648648648649,
+      "observed_diff": -0.024265569917743812,
+      "ci_lower": -0.0643525727950813,
+      "ci_upper": 0.015551822828981645,
+      "p_value": 0.2402,
       "significant": false
     },
     "FAIL_f1": {
       "metric": "FAIL_f1",
-      "n_paired": 956,
-      "model1_value": 0.6273062730627306,
-      "model2_value": 0.6000000000000001,
-      "observed_diff": -0.02730627306273048,
-      "ci_lower": -0.05895925319866271,
-      "ci_upper": 0.0036300880197306673,
-      "p_value": 0.0856,
+      "n_paired": 938,
+      "model1_value": 0.6231343283582089,
+      "model2_value": 0.6048237476808904,
+      "observed_diff": -0.0183105806773185,
+      "ci_lower": -0.047590258915711024,
+      "ci_upper": 0.009974044031558011,
+      "p_value": 0.211,
       "significant": false
     },
     "NA_f1": {
       "metric": "NA_f1",
-      "n_paired": 956,
-      "model1_value": 0.6733668341708543,
-      "model2_value": 0.6480908152734778,
-      "observed_diff": -0.025276018897376518,
-      "ci_lower": -0.04858946095522739,
-      "ci_upper": -0.00257974251812455,
-      "p_value": 0.032,
-      "significant": false
+      "n_paired": 938,
+      "model1_value": 0.6687242798353908,
+      "model2_value": 0.6349534643226474,
+      "observed_diff": -0.03377081551274341,
+      "ci_lower": -0.05567226725221565,
+      "ci_upper": -0.012274802372626433,
+      "p_value": 0.002,
+      "significant": true
     },
     "NA_recall": {
       "metric": "NA_recall",
-      "n_paired": 956,
-      "model1_value": 0.7023060796645703,
-      "model2_value": 0.6582809224318659,
-      "observed_diff": -0.04402515723270439,
-      "ci_lower": -0.07644978479845202,
-      "ci_upper": -0.011108663729809102,
-      "p_value": 0.0094,
-      "significant": true
+      "n_paired": 938,
+      "model1_value": 0.6974248927038627,
+      "model2_value": 0.6587982832618026,
+      "observed_diff": -0.03862660944206009,
+      "ci_lower": -0.06903777338763038,
+      "ci_upper": -0.008695180609261489,
+      "p_value": 0.0126,
+      "significant": false
     }
   }
 }
