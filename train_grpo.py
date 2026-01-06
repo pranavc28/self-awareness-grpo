@@ -20,6 +20,8 @@ import tinker
 from tinker import types
 
 from extract_fever_dataset import WikiReader, download_wiki_pages
+from extract_vitaminc_dataset import download_vitaminc
+from extract_climatefever_dataset import download_climatefever
 
 MODEL = "openai/gpt-oss-20b"
 SEED = 42
@@ -122,9 +124,9 @@ class Config:
     correct_neg: float = 1.0
     alpha_logp: float = 0.10
     # These are the *end* values; we ramp up from 0 over warmup_steps.
-    # Note: eta_cal is lower for log scoring since log(0.01) ≈ -4.6 (vs Brier max of 1.0)
-    eta_cal: float = 0.10
-    eta_align: float = 0.15
+    # Higher values for better calibration (previously 0.10/0.15)
+    eta_cal: float = 0.50
+    eta_align: float = 0.30
     warmup_steps: int = 50
     lambda_false_na: float = 0.5
     lambda_inconsistent: float = 0.25
@@ -177,6 +179,110 @@ def load_dataset(not_enough_info_count: int = _NOT_ENOUGH_INFO_COUNT, supports_c
     return [{"prompt": ex["claim"], "label": LABEL_MAP[ex["label"]], "evidence": ex.get("evidence", [])} for ex in sampled]
 
 
+def load_mixed_dataset(
+    fever_na: int = 200, fever_pass: int = 70, fever_fail: int = 70,
+    vitaminc_na: int = 200, vitaminc_pass: int = 70, vitaminc_fail: int = 70,
+    climatefever_na: int = 200, climatefever_pass: int = 70, climatefever_fail: int = 70,
+):
+    """
+    Load a mixed dataset from FEVER, VitaminC, and ClimateFEVER for multi-domain training.
+    
+    This enables learning generalizable self-awareness patterns across different
+    fact verification domains: general Wikipedia facts (FEVER), Wikipedia revisions
+    (VitaminC), and climate science claims (ClimateFEVER).
+    
+    Args:
+        fever_na/pass/fail: Number of each label from FEVER
+        vitaminc_na/pass/fail: Number of each label from VitaminC
+        climatefever_na/pass/fail: Number of each label from ClimateFEVER
+    
+    Returns:
+        list[dict]: Mixed dataset with keys:
+            - prompt: The claim text
+            - label: Mapped label (NA/PASS/FAIL)
+            - evidence: Evidence list (FEVER) or string (VitaminC/ClimateFEVER)
+            - source: Dataset source identifier (fever/vitaminc/climatefever)
+    """
+    random.seed(SEED)
+    sampled = []
+    
+    # Load FEVER examples
+    print("Loading FEVER examples...")
+    with open("fever_data/fever_dev.json", "r") as f:
+        fever_examples = json.load(f)
+    fever_by_label = {"NOT ENOUGH INFO": [], "SUPPORTS": [], "REFUTES": []}
+    for ex in fever_examples:
+        if ex.get("label") in fever_by_label:
+            fever_by_label[ex["label"]].append(ex)
+    
+    for lbl, count in [("NOT ENOUGH INFO", fever_na), ("SUPPORTS", fever_pass), ("REFUTES", fever_fail)]:
+        selected = random.sample(fever_by_label[lbl], min(count, len(fever_by_label[lbl])))
+        for ex in selected:
+            sampled.append({
+                "prompt": ex["claim"],
+                "label": LABEL_MAP[ex["label"]],
+                "evidence": ex.get("evidence", []),  # List format for WikiReader
+                "source": "fever"
+            })
+    print(f"  Added {fever_na + fever_pass + fever_fail} FEVER examples")
+    
+    # Load VitaminC examples
+    print("Loading VitaminC examples...")
+    vitaminc_examples = download_vitaminc("vitaminc_data", split="dev")
+    vitaminc_by_label = {"NOT ENOUGH INFO": [], "SUPPORTS": [], "REFUTES": []}
+    for ex in vitaminc_examples:
+        if ex.get("label") in vitaminc_by_label:
+            vitaminc_by_label[ex["label"]].append(ex)
+    
+    for lbl, count in [("NOT ENOUGH INFO", vitaminc_na), ("SUPPORTS", vitaminc_pass), ("REFUTES", vitaminc_fail)]:
+        selected = random.sample(vitaminc_by_label[lbl], min(count, len(vitaminc_by_label[lbl])))
+        for ex in selected:
+            sampled.append({
+                "prompt": ex["claim"],
+                "label": LABEL_MAP[ex["label"]],
+                "evidence": ex.get("evidence", ""),  # String format directly
+                "source": "vitaminc"
+            })
+    print(f"  Added {vitaminc_na + vitaminc_pass + vitaminc_fail} VitaminC examples")
+    
+    # Load ClimateFEVER examples
+    print("Loading ClimateFEVER examples...")
+    climatefever_examples = download_climatefever("climatefever_data")
+    climatefever_by_label = {"NOT ENOUGH INFO": [], "SUPPORTS": [], "REFUTES": []}
+    for ex in climatefever_examples:
+        if ex.get("label") in climatefever_by_label:
+            climatefever_by_label[ex["label"]].append(ex)
+    
+    for lbl, count in [("NOT ENOUGH INFO", climatefever_na), ("SUPPORTS", climatefever_pass), ("REFUTES", climatefever_fail)]:
+        available = len(climatefever_by_label[lbl])
+        actual_count = min(count, available)
+        if actual_count < count:
+            print(f"  Warning: Only {available} {lbl} examples available in ClimateFEVER, using all")
+        selected = random.sample(climatefever_by_label[lbl], actual_count)
+        for ex in selected:
+            sampled.append({
+                "prompt": ex["claim"],
+                "label": LABEL_MAP[ex["label"]],
+                "evidence": ex.get("evidence", ""),  # String format directly
+                "source": "climatefever"
+            })
+    print(f"  Added {climatefever_na + climatefever_pass + climatefever_fail} ClimateFEVER examples")
+    
+    random.shuffle(sampled)
+    
+    # Save training IDs
+    training_ids = [f"{ex['source']}_{i}" for i, ex in enumerate(sampled)]
+    with open("training_ids_mixed.json", "w") as f:
+        json.dump(training_ids, f, indent=2)
+    
+    print(f"\nTotal mixed dataset: {len(sampled)} examples")
+    print(f"  NA: {sum(1 for ex in sampled if ex['label'] == 'NA')}")
+    print(f"  PASS: {sum(1 for ex in sampled if ex['label'] == 'PASS')}")
+    print(f"  FAIL: {sum(1 for ex in sampled if ex['label'] == 'FAIL')}")
+    
+    return sampled
+
+
 def build_prompt(example):
     """
     Build a generalizable classification prompt with claim and evidence context.
@@ -192,13 +298,26 @@ def build_prompt(example):
     4. No dataset-specific terminology hints
     
     Args:
-        example: Dict with 'prompt' (claim text) and 'evidence' (evidence list)
+        example: Dict with 'prompt' (claim text) and 'evidence' (evidence list or string)
+                 For FEVER: evidence is a list for WikiReader lookup
+                 For VitaminC/ClimateFEVER: evidence is a direct string
     
     Returns:
         str: Formatted prompt string for the model.
     """
-    wiki_reader = get_wiki_reader()
-    evidence_texts = wiki_reader.get_evidence_text(example.get("evidence", []))
+    evidence_raw = example.get("evidence", [])
+    source = example.get("source", "fever")
+    
+    # Handle different evidence formats based on source
+    if source == "fever" and isinstance(evidence_raw, list):
+        # FEVER uses WikiReader for evidence lookup
+        wiki_reader = get_wiki_reader()
+        evidence_texts = wiki_reader.get_evidence_text(evidence_raw)
+    elif isinstance(evidence_raw, str) and evidence_raw:
+        # VitaminC/ClimateFEVER provide evidence as string directly
+        evidence_texts = [evidence_raw]
+    else:
+        evidence_texts = []
     
     if evidence_texts:
         evidence = "\n".join(f"- {t}" for t in evidence_texts)
@@ -583,8 +702,13 @@ async def run_training():
         str: Path to the final saved checkpoint.
     """
     cfg = Config()
-    print(f"Loading dataset...")
-    dataset = load_dataset()
+    print(f"Loading mixed dataset from FEVER, VitaminC, and ClimateFEVER...")
+    # 200 NA + 50 PASS + 50 FAIL from each dataset = 900 total examples
+    dataset = load_mixed_dataset(
+        fever_na=200, fever_pass=70, fever_fail=70,
+        vitaminc_na=200, vitaminc_pass=70, vitaminc_fail=70,
+        climatefever_na=200, climatefever_pass=70, climatefever_fail=70,
+    )
     print(f"Loaded {len(dataset)} examples")
     
     service_client = tinker.ServiceClient()
@@ -749,7 +873,7 @@ async def run_training():
         json.dump(metrics_history, f, indent=2)
     print(f"Saved training metrics to training_metrics.json")
     
-    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-trial-4")).result().path
+    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-v1")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
     return final_path
 
