@@ -226,6 +226,6 @@ async def sample_from_checkpoint(checkpoint_path: str, dataset: str = "fever", n
 
 if __name__ == "__main__":
     dataset = sys.argv[1] if len(sys.argv) > 1 else "fever"
-    checkpoint = sys.argv[2] if len(sys.argv) > 2 else "tinker://9d4915f4-ed1d-5df7-b60a-56bb4e50a284:train:0/sampler_weights/self-aware-grpo-trial-4"
+    checkpoint = sys.argv[2] if len(sys.argv) > 2 else "tinker://8c58d982-9ba2-5469-afe0-5f184f9a7f7c:train:0/sampler_weights/self-aware-grpo-trial-4"
     num_examples = int(sys.argv[3]) if len(sys.argv) > 3 else None
     asyncio.run(sample_from_checkpoint(checkpoint, dataset, num_examples))

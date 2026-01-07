@@ -96,7 +96,7 @@ class Config:
         correct_pos: Reward for correct label emission (parsed output)
         correct_neg: Penalty for incorrect label emission (parsed output)
         alpha_logp: Weight on log(p_gold) shaping term from probed label distribution
-        eta_cal: Log-scoring calibration weight (penalizes overconfidence when wrong)
+        eta_cal: Proper-scoring calibration weight (Brier-style)
         eta_align: Confidence-vs-probed-probability alignment weight
         lambda_false_na: Penalty for emitting NA when evidence exists and gold is PASS/FAIL
         lambda_inconsistent: Penalty when emitted label != probed argmax label (discourages reward hacking)
@@ -124,11 +124,10 @@ class Config:
     correct_neg: float = 1.0
     alpha_logp: float = 0.10
     # These are the *end* values; we ramp up from 0 over warmup_steps.
-    # Higher values for better calibration (previously 0.10/0.15)
-    eta_cal: float = 0.50
-    eta_align: float = 0.30
+    eta_cal: float = 0.25
+    eta_align: float = 0.15
     warmup_steps: int = 50
-    lambda_false_na: float = 0.5
+    lambda_false_na: float = 2.0
     lambda_inconsistent: float = 0.25
     format_penalty: float = 0.25
     beta_kl: float = 0.02
@@ -285,48 +284,35 @@ def load_mixed_dataset(
 
 def build_prompt(example):
     """
-    Build a generalizable classification prompt with claim and evidence context.
+    Build the classification prompt with claim and evidence context.
     
-    Uses Natural Language Inference (NLI) framing for better cross-dataset
-    generalization. The prompt focuses on logical relationships between
-    evidence and claim rather than dataset-specific terminology.
+    Constructs a prompt that includes:
+    1. The claim to be verified
+    2. Retrieved evidence sentences from Wikipedia (via WikiReader)
+    3. Instructions for outputting LABEL, CONF, and RATIONALE
     
-    Key design principles from fact verification literature:
-    1. NLI framing (entailment/contradiction/neutral) generalizes better
-    2. First-principles logical reasoning over dataset-specific patterns
-    3. Clear abstention criteria based on evidence sufficiency
-    4. No dataset-specific terminology hints
+    The evidence helps the model make informed predictions. For NA cases,
+    evidence may be empty or insufficient, which the model should recognize.
+    This affects the reward function: the model should express lower confidence
+    when evidence is weak and avoid false NA predictions when evidence exists.
     
     Args:
-        example: Dict with 'prompt' (claim text) and 'evidence' (evidence list or string)
-                 For FEVER: evidence is a list for WikiReader lookup
-                 For VitaminC/ClimateFEVER: evidence is a direct string
+        example: Dict with 'prompt' (claim text) and 'evidence' (evidence list)
     
     Returns:
         str: Formatted prompt string for the model.
     """
-    evidence_raw = example.get("evidence", [])
-    source = example.get("source", "fever")
-    
-    # Handle different evidence formats based on source
-    if source == "fever" and isinstance(evidence_raw, list):
-        # FEVER uses WikiReader for evidence lookup
-        wiki_reader = get_wiki_reader()
-        evidence_texts = wiki_reader.get_evidence_text(evidence_raw)
-    elif isinstance(evidence_raw, str) and evidence_raw:
-        # VitaminC/ClimateFEVER provide evidence as string directly
-        evidence_texts = [evidence_raw]
-    else:
-        evidence_texts = []
+    wiki_reader = get_wiki_reader()
+    evidence_texts = wiki_reader.get_evidence_text(example.get("evidence", []))
     
     if evidence_texts:
         evidence = "\n".join(f"- {t}" for t in evidence_texts)
     else:
-        evidence = "No relevant evidence available."
+        evidence = "No specific evidence provided."
     
     return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
 
-Claim: {example["prompt"]}
+Claim: {example['prompt']}
 
 You have additional evidence to consider in case you need it:
 {evidence}
@@ -442,11 +428,9 @@ def compute_reward(
        alpha_logp * log(p_gold) to softly encourage the probed distribution
        to put probability mass on the gold label.
     
-    3. r_cal (Calibration via log scoring):
-       eta_cal * log(conf) if correct, eta_cal * log(1-conf) if incorrect.
-       Log scoring HEAVILY penalizes overconfidence when wrong (log(0.01) ≈ -4.6)
-       while only mildly penalizing high confidence when correct (log(0.99) ≈ -0.01).
-       This prevents the model from always outputting 0.99.
+    3. r_cal (Calibration via proper scoring rule):
+       -eta_cal * (conf - 1)^2 if correct, -eta_cal * (conf - 0)^2 if incorrect.
+       Encourages well-calibrated confidence rather than thresholded bonuses.
     
     4. r_false_na (False NA Penalty):
        -lambda_false_na if evidence exists, gold != NA, and the model emits NA.
@@ -504,15 +488,10 @@ def compute_reward(
     # Warm up calibration/alignment to avoid overpowering the accuracy signal early.
     # (Used by run_training via optional overrides; defaults to cfg values.)
     #
-    # Calibration: LOG SCORING (proper scoring rule that heavily penalizes overconfidence)
-    # - When correct: reward log(conf) → small penalty for high conf
-    # - When wrong: reward log(1-conf) → HUGE penalty for high conf when wrong
-    # This prevents the model from always outputting 0.99
+    # Calibration: proper scoring rule (Brier-style) for confidence vs correctness
+    target = 1.0 if pred_label == gold else 0.0
     eta_cal = getattr(cfg, "eta_cal", 0.0)
-    if pred_label == gold:
-        r_cal = eta_cal * float(np.log(pred_conf + eps))  # log(0.99) ≈ -0.01
-    else:
-        r_cal = eta_cal * float(np.log(1 - pred_conf + eps))  # log(0.01) ≈ -4.6!
+    r_cal = -eta_cal * float((pred_conf - target) ** 2)
 
     # Alignment: stated confidence should match probed probability of the *emitted* label
     eta_align = getattr(cfg, "eta_align", 0.0)
@@ -691,13 +670,8 @@ async def run_training():
         str: Path to the final saved checkpoint.
     """
     cfg = Config()
-    print(f"Loading mixed dataset from FEVER, VitaminC, and ClimateFEVER...")
-    # 200 NA + 50 PASS + 50 FAIL from each dataset = 900 total examples
-    dataset = load_mixed_dataset(
-        fever_na=200, fever_pass=70, fever_fail=70,
-        vitaminc_na=200, vitaminc_pass=70, vitaminc_fail=70,
-        climatefever_na=200, climatefever_pass=70, climatefever_fail=70,
-    )
+    print(f"Loading dataset...")
+    dataset = load_mixed_dataset()
     print(f"Loaded {len(dataset)} examples")
     
     service_client = tinker.ServiceClient()
@@ -862,10 +836,9 @@ async def run_training():
         json.dump(metrics_history, f, indent=2)
     print(f"Saved training metrics to training_metrics.json")
     
-    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-v1")).result().path
+    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-trial-4")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
     return final_path
 
 if __name__ == "__main__":
     asyncio.run(run_training())
-

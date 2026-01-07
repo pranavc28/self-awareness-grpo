@@ -1,81 +1,81 @@
 {
   "filtering": {
-    "valid1": 940,
-    "valid2": 951,
-    "paired": 907
+    "valid1": 988,
+    "valid2": 995,
+    "paired": 983
   },
   "mcnemar_test": {
-    "n01": 85,
-    "n10": 28,
-    "chi2": 27.75221238938053,
-    "p_value": 1.3789042162628443e-07
+    "n01": 42,
+    "n10": 49,
+    "chi2": 0.3956043956043956,
+    "p_value": 0.5293681061847979
   },
   "paired_bootstrap_tests": {
     "macro_f1": {
       "metric": "macro_f1",
-      "n_paired": 907,
-      "model1_value": 0.6807589695157276,
-      "model2_value": 0.7484533271448789,
-      "observed_diff": 0.06769435762915132,
-      "ci_lower": 0.044657709844049855,
-      "ci_upper": 0.09113396140004044,
-      "p_value": 0.0,
-      "significant": true
+      "n_paired": 983,
+      "model1_value": 0.5998646107531125,
+      "model2_value": 0.5927799719889875,
+      "observed_diff": -0.0070846387641250175,
+      "ci_lower": -0.02652950047902149,
+      "ci_upper": 0.012271299893714123,
+      "p_value": 0.4768,
+      "significant": false
     },
     "accuracy": {
       "metric": "accuracy",
-      "n_paired": 907,
-      "model1_value": 0.6780595369349504,
-      "model2_value": 0.74090407938258,
-      "observed_diff": 0.0628445424476296,
-      "ci_lower": 0.040793825799338435,
-      "ci_upper": 0.08599779492833515,
-      "p_value": 0.0,
-      "significant": true
+      "n_paired": 983,
+      "model1_value": 0.6032553407934893,
+      "model2_value": 0.5961342828077314,
+      "observed_diff": -0.007121057985757906,
+      "ci_lower": -0.0264496439471007,
+      "ci_upper": 0.012207527975584997,
+      "p_value": 0.4982,
+      "significant": false
     },
     "PASS_f1": {
       "metric": "PASS_f1",
-      "n_paired": 907,
-      "model1_value": 0.8351254480286738,
-      "model2_value": 0.8705440900562852,
-      "observed_diff": 0.03541864202761136,
-      "ci_lower": 0.014693191292009,
-      "ci_upper": 0.057635245150730464,
-      "p_value": 0.0016,
-      "significant": true
+      "n_paired": 983,
+      "model1_value": 0.5691056910569106,
+      "model2_value": 0.5633802816901409,
+      "observed_diff": -0.005725409366769685,
+      "ci_lower": -0.03759340629853787,
+      "ci_upper": 0.02589481680446086,
+      "p_value": 0.729,
+      "significant": false
     },
     "FAIL_f1": {
       "metric": "FAIL_f1",
-      "n_paired": 907,
-      "model1_value": 0.6756352765321375,
-      "model2_value": 0.7101910828025477,
-      "observed_diff": 0.034555806270410216,
-      "ci_lower": 0.012376882685041352,
-      "ci_upper": 0.05693212840100617,
-      "p_value": 0.002,
-      "significant": true
+      "n_paired": 983,
+      "model1_value": 0.6182432432432433,
+      "model2_value": 0.6086956521739131,
+      "observed_diff": -0.00954759106933023,
+      "ci_lower": -0.03590741981414304,
+      "ci_upper": 0.016448306740469737,
+      "p_value": 0.4582,
+      "significant": false
     },
     "NA_f1": {
       "metric": "NA_f1",
-      "n_paired": 907,
-      "model1_value": 0.5315161839863713,
-      "model2_value": 0.6646248085758039,
-      "observed_diff": 0.1331086245894325,
-      "ci_lower": 0.09077746809664672,
-      "ci_upper": 0.17736549707108373,
-      "p_value": 0.0,
-      "significant": true
+      "n_paired": 983,
+      "model1_value": 0.6122448979591837,
+      "model2_value": 0.6062639821029083,
+      "observed_diff": -0.0059809158562753595,
+      "ci_lower": -0.028718683182056413,
+      "ci_upper": 0.016999131887013807,
+      "p_value": 0.6094,
+      "significant": false
     },
     "NA_recall": {
       "metric": "NA_recall",
-      "n_paired": 907,
-      "model1_value": 0.38141809290953543,
-      "model2_value": 0.530562347188264,
-      "observed_diff": 0.14914425427872857,
-      "ci_lower": 0.10416540556900729,
-      "ci_upper": 0.19483820645391337,
-      "p_value": 0.0,
-      "significant": true
+      "n_paired": 983,
+      "model1_value": 0.5498981670061099,
+      "model2_value": 0.5519348268839104,
+      "observed_diff": 0.0020366598778004397,
+      "ci_lower": -0.02429272979609267,
+      "ci_upper": 0.02904564315352698,
+      "p_value": 0.9388,
+      "significant": false
     }
   }
 }
