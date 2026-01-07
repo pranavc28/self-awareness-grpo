@@ -1,24 +1,24 @@
 {
   "baseline": {
-    "name": "classify_fever",
-    "n": 941,
-    "accuracy": 0.6599362380446334,
-    "auroc": 0.4303542673107891,
-    "brier": 0.30081455897980874,
-    "conf_when_wrong": 0.8445
+    "name": "sample_control_climatefever",
+    "n": 989,
+    "accuracy": 0.60262891809909,
+    "auroc": 0.518968697166863,
+    "brier": 0.3206662285136501,
+    "conf_std": 0.15912458432553814
   },
   "grpo": {
-    "name": "sample_grpo",
-    "n": 967,
-    "accuracy": 0.7238883143743536,
-    "auroc": 0.4779935794542536,
-    "brier": 0.29282637021716645,
-    "conf_when_wrong": 0.8904494382022472
+    "name": "sample_grpo_climatefever",
+    "n": 999,
+    "accuracy": 0.5905905905905906,
+    "auroc": 0.5077866644565082,
+    "brier": 0.3182402402402403,
+    "conf_std": 0.18031378652271352
   },
-  "test_conf_when_wrong": {
-    "baseline_conf_when_wrong": 0.8445,
-    "grpo_conf_when_wrong": 0.8904494382022472,
-    "p_value": 1.1498974049559752e-27,
+  "test_conf_std": {
+    "baseline_conf_std": 0.15912458432553814,
+    "grpo_conf_std": 0.18031378652271352,
+    "p_value": 8.033122717039751e-09,
     "significant": true
   }
 }

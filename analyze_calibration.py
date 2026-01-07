@@ -3,7 +3,7 @@
 Key metrics for self-awareness:
 1. AUROC - Can confidence predict correctness?
 2. Brier Score - Proper scoring rule for probabilistic predictions
-3. Lower conf when wrong - Is model less confident when incorrect?
+3. Confidence Std - Does model vary confidence based on certainty?
 """
 
 import json
@@ -92,29 +92,35 @@ def compute_brier_score(results: list[dict]) -> float:
     return float(np.mean(scores))
 
 
-def compute_conf_when_wrong(results: list[dict]) -> float:
-    """Mean confidence when prediction is incorrect."""
-    wrong_confs = [r["confidence"] for r in results if not r["correct"]]
-    if not wrong_confs:
+def compute_conf_std(results: list[dict]) -> float:
+    """Standard deviation of confidence scores.
+    
+    Higher SD = better self-awareness (model differentiates between 
+    cases it's sure about vs uncertain about).
+    Low SD = model gives uniform confidence regardless of difficulty.
+    """
+    confs = [r["confidence"] for r in results]
+    if len(confs) < 2:
         return 0.0
-    return float(np.mean(wrong_confs))
+    return float(np.std(confs))
 
 
-def statistical_test_conf_when_wrong(results1: list[dict], results2: list[dict]) -> dict:
-    """Test if confidence when wrong is significantly different."""
+def statistical_test_conf_std(results1: list[dict], results2: list[dict]) -> dict:
+    """Test if confidence SD is significantly different using Levene's test."""
     from scipy import stats
     
-    wrong1 = [r["confidence"] for r in results1 if not r["correct"]]
-    wrong2 = [r["confidence"] for r in results2 if not r["correct"]]
+    confs1 = [r["confidence"] for r in results1]
+    confs2 = [r["confidence"] for r in results2]
     
-    if len(wrong1) > 1 and len(wrong2) > 1:
-        u_stat, p_value = stats.mannwhitneyu(wrong1, wrong2, alternative='two-sided')
+    if len(confs1) > 1 and len(confs2) > 1:
+        # Levene's test for equality of variances
+        stat, p_value = stats.levene(confs1, confs2)
     else:
-        u_stat, p_value = 0, 1.0
+        stat, p_value = 0, 1.0
     
     return {
-        "baseline_conf_when_wrong": float(np.mean(wrong1)) if wrong1 else 0.0,
-        "grpo_conf_when_wrong": float(np.mean(wrong2)) if wrong2 else 0.0,
+        "baseline_conf_std": float(np.std(confs1)) if len(confs1) > 1 else 0.0,
+        "grpo_conf_std": float(np.std(confs2)) if len(confs2) > 1 else 0.0,
         "p_value": float(p_value),
         "significant": bool(p_value < 0.05)
     }
@@ -141,11 +147,11 @@ def compare_models(path1: str, path2: str) -> dict:
     brier1 = compute_brier_score(results1)
     brier2 = compute_brier_score(results2)
     
-    conf_wrong1 = compute_conf_when_wrong(results1)
-    conf_wrong2 = compute_conf_when_wrong(results2)
+    conf_std1 = compute_conf_std(results1)
+    conf_std2 = compute_conf_std(results2)
     
-    # Statistical test for conf when wrong
-    test = statistical_test_conf_when_wrong(results1, results2)
+    # Statistical test for conf std
+    test = statistical_test_conf_std(results1, results2)
     
     # Print results
     print(f"\n{'-'*60}")
@@ -175,14 +181,14 @@ def compare_models(path1: str, path2: str) -> dict:
     print(f"   Winner:   {brier_winner} (-{brier_diff:.4f})")
     
     print(f"\n{'-'*60}")
-    print("3. CONFIDENCE WHEN WRONG")
-    print(f"   Lower = better (model should be uncertain when incorrect)")
+    print("3. CONFIDENCE STD (Discrimination)")
+    print(f"   Higher = better (model varies confidence based on certainty)")
     print(f"{'-'*60}")
-    print(f"   Baseline: {conf_wrong1:.4f}")
-    print(f"   GRPO:     {conf_wrong2:.4f}")
-    conf_winner = "GRPO" if conf_wrong2 < conf_wrong1 else "Baseline"
-    conf_diff = abs(conf_wrong1 - conf_wrong2)
-    print(f"   Winner:   {conf_winner} (-{conf_diff:.4f})")
+    print(f"   Baseline: {conf_std1:.4f}")
+    print(f"   GRPO:     {conf_std2:.4f}")
+    conf_winner = "GRPO" if conf_std2 > conf_std1 else "Baseline"
+    conf_diff = abs(conf_std2 - conf_std1)
+    print(f"   Winner:   {conf_winner} (+{conf_diff:.4f})")
     print(f"   p-value:  {test['p_value']:.4f} {'(significant)' if test['significant'] else '(not significant)'}")
     
     # Summary
@@ -193,7 +199,7 @@ def compare_models(path1: str, path2: str) -> dict:
     metrics = [
         ("AUROC", auroc2 > auroc1),
         ("Brier Score", brier2 < brier1),
-        ("Conf When Wrong", conf_wrong2 < conf_wrong1),
+        ("Conf Std", conf_std2 > conf_std1),
     ]
     
     wins_grpo = sum(1 for _, grpo_wins in metrics if grpo_wins)
@@ -219,13 +225,13 @@ def compare_models(path1: str, path2: str) -> dict:
     return {
         "baseline": {
             "name": name1, "n": len(results1), "accuracy": float(acc1),
-            "auroc": auroc1, "brier": brier1, "conf_when_wrong": conf_wrong1
+            "auroc": auroc1, "brier": brier1, "conf_std": conf_std1
         },
         "grpo": {
             "name": name2, "n": len(results2), "accuracy": float(acc2),
-            "auroc": auroc2, "brier": brier2, "conf_when_wrong": conf_wrong2
+            "auroc": auroc2, "brier": brier2, "conf_std": conf_std2
         },
-        "test_conf_when_wrong": test
+        "test_conf_std": test
     }
 
 
