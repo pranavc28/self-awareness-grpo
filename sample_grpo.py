@@ -159,14 +159,14 @@ async def sample_from_checkpoint(checkpoint_path: str, dataset: str = "fever", n
         prompt = build_prompt(ex["claim"], evidence_texts)
         tokens = tokenizer.encode(prompt)
         model_input = types.ModelInput.from_ints(tokens)
-        params = types.SamplingParams(max_tokens=10000, temperature=0.1, stop=["\nRATIONALE="])
+        params = types.SamplingParams(max_tokens=10, temperature=0.1, stop=["\nRATIONALE="])
         
         result = await sampling_client.sample_async(prompt=model_input, num_samples=1, sampling_params=params)
         raw_response = tokenizer.decode(result.sequences[0].tokens)
-        predicted_label, predicted_conf, valid = parse_output(raw_response)
+        predicted_label, valid = parse_output(raw_response)
         
         status = "✓" if predicted_label == golden_label else "✗"
-        print(f"[{idx+1}/{len(examples)}] {status} Golden={golden_label} Pred={predicted_label} Conf={predicted_conf:.2f} Valid={valid} | {ex['claim'][:40]}...")
+        print(f"[{idx+1}/{len(examples)}] {status} Golden={golden_label} Pred={predicted_label} Valid={valid} | {ex['claim'][:40]}...")
         
         return {
             "id": ex.get("id", idx),
@@ -174,7 +174,6 @@ async def sample_from_checkpoint(checkpoint_path: str, dataset: str = "fever", n
             "evidence_texts": evidence_texts,
             "golden_label": golden_label,
             "predicted_label": predicted_label,
-            "predicted_conf": predicted_conf,
             "format_valid": valid,
             "raw_response": raw_response.strip()
         }

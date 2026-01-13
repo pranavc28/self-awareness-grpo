@@ -118,7 +118,7 @@ class Config:
     # 32 examples × 8 samples = 256 completions per step (same as 64×4).
     batch_size: int = 32
     group_size: int = 8
-    max_tokens: int = 512
+    max_tokens: int = 10  # Only need to generate a single word (PASS/FAIL/NA)
     temperature: float = 0.2
     # Higher learning rate paired with regularization for faster convergence
     lr: float = 5e-6
@@ -395,7 +395,6 @@ def compute_probs_from_logits(logprobs_dict):
 def compute_reward(
     gold: str,
     pred_label: str | None,
-    pred_conf: float,
     probs: dict,
     cfg: Config,
     format_valid: bool,
@@ -436,7 +435,6 @@ def compute_reward(
     Args:
         gold: Ground truth label (NA/PASS/FAIL).
         pred_label: Label parsed from the sampled completion.
-        pred_conf: Confidence parsed from the sampled completion [0,1].
         probs: Probability distribution from probe_label_logprobs.
         cfg: Config with reward function hyperparameters.
         format_valid: Whether the output format was valid.
@@ -668,8 +666,8 @@ async def run_training():
     sanity_results = await asyncio.gather(*sanity_tasks)
     for ex, samples in zip(test_batch, sanity_results):
         for s in samples[:2]:
-            label, conf, valid = parse_output(s["text"])
-            print(f"  Gold={ex['label']} Pred={label} Conf={conf:.2f} Valid={valid}")
+            label, valid = parse_output(s["text"])
+            print(f"  Gold={ex['label']} Pred={label} Valid={valid}")
     
     metrics_history = []
     reward_components = ["total", "r_correct", "r_cls", "r_false_na", "r_inconsistent", "r_format", "r_entropy"]
@@ -719,8 +717,8 @@ async def run_training():
             rewards = []
 
             for s in samples:
-                pred_label, pred_conf, valid = parse_output(s["text"])
-                reward_breakdown = compute_reward(ex["label"], pred_label, pred_conf, probs, cfg, valid, evidence_provided)
+                pred_label, valid = parse_output(s["text"])
+                reward_breakdown = compute_reward(ex["label"], pred_label, probs, cfg, valid, evidence_provided)
                 rewards.append(reward_breakdown["total"])
                 
                 for comp in reward_components:

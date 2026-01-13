@@ -90,28 +90,25 @@ Example: PASS
 </Response Format>
 
 LABEL="""
-    def parse_output(self, text: str) -> tuple[str, float, bool]:
-        """Parse LABEL/CONF from the model output."""
+    def parse_output(self, text: str) -> tuple[str, bool]:
+        """Parse label from the model output."""
         import re
 
-        label, conf, valid = None, 0.5, True
-        text = text.replace("<", "").replace(">", "")
-        m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
-        if m:
-            label = m.group(1).upper()
+        label, valid = None, True
+        text = text.strip().upper()
+        # Check if the output is exactly one of the valid labels
+        if text in ("NA", "PASS", "FAIL"):
+            label = text
         else:
-            print()
-            valid = False
-        m = re.search(r"CONF\s*=\s*([\d.]+)", text)
-        if m:
-            try:
-                conf = float(m.group(1))
-                conf = max(0.0, min(1.0, conf))
-            except Exception:
+            # Try to find a label anywhere in the text
+            text_clean = text.replace("<", "").replace(">", "")
+            m = re.search(r"\b(NA|PASS|FAIL)\b", text_clean, re.IGNORECASE)
+            if m:
+                label = m.group(1).upper()
+                valid = False  # Penalize non-exact format
+            else:
                 valid = False
-        else:
-            valid = False
-        return (label or "NA"), conf, valid
+        return (label or "NA"), valid
     
     async def classify_single(self, claim: str, evidence_texts: list[str]) -> tuple[str, str]:
         """Classify a single claim asynchronously."""
@@ -120,7 +117,7 @@ LABEL="""
         model_input = types.ModelInput.from_ints(prompt_tokens)
         
         sampling_params = types.SamplingParams(
-            max_tokens=10000, temperature=0.1, stop=["RATIONALE="]
+            max_tokens=10, temperature=0.1, stop=["\nRATIONALE="]
         )
         
         result = await self.sampling_client.sample_async(
@@ -128,7 +125,7 @@ LABEL="""
         )
         
         raw_response = self.tokenizer.decode(result.sequences[0].tokens, skip_special_tokens=True)
-        label, conf, valid = self.parse_output(raw_response)
+        label, valid = self.parse_output(raw_response)
         return label, raw_response
     
     async def classify_batch(self, examples: list[dict], wiki_reader: Optional[WikiReader], dataset: str) -> list[dict]:
