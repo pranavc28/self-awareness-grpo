@@ -118,7 +118,7 @@ class Config:
     # 32 examples × 8 samples = 256 completions per step (same as 64×4).
     batch_size: int = 32
     group_size: int = 8
-    max_tokens: int = 10  # Only need to generate a single word (PASS/FAIL/NA)
+    max_tokens: int = 64  # Only need to generate a single word (PASS/FAIL/NA)
     temperature: float = 0.2
     # Higher learning rate paired with regularization for faster convergence
     lr: float = 5e-6

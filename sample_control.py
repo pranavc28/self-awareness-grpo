@@ -117,7 +117,7 @@ LABEL="""
         model_input = types.ModelInput.from_ints(prompt_tokens)
         
         sampling_params = types.SamplingParams(
-            max_tokens=10, temperature=0.1, stop=["\nRATIONALE="]
+            max_tokens=64, temperature=0.1, stop=["\nRATIONALE="]
         )
         
         result = await self.sampling_client.sample_async(

@@ -159,7 +159,7 @@ async def sample_from_checkpoint(checkpoint_path: str, dataset: str = "fever", n
         prompt = build_prompt(ex["claim"], evidence_texts)
         tokens = tokenizer.encode(prompt)
         model_input = types.ModelInput.from_ints(tokens)
-        params = types.SamplingParams(max_tokens=10, temperature=0.1, stop=["\nRATIONALE="])
+        params = types.SamplingParams(max_tokens=64, temperature=0.1, stop=["\nRATIONALE="])
         
         result = await sampling_client.sample_async(prompt=model_input, num_samples=1, sampling_params=params)
         raw_response = tokenizer.decode(result.sequences[0].tokens)
