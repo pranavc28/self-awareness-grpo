@@ -96,8 +96,6 @@ class Config:
         correct_pos: Reward for correct label emission (parsed output)
         correct_neg: Penalty for incorrect label emission (parsed output)
         alpha_logp: Weight on log(p_gold) shaping term from probed label distribution
-        eta_cal: Proper-scoring calibration weight (Brier-style)
-        eta_align: Confidence-vs-probed-probability alignment weight
         lambda_false_na: Penalty for emitting NA when evidence exists and gold is PASS/FAIL
         lambda_inconsistent: Penalty when emitted label != probed argmax label (discourages reward hacking)
         format_penalty: Penalty for invalid output format
@@ -110,6 +108,11 @@ class Config:
         temperature: Sampling temperature for exploration
         lr: Learning rate for AdamW optimizer
         steps: Total training steps
+    
+    Regularization parameters:
+        weight_decay: L2 regularization coefficient (AdamW decoupled weight decay)
+        max_grad_norm: Maximum gradient norm for gradient clipping (None to disable)
+        entropy_bonus: Entropy bonus coefficient to encourage exploration
     """
     # Keep total samples/step roughly constant while improving within-group signal:
     # 32 examples × 8 samples = 256 completions per step (same as 64×4).
@@ -117,16 +120,17 @@ class Config:
     group_size: int = 8
     max_tokens: int = 512
     temperature: float = 0.2
-    lr: float = 2e-6
+    # Higher learning rate paired with regularization for faster convergence
+    lr: float = 5e-6
     steps: int = 160
+    # Regularization: L2 weight decay and gradient clipping
+    weight_decay: float = 0.01
+    max_grad_norm: float = 1.0
+    entropy_bonus: float = 0.01
     # Increase correctness reward so it dominates early learning.
     correct_pos: float = 2.0
     correct_neg: float = 1.0
     alpha_logp: float = 0.10
-    # These are the *end* values; we ramp up from 0 over warmup_steps.
-    eta_cal: float = 0.25
-    eta_align: float = 0.15
-    warmup_steps: int = 50
     lambda_false_na: float = 2.0
     lambda_inconsistent: float = 0.25
     format_penalty: float = 0.25
@@ -322,37 +326,23 @@ Classify into exactly one category:
 - FAIL: Evidence contradicts the claim (REFUTES)
 - NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
 
-For the confidence, output a number between 0 and 1 with 2 decimal places. 0 being the lowest confidence and 1 being the highest confidence. This is a confidence score for your classification.
-
-For the rationale, output an empty string. There is no need to explain your reasoning.
-
-You must have the LABEL, CONF, and RATIONALE in your response. DO NOT hallucinate the keys for the response, e.g. STANCE instead of LABEL is incorrect. Or CONFIDENCE instead of CONF is incorrect.
-
 Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
 
-CONF should represent your probability (0 to 1) that your chosen LABEL is correct. Use 2 decimal places.
-
 <Response Format>
-Return ONLY the following response format. Output exactly 3 lines and nothing else. Do not add any other text. Example:
+Return ONLY the label. Output exactly one word (PASS, FAIL, or NA) and nothing else.
 
-LABEL=PASS
-CONF=0.65
-RATIONALE=
+Example: PASS
 
 </Response Format>
 
-Now begin your response. Do not write anything before LABEL.
-LABEL=
-"""
+LABEL="""
 
 def parse_output(text):
     """
-    Parse model output to extract label, confidence, and format validity.
+    Parse model output to extract label and format validity.
     
-    Extracts structured output from the model's response text. The expected format:
-        LABEL=<NA|PASS|FAIL>
-        CONF=<float 0-1>
-        RATIONALE=<text>
+    Extracts the label from the model's response text. The expected format is
+    simply the label (NA, PASS, or FAIL).
     
     Format validity affects the reward function via format_penalty. Invalid outputs
     receive a penalty to encourage the model to follow the specified format.
@@ -361,28 +351,25 @@ def parse_output(text):
         text: Raw model output string.
     
     Returns:
-        tuple: (label, conf, valid) where:
+        tuple: (label, valid) where:
             - label: Extracted label (NA/PASS/FAIL) or None if missing
-            - conf: Confidence float clamped to [0,1], default 0.5 if missing
             - valid: Boolean indicating if output format was correct
     """
-    label, conf, valid = None, 0.5, True
-    text = text.replace("<", "").replace(">", "")
-    m = re.search(r"LABEL\s*[:=]\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
-    if m:
-        label = m.group(1).upper()
+    label, valid = None, True
+    text = text.strip().upper()
+    # Check if the output is exactly one of the valid labels
+    if text in ("NA", "PASS", "FAIL"):
+        label = text
     else:
-        valid = False
-    m = re.search(r"CONF\s*[:=]\s*([\d.]+)", text)
-    if m:
-        try:
-            conf = float(m.group(1))
-            conf = max(0.0, min(1.0, conf))
-        except:
+        # Try to find a label anywhere in the text
+        text_clean = text.replace("<", "").replace(">", "")
+        m = re.search(r"\b(NA|PASS|FAIL)\b", text_clean, re.IGNORECASE)
+        if m:
+            label = m.group(1).upper()
+            valid = False  # Penalize non-exact format
+        else:
             valid = False
-    else:
-        valid = False
-    return label, conf, valid
+    return label, valid
 
 def compute_probs_from_logits(logprobs_dict):
     """
@@ -428,26 +415,23 @@ def compute_reward(
        alpha_logp * log(p_gold) to softly encourage the probed distribution
        to put probability mass on the gold label.
     
-    3. r_cal (Calibration via proper scoring rule):
-       -eta_cal * (conf - 1)^2 if correct, -eta_cal * (conf - 0)^2 if incorrect.
-       Encourages well-calibrated confidence rather than thresholded bonuses.
-    
-    4. r_false_na (False NA Penalty):
+    3. r_false_na (False NA Penalty):
        -lambda_false_na if evidence exists, gold != NA, and the model emits NA.
        Prevents the model from taking the easy way out.
     
-    5. r_align (Alignment Penalty):
-       -eta_align * |conf - p_pred|, where p_pred is the probed probability
-       of the *emitted* label. Encourages consistency between reported confidence
-       and the model's own label probabilities.
-    
-    6. r_inconsistent (Consistency Penalty):
+    4. r_inconsistent (Consistency Penalty):
        -lambda_inconsistent if emitted label != probed argmax label.
        Discourages reward hacking where the model emits one label but internally
        prefers another.
 
-    7. r_format (Format Penalty):
+    5. r_format (Format Penalty):
        -format_penalty if output format is invalid.
+    
+    6. r_entropy (Entropy Bonus):
+       entropy_bonus * H(probs), where H is Shannon entropy over the probed
+       label distribution. Encourages exploration by rewarding uncertainty
+       in the model's internal distribution. Acts as a regularizer to prevent
+       premature collapse to deterministic predictions.
     
     Args:
         gold: Ground truth label (NA/PASS/FAIL).
@@ -463,11 +447,10 @@ def compute_reward(
             - total: Sum of all components
             - r_correct: Accuracy reward (+1 correct, -0.5 incorrect)
             - r_cls: Classification calibration (scaled log-prob)
-            - r_cal: Proper-scoring calibration term
             - r_false_na: False NA penalty
-            - r_align: Alignment penalty
             - r_inconsistent: Consistency penalty
             - r_format: Format penalty
+            - r_entropy: Entropy bonus for exploration
     """
     eps = 1e-10
     pred_label = (pred_label or "NA").upper()
@@ -477,25 +460,12 @@ def compute_reward(
 
     y_hat = max(probs, key=probs.get)
     p_gold = probs.get(gold, eps)
-    p_pred = probs.get(pred_label, eps)
 
     # PRIMARY SIGNAL: reward the *emitted* label (this is what your metrics measure).
     r_correct = cfg.correct_pos if pred_label == gold else -cfg.correct_neg
 
     # Shaping: encourage the probed distribution to put mass on the gold label
     r_cls = cfg.alpha_logp * float(np.log(p_gold + eps))
-
-    # Warm up calibration/alignment to avoid overpowering the accuracy signal early.
-    # (Used by run_training via optional overrides; defaults to cfg values.)
-    #
-    # Calibration: proper scoring rule (Brier-style) for confidence vs correctness
-    target = 1.0 if pred_label == gold else 0.0
-    eta_cal = getattr(cfg, "eta_cal", 0.0)
-    r_cal = -eta_cal * float((pred_conf - target) ** 2)
-
-    # Alignment: stated confidence should match probed probability of the *emitted* label
-    eta_align = getattr(cfg, "eta_align", 0.0)
-    r_align = -eta_align * float(abs(pred_conf - p_pred))
 
     # Penalize NA when evidence exists and gold is not NA (prevents NA collapse)
     r_false_na = 0.0
@@ -508,16 +478,22 @@ def compute_reward(
     # Format penalty
     r_format = -cfg.format_penalty if not format_valid else 0.0
 
-    total = r_correct + r_cls + r_cal + r_false_na + r_align + r_inconsistent + r_format
+    # Entropy bonus: encourages exploration by rewarding uncertainty in probed distribution
+    # H(p) = -sum(p * log(p)), normalized by max entropy log(3) for 3 classes
+    entropy_bonus = getattr(cfg, "entropy_bonus", 0.0)
+    entropy = -sum(p * np.log(p + eps) for p in probs.values())
+    max_entropy = np.log(3)  # Maximum entropy for uniform distribution over 3 classes
+    r_entropy = entropy_bonus * (entropy / max_entropy)  # Normalized to [0, entropy_bonus]
+
+    total = r_correct + r_cls + r_false_na + r_inconsistent + r_format + r_entropy
     return {
         "total": total,
         "r_correct": r_correct,
         "r_cls": r_cls,
-        "r_cal": r_cal,
         "r_false_na": r_false_na,
-        "r_align": r_align,
         "r_inconsistent": r_inconsistent,
         "r_format": r_format,
+        "r_entropy": r_entropy,
     }
 
 @async_retry()
@@ -660,11 +636,15 @@ async def run_training():
     Reward Function Summary (see compute_reward for details):
     - r_correct: Reward/penalty for emitted label correctness
     - r_cls: Shaping via probed log-probability of the gold label
-    - r_cal: Proper-scoring calibration term for confidence
     - r_false_na: Penalty for emitting NA when evidence exists and gold is PASS/FAIL
-    - r_align: Penalty for confidence mismatch vs probed probability of emitted label
     - r_inconsistent: Penalty when emitted label != probed argmax label
     - r_format: Penalty for invalid output format
+    - r_entropy: Entropy bonus for exploration (regularization)
+    
+    Regularization (L2 + explicit constraints):
+    - weight_decay: L2 regularization via AdamW decoupled weight decay
+    - max_grad_norm: Gradient clipping to prevent exploding gradients
+    - entropy_bonus: Reward entropy in probed distribution to encourage exploration
     
     Returns:
         str: Path to the final saved checkpoint.
@@ -692,7 +672,7 @@ async def run_training():
             print(f"  Gold={ex['label']} Pred={label} Conf={conf:.2f} Valid={valid}")
     
     metrics_history = []
-    reward_components = ["total", "r_correct", "r_cls", "r_cal", "r_false_na", "r_align", "r_inconsistent", "r_format"]
+    reward_components = ["total", "r_correct", "r_cls", "r_false_na", "r_inconsistent", "r_format", "r_entropy"]
 
     print(f"\nStarting GRPO training for {cfg.steps} steps...")
     for step in range(cfg.steps):
@@ -737,12 +717,6 @@ async def run_training():
             probs = compute_probs_from_logits(label_lps)
             evidence_provided = bool(ex.get("evidence"))
             rewards = []
-            # Ramp calibration/alignment from 0 -> configured value over warmup.
-            warmup_steps = max(int(getattr(cfg, "warmup_steps", 0) or 0), 0)
-            warm = 1.0 if warmup_steps == 0 else min(1.0, (step + 1) / warmup_steps)
-            eta_cal_saved, eta_align_saved = cfg.eta_cal, cfg.eta_align
-            cfg.eta_cal = eta_cal_saved * warm
-            cfg.eta_align = eta_align_saved * warm
 
             for s in samples:
                 pred_label, pred_conf, valid = parse_output(s["text"])
@@ -756,9 +730,6 @@ async def run_training():
                 if pred_label == ex["label"]:
                     correct += 1
                 total += 1
-
-            # Restore config (avoid surprising future callers)
-            cfg.eta_cal, cfg.eta_align = eta_cal_saved, eta_align_saved
             
             baseline = np.mean(rewards)
             advantages = [(r - baseline) for r in rewards]
@@ -792,7 +763,14 @@ async def run_training():
         
         if all_data:
             fwd_future = await training_client.forward_backward_async(all_data, loss_fn="ppo")
-            opt_future = await training_client.optim_step_async(types.AdamParams(learning_rate=cfg.lr))
+            # AdamW with L2 regularization (weight decay) and gradient clipping
+            opt_future = await training_client.optim_step_async(
+                types.AdamParams(
+                    learning_rate=cfg.lr,
+                    weight_decay=cfg.weight_decay,
+                    max_grad_norm=cfg.max_grad_norm,
+                )
+            )
             await fwd_future
             await opt_future
         
@@ -822,9 +800,8 @@ async def run_training():
         cum = step_metrics["cumulative"]
         print(f"Step {step}: Acc={acc:.3f} | "
             f"r_correct={cum['r_correct']:.3f} r_cls={cum['r_cls']:.3f} "
-            f"r_cal={cum['r_cal']:.3f} r_false_na={cum['r_false_na']:.3f} "
-            f"r_align={cum['r_align']:.3f} r_incon={cum['r_inconsistent']:.3f} "
-            f"r_format={cum['r_format']:.3f} "
+            f"r_false_na={cum['r_false_na']:.3f} r_incon={cum['r_inconsistent']:.3f} "
+            f"r_format={cum['r_format']:.3f} r_entropy={cum['r_entropy']:.3f} "
             f"| total={cum['total']:.3f}")
         
         if step % 50 == 0 and step > 0:

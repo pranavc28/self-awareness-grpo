@@ -80,28 +80,16 @@ Classify into exactly one category:
 - FAIL: Evidence contradicts the claim (REFUTES)
 - NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
 
-For the confidence, output a number between 0 and 1 with 2 decimal places. 0 being the lowest confidence and 1 being the highest confidence. This is a confidence score for your classification.
-
-For the rationale, output an empty string. There is no need to explain your reasoning.
-
-You must have the LABEL, CONF, and RATIONALE in your response. DO NOT hallucinate the keys for the response, e.g. STANCE instead of LABEL is incorrect. Or CONFIDENCE instead of CONF is incorrect.
-
 Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
 
-CONF should represent your probability (0 to 1) that your chosen LABEL is correct. Use 2 decimal places.
-
 <Response Format>
-Return ONLY the following response format. Output exactly 3 lines and nothing else. Do not add any other text. Example:
+Return ONLY the label. Output exactly one word (PASS, FAIL, or NA) and nothing else.
 
-LABEL=PASS
-CONF=0.65
-RATIONALE=
+Example: PASS
 
 </Response Format>
 
-Now begin your response. Do not write anything before LABEL.
-LABEL=
-"""
+LABEL="""
     def parse_output(self, text: str) -> tuple[str, float, bool]:
         """Parse LABEL/CONF from the model output."""
         import re
