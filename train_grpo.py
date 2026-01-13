@@ -811,7 +811,7 @@ async def run_training():
         json.dump(metrics_history, f, indent=2)
     print(f"Saved training metrics to training_metrics.json")
     
-    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-trial-4")).result().path
+    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-regularization-trial-1")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
     return final_path
 
