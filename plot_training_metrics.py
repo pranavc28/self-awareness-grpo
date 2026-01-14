@@ -38,20 +38,15 @@ def plot_cumulative_rewards(metrics: list[dict], output_path: str = "rewards_cum
     Shows both raw per-step values (with low opacity) and smoothed trend lines.
     """
     steps = [m["step"] for m in metrics]
-    desired = ["r_correct", "r_cls", "r_cal", "r_conf", "r_false_na", "r_align", "r_inconsistent", "r_format", "r_entropy", "total"]
+    desired = ["r_correct", "r_false_na", "r_explore", "r_format", "total"]
     # Backward compatible: only plot keys that exist in the metrics file.
     available = set(metrics[0].get("cumulative", {}).keys()) if metrics else set()
     components = [c for c in desired if c in available]
     palette = {
         "r_correct": "#27ae60",
-        "r_cls": "#2ecc71",
-        "r_cal": "#3498db",
-        "r_conf": "#3498db",
         "r_false_na": "#e74c3c",
-        "r_align": "#9b59b6",
-        "r_inconsistent": "#34495e",
+        "r_explore": "#9b59b6",
         "r_format": "#f39c12",
-        "r_entropy": "#1abc9c",
         "total": "#1a1a2e",
     }
     
@@ -115,7 +110,7 @@ def plot_cumulative_rewards(metrics: list[dict], output_path: str = "rewards_cum
 def plot_rewards_by_outcome(metrics: list[dict], output_path: str = "rewards_by_outcome.png"):
     """Plot rewards per component for each outcome (NA, PASS, FAIL) with smoothing."""
     steps = [m["step"] for m in metrics]
-    desired = ["r_correct", "r_cls", "r_cal", "r_conf", "r_false_na", "r_align", "r_inconsistent", "r_format", "r_entropy", "total"]
+    desired = ["r_correct", "r_false_na", "r_explore", "r_format", "total"]
     available = set(metrics[0].get("by_outcome", {}).get("NA", {}).keys()) if metrics else set()
     components = [c for c in desired if c in available]
     outcomes = ["NA", "PASS", "FAIL"]
@@ -167,29 +162,67 @@ def plot_rewards_by_outcome(metrics: list[dict], output_path: str = "rewards_by_
 
 
 def plot_accuracy(metrics: list[dict], output_path: str = "accuracy.png"):
-    """Plot accuracy over training steps."""
+    """Plot accuracy over training steps, including per-class breakdown if available."""
     steps = [m["step"] for m in metrics]
     accuracy = [m["accuracy"] for m in metrics]
     
-    fig, ax = plt.subplots(figsize=(12, 5))
+    # Check if per-class accuracies are available
+    has_per_class = "accuracy_na" in metrics[0] if metrics else False
     
-    ax.plot(steps, accuracy, color="#1a1a2e", linewidth=2.5)
-    ax.fill_between(steps, accuracy, alpha=0.3, color="#1a1a2e")
+    if has_per_class:
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+    else:
+        fig, ax1 = plt.subplots(figsize=(12, 5))
+    
+    # Plot overall accuracy
+    ax1.plot(steps, accuracy, color="#1a1a2e", linewidth=2.5)
+    ax1.fill_between(steps, accuracy, alpha=0.3, color="#1a1a2e")
     
     # Add smoothed trend line
     if len(accuracy) > 10:
         window = min(20, len(accuracy) // 5)
         smoothed = np.convolve(accuracy, np.ones(window)/window, mode='valid')
         smooth_steps = steps[window-1:]
-        ax.plot(smooth_steps, smoothed, color="#e74c3c", linewidth=2, linestyle="--", 
+        ax1.plot(smooth_steps, smoothed, color="#e74c3c", linewidth=2, linestyle="--", 
                 label=f"Smoothed (window={window})")
-        ax.legend(loc="best")
+        ax1.legend(loc="best")
     
-    ax.set_xlabel("Training Step", fontsize=12)
-    ax.set_ylabel("Accuracy", fontsize=12)
-    ax.set_title("Classification Accuracy Over Training", fontsize=14, fontweight="bold")
-    ax.set_ylim(0, 1)
-    ax.grid(True, alpha=0.3)
+    ax1.set_xlabel("Training Step", fontsize=12)
+    ax1.set_ylabel("Accuracy", fontsize=12)
+    ax1.set_title("Overall Classification Accuracy", fontsize=14, fontweight="bold")
+    ax1.set_ylim(0, 1)
+    ax1.grid(True, alpha=0.3)
+    
+    # Plot per-class accuracy if available
+    if has_per_class:
+        acc_na = [m.get("accuracy_na", 0) for m in metrics]
+        acc_pass = [m.get("accuracy_pass", 0) for m in metrics]
+        acc_fail = [m.get("accuracy_fail", 0) for m in metrics]
+        
+        class_colors = {"NA": "#e74c3c", "PASS": "#2ecc71", "FAIL": "#3498db"}
+        window = min(20, max(5, len(metrics) // 8)) if len(metrics) > 10 else 1
+        
+        for label, values, color in [("NA", acc_na, class_colors["NA"]), 
+                                      ("PASS", acc_pass, class_colors["PASS"]),
+                                      ("FAIL", acc_fail, class_colors["FAIL"])]:
+            # Raw values with low opacity
+            ax2.plot(steps, values, color=color, linewidth=1, alpha=0.25)
+            
+            # Smoothed
+            if len(values) > window:
+                smoothed = np.convolve(values, np.ones(window)/window, mode='valid')
+                smooth_steps = steps[window-1:]
+                ax2.plot(smooth_steps[:len(smoothed)], smoothed, label=label, color=color, linewidth=2.5)
+            else:
+                ax2.plot(steps, values, label=label, color=color, linewidth=2.5)
+        
+        ax2.set_xlabel("Training Step", fontsize=12)
+        ax2.set_ylabel("Accuracy", fontsize=12)
+        ax2.set_title(f"Per-Class Accuracy (Smoothed, window={window})", fontsize=14, fontweight="bold")
+        ax2.set_ylim(0, 1)
+        ax2.grid(True, alpha=0.3)
+        ax2.legend(loc="best", fontsize=10)
+        ax2.axhline(y=0.33, color='gray', linestyle='--', alpha=0.5, label="Random baseline")
     
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
@@ -200,19 +233,14 @@ def plot_accuracy(metrics: list[dict], output_path: str = "accuracy.png"):
 def plot_component_contribution(metrics: list[dict], output_path: str = "component_contribution.png"):
     """Plot smoothed component contributions showing how each component contributes to total reward."""
     steps = [m["step"] for m in metrics]
-    desired = ["r_correct", "r_cls", "r_cal", "r_conf", "r_false_na", "r_align", "r_inconsistent", "r_format", "r_entropy"]
+    desired = ["r_correct", "r_false_na", "r_explore", "r_format"]
     available = set(metrics[0].get("cumulative", {}).keys()) if metrics else set()
     components = [c for c in desired if c in available]
     palette = {
         "r_correct": "#27ae60",
-        "r_cls": "#2ecc71",
-        "r_cal": "#3498db",
-        "r_conf": "#3498db",
         "r_false_na": "#e74c3c",
-        "r_align": "#9b59b6",
-        "r_inconsistent": "#34495e",
+        "r_explore": "#9b59b6",
         "r_format": "#f39c12",
-        "r_entropy": "#1abc9c",
     }
     
     # Calculate smoothing window
@@ -287,7 +315,7 @@ def main():
         print(f"Steps: {first['step']} → {last['step']}")
         print(f"Accuracy: {first['accuracy']:.3f} → {last['accuracy']:.3f}")
         print(f"\nFinal Cumulative Rewards:")
-        for comp in ["r_correct", "r_cls", "r_cal", "r_conf", "r_false_na", "r_align", "r_inconsistent", "r_format", "r_entropy", "total"]:
+        for comp in ["r_correct", "r_false_na", "r_explore", "r_format", "total"]:
             if comp in last.get("cumulative", {}):
                 print(f"  {comp}: {last['cumulative'][comp]:.4f}")
 

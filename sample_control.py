@@ -72,22 +72,15 @@ class FEVERClassifier:
 
 Claim: {claim}
 
-You have additional evidence to consider in case you need it:
+Evidence:
 {evidence}
 
 Classify into exactly one category:
-- PASS: Evidence supports the claim (SUPPORTS)
-- FAIL: Evidence contradicts the claim (REFUTES)
-- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
+- PASS: Evidence supports the claim
+- FAIL: Evidence contradicts the claim
+- NA: Insufficient evidence to decide
 
-Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
-
-<Response Format>
-Return ONLY the label. Output exactly one word (PASS, FAIL, or NA) and nothing else.
-
-Example: PASS
-
-</Response Format>
+IMPORTANT: Output ONLY the label (PASS, FAIL, or NA). Do NOT explain your reasoning. Do NOT write anything else. Just the single word label.
 
 LABEL="""
     def parse_output(self, text: str) -> tuple[str, bool]:
@@ -117,7 +110,7 @@ LABEL="""
         model_input = types.ModelInput.from_ints(prompt_tokens)
         
         sampling_params = types.SamplingParams(
-            max_tokens=64, temperature=0.1, stop=["\nRATIONALE="]
+            max_tokens=10, temperature=0.1, stop=["\n"]
         )
         
         result = await self.sampling_client.sample_async(

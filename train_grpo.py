@@ -92,46 +92,57 @@ class Config:
     """
     Configuration for GRPO training hyperparameters.
     
+    IMPROVED based on training analysis:
+    - Simplified reward function (removed noisy r_cls, r_inconsistent, r_entropy)
+    - Class-weighted rewards to combat NA bias
+    - Stronger correct/incorrect signal
+    - Higher temperature for better exploration
+    
     Reward function parameters:
-        correct_pos: Reward for correct label emission (parsed output)
-        correct_neg: Penalty for incorrect label emission (parsed output)
-        alpha_logp: Weight on log(p_gold) shaping term from probed label distribution
-        lambda_false_na: Penalty for emitting NA when evidence exists and gold is PASS/FAIL
-        lambda_inconsistent: Penalty when emitted label != probed argmax label (discourages reward hacking)
+        correct_pos: Reward for correct label emission (increased from 2.0 to 3.0)
+        correct_neg: Penalty for incorrect label emission (increased from 1.0 to 2.0)
+        lambda_false_na: Penalty for emitting NA when gold is PASS/FAIL (increased to 3.5)
         format_penalty: Penalty for invalid output format
-        beta_kl: KL divergence regularization weight (if supported by PPO impl)
+        class_weight_*: Per-class reward multipliers to combat NA bias
     
     Training parameters:
         batch_size: Number of examples per training step
         group_size: Number of samples per example for GRPO advantage estimation
         max_tokens: Maximum tokens to generate per sample
-        temperature: Sampling temperature for exploration
-        lr: Learning rate for AdamW optimizer
-        steps: Total training steps
-    
-    Regularization parameters:
-        weight_decay: L2 regularization coefficient (AdamW decoupled weight decay)
-        entropy_bonus: Entropy bonus coefficient to encourage exploration
+        temperature: Sampling temperature (increased to 0.4 for exploration)
+        lr: Learning rate for AdamW optimizer (increased to 8e-6)
+        steps: Total training steps (increased to 200)
     """
-    # Keep total samples/step roughly constant while improving within-group signal:
-    # 32 examples × 8 samples = 256 completions per step (same as 64×4).
     batch_size: int = 32
     group_size: int = 8
-    max_tokens: int = 64  # Only need to generate a single word (PASS/FAIL/NA)
-    temperature: float = 0.2
-    # Higher learning rate paired with regularization for faster convergence
+    max_tokens: int = 28000
+    # HIGH temperature to break NA collapse - force diverse samples
+    temperature: float = 0.7
+    # Lower LR for stability (high variance in your run)
     lr: float = 5e-6
-    steps: int = 160
-    # Regularization: L2 weight decay
+    steps: int = 200
+    # Regularization
     weight_decay: float = 0.01
-    entropy_bonus: float = 0.01
-    # Increase correctness reward so it dominates early learning.
-    correct_pos: float = 2.0
-    correct_neg: float = 1.0
-    alpha_logp: float = 0.10
-    lambda_false_na: float = 2.0
-    lambda_inconsistent: float = 0.25
+    
+    # IMPROVED: Stronger correctness signal
+    correct_pos: float = 3.0
+    correct_neg: float = 2.0
+    
+    # MORE AGGRESSIVE class weighting - PASS/FAIL get 2x bonus
+    class_weight_na: float = 0.8   # Slightly penalize NA to discourage default
+    class_weight_pass: float = 2.0  # Was 1.5
+    class_weight_fail: float = 2.0  # Was 1.5
+    
+    # Stronger false NA penalty
+    lambda_false_na: float = 4.0  # Was 3.5
+    
+    # Exploration bonus: reward for predicting PASS/FAIL (helps break NA collapse)
+    exploration_bonus: float = 0.5
+    
+    # Format compliance
     format_penalty: float = 0.25
+    
+    # KL regularization (for PPO stability)
     beta_kl: float = 0.02
 
 _NOT_ENOUGH_INFO_COUNT = 500
@@ -181,9 +192,12 @@ def load_dataset(not_enough_info_count: int = _NOT_ENOUGH_INFO_COUNT, supports_c
 
 
 def load_mixed_dataset(
-    fever_na: int = 200, fever_pass: int = 70, fever_fail: int = 70,
-    vitaminc_na: int = 200, vitaminc_pass: int = 70, vitaminc_fail: int = 70,
-    climatefever_na: int = 200, climatefever_pass: int = 70, climatefever_fail: int = 70,
+    # IMPROVED: More balanced dataset to combat NA class dominance
+    # Original had 200-200-200 NA and 70-70-70 for PASS/FAIL (NA = 59%)
+    # New: 120-120-120 gives roughly equal representation (NA = 35%)
+    fever_na: int = 120, fever_pass: int = 120, fever_fail: int = 100,
+    vitaminc_na: int = 120, vitaminc_pass: int = 120, vitaminc_fail: int = 100,
+    climatefever_na: int = 120, climatefever_pass: int = 120, climatefever_fail: int = 100,
 ):
     """
     Load a mixed dataset from FEVER, VitaminC, and ClimateFEVER for multi-domain training.
@@ -312,26 +326,19 @@ def build_prompt(example):
     else:
         evidence = "No specific evidence provided."
     
-    return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
+    return f"""Classify whether a claim is supported, refuted, or has insufficient evidence.
 
 Claim: {example['prompt']}
 
-You have additional evidence to consider in case you need it:
+Evidence:
 {evidence}
 
-Classify into exactly one category:
-- PASS: Evidence supports the claim (SUPPORTS)
-- FAIL: Evidence contradicts the claim (REFUTES)
-- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
+Categories:
+- PASS: Evidence supports the claim
+- FAIL: Evidence contradicts the claim  
+- NA: Insufficient evidence to decide
 
-Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
-
-<Response Format>
-Return ONLY the label. Output exactly one word (PASS, FAIL, or NA) and nothing else.
-
-Example: PASS
-
-</Response Format>
+Respond with ONLY: LABEL=PASS, LABEL=FAIL, or LABEL=NA
 
 LABEL="""
 
@@ -340,7 +347,7 @@ def parse_output(text):
     Parse model output to extract label and format validity.
     
     Extracts the label from the model's response text. The expected format is
-    simply the label (NA, PASS, or FAIL).
+    LABEL=X where X is NA, PASS, or FAIL.
     
     Format validity affects the reward function via format_penalty. Invalid outputs
     receive a penalty to encourage the model to follow the specified format.
@@ -353,213 +360,118 @@ def parse_output(text):
             - label: Extracted label (NA/PASS/FAIL) or None if missing
             - valid: Boolean indicating if output format was correct
     """
-    label, valid = None, True
-    text = text.strip().upper()
-    # Check if the output is exactly one of the valid labels
-    if text in ("NA", "PASS", "FAIL"):
-        label = text
-    else:
-        # Try to find a label anywhere in the text
-        text_clean = text.replace("<", "").replace(">", "")
-        m = re.search(r"\b(NA|PASS|FAIL)\b", text_clean, re.IGNORECASE)
-        if m:
-            label = m.group(1).upper()
-            valid = False  # Penalize non-exact format
-        else:
-            valid = False
-    return label, valid
+    # Strip special tokens that might be appended (e.g., <|end|>, <|return|>)
+    text = re.sub(r'<\|[^|]*\|>', '', text).strip()
+    text_upper = text.upper()
+    
+    # Check for exact LABEL=X format (most desirable - mark as valid)
+    label_exact = re.match(r'^LABEL\s*=\s*(NA|PASS|FAIL)\s*$', text_upper)
+    if label_exact:
+        return label_exact.group(1), True
+    
+    # Check for exact bare label (also acceptable as valid)
+    if text_upper in ("NA", "PASS", "FAIL"):
+        return text_upper, True
+    
+    # Fallback: find LABEL=X anywhere in text (penalize - model wrote extra text)
+    label_match = re.search(r'LABEL\s*=\s*(NA|PASS|FAIL)', text_upper)
+    if label_match:
+        return label_match.group(1), False
+    
+    # Last resort: find bare label anywhere (heavily penalize)
+    bare_match = re.search(r'\b(NA|PASS|FAIL)\b', text_upper)
+    if bare_match:
+        return bare_match.group(1), False
+    
+    return None, False
 
-def compute_probs_from_logits(logprobs_dict):
-    """
-    Convert log-probabilities to normalized probabilities using softmax.
-    
-    Uses the log-sum-exp trick for numerical stability. The resulting probabilities
-    are used in the reward function to:
-    1. Compute r_cls: Weighted log-probability of the gold label
-    2. Determine y_hat: The model's most likely prediction
-    3. Compute r_align: Penalize mismatch between stated confidence and p_hat
-    
-    Args:
-        logprobs_dict: Dict mapping labels (NA/PASS/FAIL) to their log-probabilities.
-    
-    Returns:
-        dict: Normalized probability distribution over labels summing to 1.
-    """
-    max_lp = max(logprobs_dict.values())
-    exp_sum = sum(np.exp(lp - max_lp) for lp in logprobs_dict.values())
-    probs = {k: np.exp(v - max_lp) / exp_sum for k, v in logprobs_dict.items()}
-    return probs
+# NOTE: compute_probs_from_logits and probe_batch_logprobs removed in simplified version
+# These were used for r_cls and r_inconsistent which added noise without improving accuracy
 
 def compute_reward(
     gold: str,
     pred_label: str | None,
-    probs: dict,
     cfg: Config,
     format_valid: bool,
     evidence_provided: bool,
 ):
     """
-    Compute the total reward for a single model prediction.
+    SIMPLIFIED reward function with cleaner learning signal.
     
-    The reward function combines multiple components to encourage self-aware,
-    well-calibrated fact verification:
+    REMOVED (too noisy, didn't improve accuracy):
+    - r_cls (log-probability calibration)
+    - r_inconsistent (argmax mismatch - rarely fires)
+    - r_entropy (exploration bonus - model learns format quickly)
     
+    KEPT and IMPROVED:
     1. r_correct (Accuracy Reward):
-       Reward/penalty for whether the *emitted* label matches gold.
-       This is the PRIMARY learning signal for classification accuracy.
+       Class-weighted reward/penalty for correct classification.
+       PASS/FAIL get 1.5x weight to combat NA bias.
     
-    2. r_cls (Shaping via probed logits):
-       alpha_logp * log(p_gold) to softly encourage the probed distribution
-       to put probability mass on the gold label.
+    2. r_false_na (False NA Penalty):
+       Strong penalty when predicting NA for PASS/FAIL examples.
+       Increased to 3.5 and scaled by class weight.
     
-    3. r_false_na (False NA Penalty):
-       -lambda_false_na if evidence exists, gold != NA, and the model emits NA.
-       Prevents the model from taking the easy way out.
-    
-    4. r_inconsistent (Consistency Penalty):
-       -lambda_inconsistent if emitted label != probed argmax label.
-       Discourages reward hacking where the model emits one label but internally
-       prefers another.
-
-    5. r_format (Format Penalty):
-       -format_penalty if output format is invalid.
-    
-    6. r_entropy (Entropy Bonus):
-       entropy_bonus * H(probs), where H is Shannon entropy over the probed
-       label distribution. Encourages exploration by rewarding uncertainty
-       in the model's internal distribution. Acts as a regularizer to prevent
-       premature collapse to deterministic predictions.
+    3. r_format (Format Penalty):
+       Penalty for invalid output format.
     
     Args:
         gold: Ground truth label (NA/PASS/FAIL).
         pred_label: Label parsed from the sampled completion.
-        probs: Probability distribution from probe_label_logprobs.
         cfg: Config with reward function hyperparameters.
         format_valid: Whether the output format was valid.
-        evidence_provided: Whether the FEVER example includes evidence annotations.
+        evidence_provided: Whether the example includes evidence.
     
     Returns:
         dict: Reward breakdown with keys:
             - total: Sum of all components
-            - r_correct: Accuracy reward (+1 correct, -0.5 incorrect)
-            - r_cls: Classification calibration (scaled log-prob)
+            - r_correct: Class-weighted accuracy reward
             - r_false_na: False NA penalty
-            - r_inconsistent: Consistency penalty
             - r_format: Format penalty
-            - r_entropy: Entropy bonus for exploration
     """
-    eps = 1e-10
     pred_label = (pred_label or "NA").upper()
     if pred_label not in ("NA", "PASS", "FAIL"):
         pred_label = "NA"
         format_valid = False
 
-    y_hat = max(probs, key=probs.get)
-    p_gold = probs.get(gold, eps)
+    # Get class weight for the gold label (PASS/FAIL get 1.5x bonus)
+    class_weights = {
+        "NA": cfg.class_weight_na,
+        "PASS": cfg.class_weight_pass,
+        "FAIL": cfg.class_weight_fail,
+    }
+    weight = class_weights.get(gold, 1.0)
 
-    # PRIMARY SIGNAL: reward the *emitted* label (this is what your metrics measure).
-    r_correct = cfg.correct_pos if pred_label == gold else -cfg.correct_neg
+    # r_correct: Class-weighted accuracy reward
+    if pred_label == gold:
+        r_correct = cfg.correct_pos * weight
+    else:
+        r_correct = -cfg.correct_neg * weight
 
-    # Shaping: encourage the probed distribution to put mass on the gold label
-    r_cls = cfg.alpha_logp * float(np.log(p_gold + eps))
-
-    # Penalize NA when evidence exists and gold is not NA (prevents NA collapse)
+    # r_false_na: Strong penalty for predicting NA when evidence exists and gold != NA
     r_false_na = 0.0
     if evidence_provided and gold != "NA" and pred_label == "NA":
-        r_false_na = -cfg.lambda_false_na
+        # Scale penalty by class weight (punish more for missing PASS/FAIL)
+        r_false_na = -cfg.lambda_false_na * weight
 
-    # Penalize inconsistency between what the model emits and what its probed argmax says
-    r_inconsistent = -cfg.lambda_inconsistent if pred_label != y_hat else 0.0
+    # r_explore: Small bonus for predicting PASS/FAIL (helps break NA collapse)
+    # This encourages the model to explore non-NA predictions
+    r_explore = 0.0
+    if pred_label in ("PASS", "FAIL"):
+        r_explore = cfg.exploration_bonus
 
-    # Format penalty
+    # r_format: Format compliance penalty
     r_format = -cfg.format_penalty if not format_valid else 0.0
 
-    # Entropy bonus: encourages exploration by rewarding uncertainty in probed distribution
-    # H(p) = -sum(p * log(p)), normalized by max entropy log(3) for 3 classes
-    entropy_bonus = getattr(cfg, "entropy_bonus", 0.0)
-    entropy = -sum(p * np.log(p + eps) for p in probs.values())
-    max_entropy = np.log(3)  # Maximum entropy for uniform distribution over 3 classes
-    r_entropy = entropy_bonus * (entropy / max_entropy)  # Normalized to [0, entropy_bonus]
-
-    total = r_correct + r_cls + r_false_na + r_inconsistent + r_format + r_entropy
+    total = r_correct + r_false_na + r_explore + r_format
     return {
         "total": total,
         "r_correct": r_correct,
-        "r_cls": r_cls,
         "r_false_na": r_false_na,
-        "r_inconsistent": r_inconsistent,
+        "r_explore": r_explore,
         "r_format": r_format,
-        "r_entropy": r_entropy,
     }
 
-@async_retry()
-async def probe_batch_logprobs(training_client, tokenizer, prompts):
-    """
-    Probe the model's log-probabilities for all labels across a batch of prompts.
-    
-    This is highly optimized: it sends all probe Datums for the entire batch 
-    in a single forward_backward call, maximizing GPU throughput.
-    
-    Args:
-        training_client: Tinker training client.
-        tokenizer: Tokenizer instance.
-        prompts: List of prompt strings for the batch.
-        
-    Returns:
-        list[dict]: A list (one per prompt) of label-to-logprob mappings.
-    """
-    all_probe_data = []
-    all_label_info = [] # List of (label, start, end) per prompt
-    
-    for prompt_text in prompts:
-        # If the prompt already ends with LABEL= (we do this to improve compliance),
-        # don't append it again.
-        prefix = prompt_text if prompt_text.rstrip().endswith("LABEL=") else (prompt_text + "LABEL=")
-        prefix_tokens = tokenizer.encode(prefix, add_special_tokens=False)
-        prefix_len = len(prefix_tokens)
-        
-        prompt_labels = []
-        for label in ["NA", "PASS", "FAIL"]:
-            label_tokens = tokenizer.encode(label, add_special_tokens=False)
-            full_tokens = prefix_tokens + label_tokens
-            
-            input_tokens = full_tokens[:-1]
-            target_tokens = np.array(full_tokens[1:], dtype=np.int64)
-            weights = np.zeros(len(target_tokens), dtype=np.float32)
-            
-            label_start_idx = prefix_len - 1
-            label_end_idx = label_start_idx + len(label_tokens)
-            
-            datum = types.Datum(
-                model_input=types.ModelInput.from_ints(input_tokens),
-                loss_fn_inputs={
-                    "target_tokens": target_tokens,
-                    "weights": weights,
-                }
-            )
-            all_probe_data.append(datum)
-            prompt_labels.append((label, label_start_idx, label_end_idx))
-        all_label_info.append(prompt_labels)
-    
-    # Run a single batch forward_backward for all 3 * batch_size datums
-    fwd_result = await training_client.forward_backward_async(all_probe_data, loss_fn="cross_entropy")
-    fwd_output = fwd_result.result() if hasattr(fwd_result, 'result') else fwd_result
-    
-    results = []
-    datum_idx = 0
-    for prompt_labels in all_label_info:
-        logprobs = {}
-        for label, start_idx, end_idx in prompt_labels:
-            output_logprobs = fwd_output.loss_fn_outputs[datum_idx]['logprobs']
-            if hasattr(output_logprobs, 'tolist'):
-                output_logprobs = output_logprobs.tolist()
-            
-            label_logprobs = output_logprobs[start_idx:end_idx]
-            logprobs[label] = sum(label_logprobs) if label_logprobs else -10.0
-            datum_idx += 1
-        results.append(logprobs)
-        
-    return results
 
 @async_retry()
 async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Config):
@@ -592,7 +504,7 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
     params = types.SamplingParams(
         max_tokens=cfg.max_tokens,
         temperature=cfg.temperature,
-        stop=["\nRATIONALE="]
+        stop=["\n"]  # Stop at newline
     )
     result = await sampling_client.sample_async(
         prompt=model_input,
@@ -613,33 +525,33 @@ async def sample_completions(sampling_client, tokenizer, prompt_text, cfg: Confi
 
 async def run_training():
     """
-    Main GRPO training loop for FEVER fact verification.
+    IMPROVED GRPO training loop for FEVER fact verification.
+    
+    Key improvements based on training analysis:
+    1. Simplified 3-component reward (removed noisy r_cls, r_inconsistent, r_entropy)
+    2. Class-weighted rewards (PASS/FAIL get 1.5x bonus to combat NA bias)
+    3. Balanced dataset (equal NA/PASS, slightly less FAIL)
+    4. Higher temperature (0.4) for better exploration
+    5. Stronger correct/incorrect signal (3.0 / 2.0 vs 2.0 / 1.0)
+    6. Removed probing step (faster training)
     
     Training Process:
-    1. Load balanced FEVER dataset (500 NA, 250 PASS, 250 FAIL)
+    1. Load balanced mixed dataset (~1020 examples: 360 NA, 360 PASS, 300 FAIL)
     2. Initialize LoRA training client and sampling client
     3. For each training step:
        a. Sample a batch of examples
        b. For each example (in parallel):
           - Generate group_size completions with temperature sampling
-          - Probe label log-probabilities for reward computation
-          - Compute rewards using the multi-component reward function
+          - Compute simplified rewards (r_correct, r_false_na, r_format)
           - Calculate advantages relative to group mean
        c. Perform PPO-style forward-backward pass with advantages
        d. Update model weights with AdamW optimizer
-    4. Periodically checkpoint and log metrics
+    4. Periodically checkpoint and log metrics (includes per-class accuracy)
     
-    Reward Function Summary (see compute_reward for details):
-    - r_correct: Reward/penalty for emitted label correctness
-    - r_cls: Shaping via probed log-probability of the gold label
-    - r_false_na: Penalty for emitting NA when evidence exists and gold is PASS/FAIL
-    - r_inconsistent: Penalty when emitted label != probed argmax label
+    SIMPLIFIED Reward Function:
+    - r_correct: Class-weighted accuracy reward/penalty (main signal)
+    - r_false_na: Strong penalty for predicting NA when gold is PASS/FAIL  
     - r_format: Penalty for invalid output format
-    - r_entropy: Entropy bonus for exploration (regularization)
-    
-    Regularization:
-    - weight_decay: L2 regularization via AdamW decoupled weight decay
-    - entropy_bonus: Reward entropy in probed distribution to encourage exploration
     
     Returns:
         str: Path to the final saved checkpoint.
@@ -663,13 +575,20 @@ async def run_training():
     sanity_results = await asyncio.gather(*sanity_tasks)
     for ex, samples in zip(test_batch, sanity_results):
         for s in samples[:2]:
+            print(f"RAW: {repr(s['text'])}")
             label, valid = parse_output(s["text"])
             print(f"  Gold={ex['label']} Pred={label} Valid={valid}")
     
     metrics_history = []
-    reward_components = ["total", "r_correct", "r_cls", "r_false_na", "r_inconsistent", "r_format", "r_entropy"]
+    # SIMPLIFIED + r_explore to break NA collapse
+    reward_components = ["total", "r_correct", "r_false_na", "r_explore", "r_format"]
 
     print(f"\nStarting GRPO training for {cfg.steps} steps...")
+    print(f"Config: correct_pos={cfg.correct_pos}, correct_neg={cfg.correct_neg}, "
+          f"lambda_false_na={cfg.lambda_false_na}, exploration_bonus={cfg.exploration_bonus}")
+    print(f"        temp={cfg.temperature}, lr={cfg.lr}")
+    print(f"Class weights: NA={cfg.class_weight_na}, PASS={cfg.class_weight_pass}, FAIL={cfg.class_weight_fail}\n")
+    
     for step in range(cfg.steps):
         batch_idx = (step * cfg.batch_size) % len(dataset)
         batch = dataset[batch_idx:batch_idx + cfg.batch_size]
@@ -679,24 +598,15 @@ async def run_training():
         # 1. Build prompts for the whole batch
         prompts = [build_prompt(ex) for ex in batch]
         
-        # 2. Launch all sampling and probing tasks concurrently
-        # We launch batch_size sampling tasks (each doing group_size samples)
-        # and ONE big probing task for the entire batch.
+        # 2. Sample completions (removed probing - no longer needed for simplified reward)
         try:
             sampling_tasks = [
                 sample_completions(sampling_client, tokenizer, prompt, cfg)
                 for prompt in prompts
             ]
-            probing_task = probe_batch_logprobs(training_client, tokenizer, prompts)
-            
-            # Wait for everything in this batch to complete
-            all_batch_results = await asyncio.gather(*sampling_tasks, probing_task)
-            
-            # Unpack results: first N are samples, last is the batch logprobs
-            batch_samples = all_batch_results[:-1]
-            batch_label_lps = all_batch_results[-1]
+            batch_samples = await asyncio.gather(*sampling_tasks)
         except Exception as e:
-            print(f"WARNING: Batch processing failed at step {step}: {e}")
+            print(f"WARNING: Sampling failed at step {step}: {e}")
             continue
         
         all_data = []
@@ -705,26 +615,29 @@ async def run_training():
             for label in ["NA", "PASS", "FAIL"]
         }
         step_rewards_cumulative = {comp: [] for comp in reward_components}
-        correct, total = 0, 0
+        
+        # Track per-class accuracy for better monitoring
+        class_correct = {"NA": 0, "PASS": 0, "FAIL": 0}
+        class_total = {"NA": 0, "PASS": 0, "FAIL": 0}
         
         # 3. Process each example in the batch
-        for ex, prompt, samples, label_lps in zip(batch, prompts, batch_samples, batch_label_lps):
-            probs = compute_probs_from_logits(label_lps)
+        for ex, prompt, samples in zip(batch, prompts, batch_samples):
             evidence_provided = bool(ex.get("evidence"))
             rewards = []
 
             for s in samples:
                 pred_label, valid = parse_output(s["text"])
-                reward_breakdown = compute_reward(ex["label"], pred_label, probs, cfg, valid, evidence_provided)
+                reward_breakdown = compute_reward(ex["label"], pred_label, cfg, valid, evidence_provided)
                 rewards.append(reward_breakdown["total"])
                 
                 for comp in reward_components:
                     step_rewards_by_outcome[ex["label"]][comp].append(reward_breakdown[comp])
                     step_rewards_cumulative[comp].append(reward_breakdown[comp])
                 
+                # Track per-class accuracy
+                class_total[ex["label"]] += 1
                 if pred_label == ex["label"]:
-                    correct += 1
-                total += 1
+                    class_correct[ex["label"]] += 1
             
             baseline = np.mean(rewards)
             advantages = [(r - baseline) for r in rewards]
@@ -768,10 +681,20 @@ async def run_training():
             await fwd_future
             await opt_future
         
-        acc = correct / max(total, 1)
+        # Compute per-class accuracies
+        acc_na = class_correct["NA"] / max(class_total["NA"], 1)
+        acc_pass = class_correct["PASS"] / max(class_total["PASS"], 1)
+        acc_fail = class_correct["FAIL"] / max(class_total["FAIL"], 1)
+        total_correct = sum(class_correct.values())
+        total_samples = sum(class_total.values())
+        acc = total_correct / max(total_samples, 1)
+        
         step_metrics = {
             "step": step,
             "accuracy": acc,
+            "accuracy_na": acc_na,
+            "accuracy_pass": acc_pass,
+            "accuracy_fail": acc_fail,
             "by_outcome": {},
             "cumulative": {}
         }
@@ -792,11 +715,10 @@ async def run_training():
         metrics_history.append(step_metrics)
         
         cum = step_metrics["cumulative"]
-        print(f"Step {step}: Acc={acc:.3f} | "
-            f"r_correct={cum['r_correct']:.3f} r_cls={cum['r_cls']:.3f} "
-            f"r_false_na={cum['r_false_na']:.3f} r_incon={cum['r_inconsistent']:.3f} "
-            f"r_format={cum['r_format']:.3f} r_entropy={cum['r_entropy']:.3f} "
-            f"| total={cum['total']:.3f}")
+        # IMPROVED: Show per-class accuracy breakdown and exploration bonus
+        print(f"Step {step:3d}: Acc={acc:.3f} (NA:{acc_na:.2f} PASS:{acc_pass:.2f} FAIL:{acc_fail:.2f}) | "
+              f"r_correct={cum['r_correct']:+.2f} r_false_na={cum['r_false_na']:+.2f} "
+              f"r_explore={cum['r_explore']:+.2f} | total={cum['total']:+.2f}")
         
         if step % 50 == 0 and step > 0:
             sampling_client = await training_client.save_weights_and_get_sampling_client_async(name=f"step_{step}")
@@ -807,7 +729,7 @@ async def run_training():
         json.dump(metrics_history, f, indent=2)
     print(f"Saved training metrics to training_metrics.json")
     
-    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-regularization-trial-1")).result().path
+    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-regularization-trial-2")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
     return final_path
 

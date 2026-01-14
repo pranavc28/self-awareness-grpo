@@ -69,22 +69,15 @@ def build_prompt(claim: str, evidence_texts: list[str]) -> str:
 
 Claim: {claim}
 
-You have additional evidence to consider in case you need it:
+Evidence:
 {evidence}
 
 Classify into exactly one category:
-- PASS: Evidence supports the claim (SUPPORTS)
-- FAIL: Evidence contradicts the claim (REFUTES)
-- NA: Insufficient evidence or not enough information to make a decision (NOT ENOUGH INFO)
+- PASS: Evidence supports the claim
+- FAIL: Evidence contradicts the claim
+- NA: Insufficient evidence to decide
 
-Return NA ONLY if the provided evidence is genuinely insufficient to support or refute the claim. If the evidence explicitly supports the claim, choose PASS. If it explicitly contradicts the claim, choose FAIL.
-
-<Response Format>
-Return ONLY the label. Output exactly one word (PASS, FAIL, or NA) and nothing else.
-
-Example: PASS
-
-</Response Format>
+IMPORTANT: Output ONLY the label (PASS, FAIL, or NA). Do NOT explain your reasoning. Do NOT write anything else. Just the single word label.
 
 LABEL="""
 
@@ -159,14 +152,18 @@ async def sample_from_checkpoint(checkpoint_path: str, dataset: str = "fever", n
         prompt = build_prompt(ex["claim"], evidence_texts)
         tokens = tokenizer.encode(prompt)
         model_input = types.ModelInput.from_ints(tokens)
-        params = types.SamplingParams(max_tokens=64, temperature=0.1, stop=["\nRATIONALE="])
+        params = types.SamplingParams(max_tokens=10, temperature=0.1, stop=["\n"])
         
         result = await sampling_client.sample_async(prompt=model_input, num_samples=1, sampling_params=params)
         raw_response = tokenizer.decode(result.sequences[0].tokens)
         predicted_label, valid = parse_output(raw_response)
         
         status = "✓" if predicted_label == golden_label else "✗"
-        print(f"[{idx+1}/{len(examples)}] {status} Golden={golden_label} Pred={predicted_label} Valid={valid} | {ex['claim'][:40]}...")
+        # Debug: show raw response when parsing fails
+        if predicted_label is None:
+            print(f"[{idx+1}/{len(examples)}] {status} Golden={golden_label} Pred={predicted_label} Valid={valid} | RAW: {repr(raw_response[:100])}")
+        else:
+            print(f"[{idx+1}/{len(examples)}] {status} Golden={golden_label} Pred={predicted_label} Valid={valid} | {ex['claim'][:40]}...")
         
         return {
             "id": ex.get("id", idx),
