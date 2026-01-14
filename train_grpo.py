@@ -111,7 +111,6 @@ class Config:
     
     Regularization parameters:
         weight_decay: L2 regularization coefficient (AdamW decoupled weight decay)
-        max_grad_norm: Maximum gradient norm for gradient clipping (None to disable)
         entropy_bonus: Entropy bonus coefficient to encourage exploration
     """
     # Keep total samples/step roughly constant while improving within-group signal:
@@ -123,9 +122,8 @@ class Config:
     # Higher learning rate paired with regularization for faster convergence
     lr: float = 5e-6
     steps: int = 160
-    # Regularization: L2 weight decay and gradient clipping
+    # Regularization: L2 weight decay
     weight_decay: float = 0.01
-    max_grad_norm: float = 1.0
     entropy_bonus: float = 0.01
     # Increase correctness reward so it dominates early learning.
     correct_pos: float = 2.0
@@ -639,9 +637,8 @@ async def run_training():
     - r_format: Penalty for invalid output format
     - r_entropy: Entropy bonus for exploration (regularization)
     
-    Regularization (L2 + explicit constraints):
+    Regularization:
     - weight_decay: L2 regularization via AdamW decoupled weight decay
-    - max_grad_norm: Gradient clipping to prevent exploding gradients
     - entropy_bonus: Reward entropy in probed distribution to encourage exploration
     
     Returns:
@@ -761,12 +758,11 @@ async def run_training():
         
         if all_data:
             fwd_future = await training_client.forward_backward_async(all_data, loss_fn="ppo")
-            # AdamW with L2 regularization (weight decay) and gradient clipping
+            # AdamW with L2 regularization (weight decay)
             opt_future = await training_client.optim_step_async(
                 types.AdamParams(
                     learning_rate=cfg.lr,
                     weight_decay=cfg.weight_decay,
-                    max_grad_norm=cfg.max_grad_norm,
                 )
             )
             await fwd_future
