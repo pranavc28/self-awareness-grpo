@@ -170,7 +170,8 @@ def plot_accuracy(metrics: list[dict], output_path: str = "accuracy.png"):
     has_per_class = "accuracy_na" in metrics[0] if metrics else False
     
     if has_per_class:
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+        # Taller figure with more space for per-class plot
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 12), gridspec_kw={'height_ratios': [1, 1.5]})
     else:
         fig, ax1 = plt.subplots(figsize=(12, 5))
     
@@ -219,10 +220,14 @@ def plot_accuracy(metrics: list[dict], output_path: str = "accuracy.png"):
         ax2.set_xlabel("Training Step", fontsize=12)
         ax2.set_ylabel("Accuracy", fontsize=12)
         ax2.set_title(f"Per-Class Accuracy (Smoothed, window={window})", fontsize=14, fontweight="bold")
-        ax2.set_ylim(0, 1)
+        ax2.set_ylim(-0.05, 1.05)  # Slight padding to see values near 0 and 1 better
         ax2.grid(True, alpha=0.3)
-        ax2.legend(loc="best", fontsize=10)
-        ax2.axhline(y=0.33, color='gray', linestyle='--', alpha=0.5, label="Random baseline")
+        ax2.legend(loc="upper right", fontsize=11)
+        ax2.axhline(y=0.33, color='gray', linestyle='--', alpha=0.5, linewidth=1.5)
+        
+        # Add horizontal lines at key thresholds for reference
+        ax2.axhline(y=0.5, color='#95a5a6', linestyle=':', alpha=0.4, linewidth=1)
+        ax2.axhline(y=0.25, color='#95a5a6', linestyle=':', alpha=0.4, linewidth=1)
     
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight")

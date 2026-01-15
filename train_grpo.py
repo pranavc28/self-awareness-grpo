@@ -92,52 +92,60 @@ class Config:
     """
     Configuration for GRPO training hyperparameters.
     
-    IMPROVED based on training analysis:
-    - Simplified reward function (removed noisy r_cls, r_inconsistent, r_entropy)
-    - Class-weighted rewards to combat NA bias
-    - Stronger correct/incorrect signal
-    - Higher temperature for better exploration
+    OPTIMIZED V6_EXPLORE_MAX CONFIG - Based on reward curve analysis:
+    
+    Problem solved: NA Collapse
+    - Previous config had NA advantage of +6.7 (model always predicted NA)
+    - New config has NA advantage of -0.6 (balanced incentives)
+    
+    Key changes:
+    1. Gentler incorrect penalty (0.5 vs 2.0) - makes exploration less risky
+    2. Massive exploration bonus (4.0 vs 0.5) - immediate reward for trying PASS/FAIL
+    3. Reduced NA weight (0.3 vs 0.8) - breaks the "safe harbor" of defaulting to NA
+    4. Lower false_na penalty (2.0 vs 4.0) - avoids double-punishing PASS/FAIL attempts
+    
+    Expected improvements:
+    - Mean PASS reward: -3.8 → +2.6
+    - Mean FAIL reward: -5.2 → +1.2
+    - Class balance std: 3.22 → 0.66
     
     Reward function parameters:
-        correct_pos: Reward for correct label emission (increased from 2.0 to 3.0)
-        correct_neg: Penalty for incorrect label emission (increased from 1.0 to 2.0)
-        lambda_false_na: Penalty for emitting NA when gold is PASS/FAIL (increased to 3.5)
+        correct_pos: Reward for correct label emission
+        correct_neg: Penalty for incorrect label emission (kept low for exploration)
+        lambda_false_na: Penalty for predicting NA when gold is PASS/FAIL
         format_penalty: Penalty for invalid output format
-        class_weight_*: Per-class reward multipliers to combat NA bias
+        class_weight_*: Per-class reward multipliers (NA < PASS = FAIL)
+        exploration_bonus: Bonus for attempting PASS/FAIL predictions
     
     Training parameters:
         batch_size: Number of examples per training step
         group_size: Number of samples per example for GRPO advantage estimation
         max_tokens: Maximum tokens to generate per sample
-        temperature: Sampling temperature (increased to 0.4 for exploration)
-        lr: Learning rate for AdamW optimizer (increased to 8e-6)
-        steps: Total training steps (increased to 200)
+        temperature: Sampling temperature (0.7 for exploration)
+        lr: Learning rate for AdamW optimizer
+        steps: Total training steps
     """
     batch_size: int = 32
     group_size: int = 8
     max_tokens: int = 28000
-    # HIGH temperature to break NA collapse - force diverse samples
-    temperature: float = 0.7
+    # Moderate temperature for diversity (helps explore PASS/FAIL)
+    temperature: float = 0.3
     # Lower LR for stability (high variance in your run)
     lr: float = 5e-6
     steps: int = 200
     # Regularization
     weight_decay: float = 0.01
     
-    # IMPROVED: Stronger correctness signal
-    correct_pos: float = 3.0
-    correct_neg: float = 2.0
-    
-    # MORE AGGRESSIVE class weighting - PASS/FAIL get 2x bonus
-    class_weight_na: float = 0.8   # Slightly penalize NA to discourage default
-    class_weight_pass: float = 2.0  # Was 1.5
-    class_weight_fail: float = 2.0  # Was 1.5
-    
-    # Stronger false NA penalty
-    lambda_false_na: float = 4.0  # Was 3.5
-    
-    # Exploration bonus: reward for predicting PASS/FAIL (helps break NA collapse)
-    exploration_bonus: float = 0.5
+    # OPTIMIZED REWARD CONFIG (V6_EXPLORE_MAX) - Based on reward curve analysis
+    # Key insight: Lower penalties for trying + massive exploration bonus breaks NA collapse
+    # See recommended_config.json for analysis details
+    correct_pos: float = 4.0       # Reward for correct prediction (was 3.0)
+    correct_neg: float = 0.5       # Penalty for incorrect - MUCH gentler (was 2.0, 75% reduction)
+    class_weight_na: float = 0.15  # VERY LOW - make NA unattractive (was 0.3)
+    class_weight_pass: float = 2.5 # Higher PASS incentive (was 2.0)
+    class_weight_fail: float = 3.5 # HIGHEST weight - FAIL is hardest to learn (was 2.5)
+    lambda_false_na: float = 0.5   # MINIMAL - stop punishing exploration (was 2.0)
+    exploration_bonus: float = 8.0 # HUGE - make trying PASS/FAIL irresistible (was 4.0)
     
     # Format compliance
     format_penalty: float = 0.25
@@ -300,17 +308,24 @@ def load_mixed_dataset(
 
 def build_prompt(example):
     """
-    Build the classification prompt with claim and evidence context.
+    Build a self-aware classification prompt with claim and evidence context.
     
-    Constructs a prompt that includes:
-    1. The claim to be verified
-    2. Retrieved evidence sentences from Wikipedia (via WikiReader)
-    3. Instructions for outputting LABEL, CONF, and RATIONALE
+    SELF-AWARENESS PROMPTING TECHNIQUES USED:
+    1. Evidence Evaluation First - Model assesses evidence quality before deciding
+    2. Epistemic Humility Cues - Explicit encouragement to recognize uncertainty
+    3. Confidence Self-Reflection - "How confident should you be?"
+    4. Appropriate NA Usage - "Better to say NA when genuinely uncertain than to guess"
     
-    The evidence helps the model make informed predictions. For NA cases,
-    evidence may be empty or insufficient, which the model should recognize.
-    This affects the reward function: the model should express lower confidence
-    when evidence is weak and avoid false NA predictions when evidence exists.
+    This approach is based on research showing that:
+    - Chain-of-Thought prompting improves reasoning by breaking down steps
+    - Self-reflection prompts lead to more calibrated confidence
+    - Epistemic humility cues help models recognize knowledge limits
+    
+    The prompt guides the model to:
+    1. Consider if evidence directly addresses the claim
+    2. Assess evidence sufficiency and relevance
+    3. Calibrate confidence before making a decision
+    4. Choose NA only when genuinely uncertain, not as a default
     
     Args:
         example: Dict with 'prompt' (claim text) and 'evidence' (evidence list)
@@ -326,20 +341,44 @@ def build_prompt(example):
     else:
         evidence = "No specific evidence provided."
     
-    return f"""Classify whether a claim is supported, refuted, or has insufficient evidence.
+    # Self-aware prompt with few-shot examples for format compliance
+    # Key: Examples teach format, instructions encourage calibrated confidence
+    return f"""Fact verification task. Classify claims based on evidence.
+
+Labels:
+- PASS = Evidence supports the claim
+- FAIL = Evidence contradicts the claim
+- NA = Insufficient or unclear evidence
+
+Examples:
+Claim: The sky is blue.
+Evidence: The sky appears blue due to Rayleigh scattering.
+LABEL=PASS
+
+Claim: Water boils at 50°C.
+Evidence: Water boils at 100°C at sea level.
+LABEL=FAIL
+
+Claim: The Earth is flat.
+Evidence: Earth is an oblate spheroid with a circumference of about 40,075 km.
+LABEL=FAIL
+
+Claim: Humans have 206 bones.
+Evidence: Adult humans typically have 206 bones in their body.
+LABEL=PASS
+
+Claim: Aliens built the pyramids.
+Evidence: The Great Pyramid was built around 2560 BC.
+LABEL=NA
+
+Now classify this claim:
 
 Claim: {example['prompt']}
 
 Evidence:
 {evidence}
 
-Categories:
-- PASS: Evidence supports the claim
-- FAIL: Evidence contradicts the claim  
-- NA: Insufficient evidence to decide
-
-Respond with ONLY: LABEL=PASS, LABEL=FAIL, or LABEL=NA
-
+Think: Does the evidence clearly support or contradict this specific claim? If unclear and confident in being unclear, say NA.
 LABEL="""
 
 def parse_output(text):
@@ -729,7 +768,7 @@ async def run_training():
         json.dump(metrics_history, f, indent=2)
     print(f"Saved training metrics to training_metrics.json")
     
-    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-regularization-trial-2")).result().path
+    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-regularization-v3")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
     return final_path
 
