@@ -162,37 +162,53 @@ def plot_rewards_by_outcome(metrics: list[dict], output_path: str = "rewards_by_
 
 
 def plot_accuracy(metrics: list[dict], output_path: str = "accuracy.png"):
-    """Plot accuracy over training steps, including per-class breakdown if available."""
+    """Plot accuracy over training steps, including per-class breakdown if available.
+    
+    Uses same smoothing style as other plots: raw data with low opacity + bold smoothed trend.
+    """
     steps = [m["step"] for m in metrics]
     accuracy = [m["accuracy"] for m in metrics]
     
     # Check if per-class accuracies are available
     has_per_class = "accuracy_na" in metrics[0] if metrics else False
     
+    # Calculate smoothing window (consistent with other plots)
+    window = min(20, max(5, len(metrics) // 8)) if len(metrics) > 10 else 1
+    
     if has_per_class:
-        # Taller figure with more space for per-class plot
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 12), gridspec_kw={'height_ratios': [1, 1.5]})
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10))
     else:
         fig, ax1 = plt.subplots(figsize=(12, 5))
     
-    # Plot overall accuracy
-    ax1.plot(steps, accuracy, color="#1a1a2e", linewidth=2.5)
-    ax1.fill_between(steps, accuracy, alpha=0.3, color="#1a1a2e")
+    # Plot overall accuracy - raw with low opacity
+    ax1.plot(steps, accuracy, color="#1a1a2e", linewidth=1, alpha=0.25)
+    ax1.fill_between(steps, accuracy, alpha=0.1, color="#1a1a2e")
     
-    # Add smoothed trend line
-    if len(accuracy) > 10:
-        window = min(20, len(accuracy) // 5)
-        smoothed = np.convolve(accuracy, np.ones(window)/window, mode='valid')
-        smooth_steps = steps[window-1:]
-        ax1.plot(smooth_steps, smoothed, color="#e74c3c", linewidth=2, linestyle="--", 
-                label=f"Smoothed (window={window})")
-        ax1.legend(loc="best")
+    # Smoothed trend line
+    if len(accuracy) > window:
+        smoothed, smooth_indices = smooth_values(accuracy, window)
+        smooth_steps = [steps[i] for i in smooth_indices if i < len(steps)]
+        ax1.plot(smooth_steps[:len(smoothed)], smoothed, color="#1a1a2e", linewidth=2.5,
+                label=f"Overall Accuracy (smoothed)")
+    else:
+        ax1.plot(steps, accuracy, color="#1a1a2e", linewidth=2.5, label="Overall Accuracy")
+    
+    # Add reference lines
+    ax1.axhline(y=0.33, color='#e74c3c', linestyle='--', alpha=0.6, linewidth=1.5, label="Random baseline (33%)")
     
     ax1.set_xlabel("Training Step", fontsize=12)
     ax1.set_ylabel("Accuracy", fontsize=12)
-    ax1.set_title("Overall Classification Accuracy", fontsize=14, fontweight="bold")
+    ax1.set_title(f"Overall Classification Accuracy (Smoothed, window={window})", fontsize=14, fontweight="bold")
     ax1.set_ylim(0, 1)
     ax1.grid(True, alpha=0.3)
+    ax1.legend(loc="best", fontsize=10)
+    
+    # Annotate final accuracy
+    if len(accuracy) > 0:
+        final_acc = accuracy[-1]
+        ax1.annotate(f'Final: {final_acc:.1%}', xy=(steps[-1], final_acc), 
+                    xytext=(-60, 10), textcoords='offset points',
+                    fontsize=10, color='#1a1a2e', fontweight='bold')
     
     # Plot per-class accuracy if available
     if has_per_class:
@@ -201,33 +217,40 @@ def plot_accuracy(metrics: list[dict], output_path: str = "accuracy.png"):
         acc_fail = [m.get("accuracy_fail", 0) for m in metrics]
         
         class_colors = {"NA": "#e74c3c", "PASS": "#2ecc71", "FAIL": "#3498db"}
-        window = min(20, max(5, len(metrics) // 8)) if len(metrics) > 10 else 1
         
         for label, values, color in [("NA", acc_na, class_colors["NA"]), 
                                       ("PASS", acc_pass, class_colors["PASS"]),
                                       ("FAIL", acc_fail, class_colors["FAIL"])]:
             # Raw values with low opacity
-            ax2.plot(steps, values, color=color, linewidth=1, alpha=0.25)
+            ax2.plot(steps, values, color=color, linewidth=1, alpha=0.2)
             
-            # Smoothed
+            # Smoothed trend line
             if len(values) > window:
-                smoothed = np.convolve(values, np.ones(window)/window, mode='valid')
-                smooth_steps = steps[window-1:]
+                smoothed, smooth_indices = smooth_values(values, window)
+                smooth_steps = [steps[i] for i in smooth_indices if i < len(steps)]
                 ax2.plot(smooth_steps[:len(smoothed)], smoothed, label=label, color=color, linewidth=2.5)
             else:
                 ax2.plot(steps, values, label=label, color=color, linewidth=2.5)
         
+        # Reference line for random baseline
+        ax2.axhline(y=0.33, color='gray', linestyle='--', alpha=0.5, linewidth=1.5, label="Random (33%)")
+        
         ax2.set_xlabel("Training Step", fontsize=12)
         ax2.set_ylabel("Accuracy", fontsize=12)
         ax2.set_title(f"Per-Class Accuracy (Smoothed, window={window})", fontsize=14, fontweight="bold")
-        ax2.set_ylim(-0.05, 1.05)  # Slight padding to see values near 0 and 1 better
+        ax2.set_ylim(-0.05, 1.05)
         ax2.grid(True, alpha=0.3)
-        ax2.legend(loc="upper right", fontsize=11)
-        ax2.axhline(y=0.33, color='gray', linestyle='--', alpha=0.5, linewidth=1.5)
+        ax2.legend(loc="best", fontsize=10)
         
-        # Add horizontal lines at key thresholds for reference
-        ax2.axhline(y=0.5, color='#95a5a6', linestyle=':', alpha=0.4, linewidth=1)
-        ax2.axhline(y=0.25, color='#95a5a6', linestyle=':', alpha=0.4, linewidth=1)
+        # Annotate final values
+        for label, values, color in [("NA", acc_na, class_colors["NA"]), 
+                                      ("PASS", acc_pass, class_colors["PASS"]),
+                                      ("FAIL", acc_fail, class_colors["FAIL"])]:
+            if len(values) > 0:
+                ax2.annotate(f'{label}: {values[-1]:.1%}', 
+                           xy=(steps[-1], values[-1]), 
+                           xytext=(5, 0), textcoords='offset points',
+                           fontsize=9, color=color, fontweight='bold', va='center')
     
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
