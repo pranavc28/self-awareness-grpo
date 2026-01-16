@@ -1,80 +1,80 @@
 {
   "filtering": {
-    "valid1": 988,
-    "valid2": 995,
-    "paired": 983
+    "valid1": 951,
+    "valid2": 1000,
+    "paired": 951
   },
   "mcnemar_test": {
-    "n01": 42,
-    "n10": 49,
-    "chi2": 0.3956043956043956,
-    "p_value": 0.5293681061847979
+    "n01": 224,
+    "n10": 96,
+    "chi2": 50.403125,
+    "p_value": 1.251947071301882e-12
   },
   "paired_bootstrap_tests": {
     "macro_f1": {
       "metric": "macro_f1",
-      "n_paired": 983,
-      "model1_value": 0.5998646107531125,
-      "model2_value": 0.5927799719889875,
-      "observed_diff": -0.0070846387641250175,
-      "ci_lower": -0.02652950047902149,
-      "ci_upper": 0.012271299893714123,
-      "p_value": 0.4768,
-      "significant": false
+      "n_paired": 951,
+      "model1_value": 0.1767177984961633,
+      "model2_value": 0.39199823951943463,
+      "observed_diff": 0.21528044102327135,
+      "ci_lower": 0.1852995644625923,
+      "ci_upper": 0.2462945106563243,
+      "p_value": 0.0,
+      "significant": true
     },
     "accuracy": {
       "metric": "accuracy",
-      "n_paired": 983,
-      "model1_value": 0.6032553407934893,
-      "model2_value": 0.5961342828077314,
-      "observed_diff": -0.007121057985757906,
-      "ci_lower": -0.0264496439471007,
-      "ci_upper": 0.012207527975584997,
-      "p_value": 0.4982,
-      "significant": false
+      "n_paired": 951,
+      "model1_value": 0.277602523659306,
+      "model2_value": 0.41219768664563616,
+      "observed_diff": 0.13459516298633017,
+      "ci_lower": 0.09884332281808622,
+      "ci_upper": 0.17139852786540483,
+      "p_value": 0.0,
+      "significant": true
     },
     "PASS_f1": {
       "metric": "PASS_f1",
-      "n_paired": 983,
-      "model1_value": 0.5691056910569106,
-      "model2_value": 0.5633802816901409,
-      "observed_diff": -0.005725409366769685,
-      "ci_lower": -0.03759340629853787,
-      "ci_upper": 0.02589481680446086,
-      "p_value": 0.729,
-      "significant": false
+      "n_paired": 951,
+      "model1_value": 0.4100346020761246,
+      "model2_value": 0.5771324863883848,
+      "observed_diff": 0.1670978843122602,
+      "ci_lower": 0.1220425441453095,
+      "ci_upper": 0.2118605189730891,
+      "p_value": 0.0,
+      "significant": true
     },
     "FAIL_f1": {
       "metric": "FAIL_f1",
-      "n_paired": 983,
-      "model1_value": 0.6182432432432433,
-      "model2_value": 0.6086956521739131,
-      "observed_diff": -0.00954759106933023,
-      "ci_lower": -0.03590741981414304,
-      "ci_upper": 0.016448306740469737,
-      "p_value": 0.4582,
-      "significant": false
+      "n_paired": 951,
+      "model1_value": 0.02469135802469136,
+      "model2_value": 0.48513674197384066,
+      "observed_diff": 0.4604453839491493,
+      "ci_lower": 0.41019941310827845,
+      "ci_upper": 0.5083313864774631,
+      "p_value": 0.0,
+      "significant": true
     },
     "NA_f1": {
       "metric": "NA_f1",
-      "n_paired": 983,
-      "model1_value": 0.6122448979591837,
-      "model2_value": 0.6062639821029083,
-      "observed_diff": -0.0059809158562753595,
-      "ci_lower": -0.028718683182056413,
-      "ci_upper": 0.016999131887013807,
-      "p_value": 0.6094,
+      "n_paired": 951,
+      "model1_value": 0.09542743538767395,
+      "model2_value": 0.11372549019607842,
+      "observed_diff": 0.018298054808404463,
+      "ci_lower": -0.027403820262420008,
+      "ci_upper": 0.0640118218991073,
+      "p_value": 0.4512,
       "significant": false
     },
     "NA_recall": {
       "metric": "NA_recall",
-      "n_paired": 983,
-      "model1_value": 0.5498981670061099,
-      "model2_value": 0.5519348268839104,
-      "observed_diff": 0.0020366598778004397,
-      "ci_lower": -0.02429272979609267,
-      "ci_upper": 0.02904564315352698,
-      "p_value": 0.9388,
+      "n_paired": 951,
+      "model1_value": 0.0507399577167019,
+      "model2_value": 0.0613107822410148,
+      "observed_diff": 0.010570824524312898,
+      "ci_lower": -0.01518438177874186,
+      "ci_upper": 0.036661307421271855,
+      "p_value": 0.4768,
       "significant": false
     }
   }

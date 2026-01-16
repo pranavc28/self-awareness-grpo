@@ -17,23 +17,36 @@ def normalize_label(label: str) -> str:
 
 
 def _validate_raw_response(text: str) -> tuple[str, float, bool]:
+    """Validate raw response - only requires a valid label, CONF is optional."""
     label, conf, valid = None, 0.5, True
     if not isinstance(text, str):
         return None, conf, False
-    text = text.replace("<", "").replace(">", "")
-    m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text, re.IGNORECASE)
+    text_clean = text.replace("<", "").replace(">", "").strip().upper()
+    
+    # Check for exact bare label first (e.g., "PASS", "FAIL", "NA")
+    if text_clean in ("NA", "PASS", "FAIL"):
+        return text_clean, conf, True
+    
+    # Check for LABEL=X format
+    m = re.search(r"LABEL\s*=\s*(NA|PASS|FAIL)", text_clean, re.IGNORECASE)
     if m:
         label = m.group(1).upper()
     else:
-        valid = False
-    m = re.search(r"CONF\s*=\s*([\d.]+)", text)
+        # Try to find bare label anywhere
+        m = re.search(r"\b(NA|PASS|FAIL)\b", text_clean)
+        if m:
+            label = m.group(1).upper()
+        else:
+            valid = False
+    
+    # CONF is optional - extract if present but don't fail if missing
+    m = re.search(r"CONF\s*=\s*([\d.]+)", text_clean)
     if m:
         try:
             conf = max(0.0, min(1.0, float(m.group(1))))
         except:
-            valid = False
-    else:
-        valid = False
+            pass  # Keep default conf, don't invalidate
+    
     return label, conf, valid
 
 
@@ -154,16 +167,25 @@ def compare_two_models(path1: str, path2: str, output_path: Optional[str] = None
     paired1 = [id_to_r1[id_] for id_ in common_ids]
     paired2 = [id_to_r2[id_] for id_ in common_ids]
     
-    # Run tests
-    mcnemar = mcnemar_test(paired1, paired2)
-    tests = {m: paired_bootstrap_test(paired1, paired2, metric=m) 
-             for m in ["macro_f1", "accuracy", "PASS_f1", "FAIL_f1", "NA_f1", "NA_recall"]}
-    
     # Print summary
     print(f"\n{'='*70}")
     print(f"STATISTICAL SIGNIFICANCE: {name1} vs {name2}")
     print(f"{'='*70}")
     print(f"\nFiltering: {name1}={len(valid1)} valid, {name2}={len(valid2)} valid, Paired={len(common_ids)}")
+    
+    # Handle case with no paired samples
+    if len(common_ids) == 0:
+        print(f"\n❌ ERROR: No paired samples found!")
+        print(f"   - {name1} has {len(valid1)} valid results (skipped {skip1})")
+        print(f"   - {name2} has {len(valid2)} valid results (skipped {skip2})")
+        print(f"\n   This usually means one of the result files needs to be regenerated")
+        print(f"   with the updated prompt format.\n")
+        return {"error": "No paired samples", "valid1": len(valid1), "valid2": len(valid2)}
+    
+    # Run tests
+    mcnemar = mcnemar_test(paired1, paired2)
+    tests = {m: paired_bootstrap_test(paired1, paired2, metric=m) 
+             for m in ["macro_f1", "accuracy", "PASS_f1", "FAIL_f1", "NA_f1", "NA_recall"]}
     
     print(f"\n### Summary: {'ALL' if all(t['significant'] for t in tests.values()) else 'SOME'} improvements statistically significant (p < 0.01)\n")
     print(f"{'Metric':<12} {'Baseline':>12} {'→':>3} {'GRPO':>12} {'Improvement':>14} {'p-value':>12} {'Sig?':>8}")

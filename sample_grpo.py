@@ -59,26 +59,48 @@ def load_dataset(dataset: str = "fever", seed: int = 43):
 
 
 def build_prompt(claim: str, evidence_texts: list[str]) -> str:
-    """Build the same generalizable NLI-based prompt format used during GRPO training."""
+    """Build the same prompt format used during GRPO training."""
     if evidence_texts:
         evidence = "\n".join(f"- {t}" for t in evidence_texts)
     else:
-        evidence = "No relevant evidence available."
+        evidence = "No specific evidence provided."
     
-    return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
+    return f"""Fact verification task. Classify claims based on evidence.
+
+Labels:
+- PASS = Evidence supports the claim
+- FAIL = Evidence contradicts the claim
+- NA = Insufficient or unclear evidence
+
+Examples:
+Claim: The sky is blue.
+Evidence: The sky appears blue due to Rayleigh scattering.
+LABEL=PASS
+
+Claim: Water boils at 50°C.
+Evidence: Water boils at 100°C at sea level.
+LABEL=FAIL
+
+Claim: The Earth is flat.
+Evidence: Earth is an oblate spheroid with a circumference of about 40,075 km.
+LABEL=FAIL
+
+Claim: Humans have 206 bones.
+Evidence: Adult humans typically have 206 bones in their body.
+LABEL=PASS
+
+Claim: Aliens built the pyramids.
+Evidence: The Great Pyramid was built around 2560 BC.
+LABEL=NA
+
+Now classify this claim:
 
 Claim: {claim}
 
 Evidence:
 {evidence}
 
-Classify into exactly one category:
-- PASS: Evidence supports the claim
-- FAIL: Evidence contradicts the claim
-- NA: Insufficient evidence to decide
-
-IMPORTANT: Output ONLY the label (PASS, FAIL, or NA). Do NOT explain your reasoning. Do NOT write anything else. Just the single word label.
-
+Think: Does the evidence clearly support or contradict this specific claim? If unclear and confident in being unclear, say NA.
 LABEL="""
 
 def parse_output(text):
@@ -152,7 +174,7 @@ async def sample_from_checkpoint(checkpoint_path: str, dataset: str = "fever", n
         prompt = build_prompt(ex["claim"], evidence_texts)
         tokens = tokenizer.encode(prompt)
         model_input = types.ModelInput.from_ints(tokens)
-        params = types.SamplingParams(max_tokens=10, temperature=0.1, stop=["\n"])
+        params = types.SamplingParams(max_tokens=20000, temperature=0.1, stop=["\n"])
         
         result = await sampling_client.sample_async(prompt=model_input, num_samples=1, sampling_params=params)
         raw_response = tokenizer.decode(result.sequences[0].tokens)
@@ -202,6 +224,6 @@ async def sample_from_checkpoint(checkpoint_path: str, dataset: str = "fever", n
 
 if __name__ == "__main__":
     dataset = sys.argv[1] if len(sys.argv) > 1 else "fever"
-    checkpoint = sys.argv[2] if len(sys.argv) > 2 else "tinker://845038d3-b399-5fba-aebf-eeb88fdf1bf3:train:0/sampler_weights/self-aware-grpo-mixed-regularization-trial-1"
+    checkpoint = sys.argv[2] if len(sys.argv) > 2 else "tinker://834a2cd1-71b7-5696-950a-f3e95170ac66:train:0/sampler_weights/self-aware-grpo-mixed-regularization-v3"
     num_examples = int(sys.argv[3]) if len(sys.argv) > 3 else None
     asyncio.run(sample_from_checkpoint(checkpoint, dataset, num_examples))

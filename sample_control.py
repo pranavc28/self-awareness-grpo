@@ -1,12 +1,13 @@
-"""Classify FEVER/VitaminC/ClimateFEVER examples using openai/gpt-oss-20b via Tinker API.
+"""Classify FEVER/VitaminC/ClimateFEVER examples using FORMAT-ONLY baseline checkpoint.
 
-IMPORTANT: This uses the SAME output format as `train_grpo.py` (LABEL/CONF/RATIONALE)
-to avoid evaluation/prompt mismatch when comparing to GRPO checkpoints.
+This uses the format-only GRPO checkpoint as a baseline comparison.
+The model learned output format but NOT accuracy optimization.
 
 Usage:
-    python sample_control.py [dataset]
+    python sample_control.py [dataset] [checkpoint]
     
     dataset: fever (default), vitaminc, or climatefever
+    checkpoint: Path to format-only checkpoint (has default)
 """
 
 import asyncio
@@ -17,9 +18,12 @@ from typing import Optional
 
 import tinker
 from tinker import types
-from transformers import AutoTokenizer
 
 from extract_fever_dataset import get_eval_examples, WikiReader, download_wiki_pages
+
+# Default checkpoint from train_grpo_format_only.py
+DEFAULT_CHECKPOINT = "tinker://a61cf45a-6366-58b9-b0c6-6cd0a11e54ca:train:0/sampler_weights/grpo-format-only-baseline"
+MODEL = "openai/gpt-oss-20b"
 
 # Label mapping: FEVER labels -> simplified labels
 LABEL_MAP = {"NOT ENOUGH INFO": "NA", "SUPPORTS": "PASS", "REFUTES": "FAIL"}
@@ -48,39 +52,75 @@ def load_dataset(dataset: str = "fever", seed: int = 43):
 class FEVERClassifier:
     """FEVER fact verification classifier using Tinker API."""
     
-    def __init__(self, model_name: str = "openai/gpt-oss-20b"):
-        self.model_name = model_name
+    def __init__(self, checkpoint_path: str = DEFAULT_CHECKPOINT):
+        self.checkpoint_path = checkpoint_path
         self.service_client = tinker.ServiceClient()
         self.sampling_client: Optional[tinker.SamplingClient] = None
         self.tokenizer = None
         
     async def initialize(self):
-        """Initialize the sampling client directly from base model."""
-        self.sampling_client = await self.service_client.create_sampling_client_async(
-            base_model=self.model_name
-        )
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
+        """Initialize the sampling client from checkpoint."""
+        if self.checkpoint_path:
+            print(f"Loading checkpoint: {self.checkpoint_path}")
+            self.sampling_client = await self.service_client.create_sampling_client_async(
+                model_path=self.checkpoint_path
+            )
+        else:
+            print(f"Using base model: {MODEL}")
+            self.sampling_client = await self.service_client.create_sampling_client_async(
+                base_model=MODEL
+            )
+        # Get tokenizer from training client
+        training_client = await self.service_client.create_lora_training_client_async(base_model=MODEL, rank=32)
+        self.tokenizer = training_client.get_tokenizer()
     
     def build_prompt(self, claim: str, evidence_texts: list[str]) -> str:
-        """Build the same generalizable NLI-based prompt format used during GRPO training."""
+        """Build the same prompt format used during GRPO training."""
         if evidence_texts:
             evidence = "\n".join(f"- {t}" for t in evidence_texts)
         else:
-            evidence = "No relevant evidence available."
+            evidence = "No specific evidence provided."
         
-        return f"""You are a fact verification expert. Classify whether a claim is supported, refuted, or has insufficient evidence.
+        return f"""Fact verification task. Classify claims based on evidence.
+
+Labels:
+- PASS = Evidence supports the claim
+- FAIL = Evidence contradicts the claim
+- NA = Insufficient or unclear evidence
+
+Examples:
+Claim: The sky is blue.
+Evidence: The sky appears blue due to Rayleigh scattering.
+LABEL=PASS
+
+Claim: Water boils at 50°C.
+Evidence: Water boils at 100°C at sea level.
+LABEL=FAIL
+
+Claim: The Earth is flat.
+Evidence: Earth is an oblate spheroid with a circumference of about 40,075 km.
+LABEL=FAIL
+
+Claim: Humans have 206 bones.
+Evidence: Adult humans typically have 206 bones in their body.
+LABEL=PASS
+
+Claim: Aliens built the pyramids.
+Evidence: The Great Pyramid was built around 2560 BC.
+LABEL=NA
+
+Now classify this claim:
 
 Claim: {claim}
 
 Evidence:
 {evidence}
 
-Classify into exactly one category:
-- PASS: Evidence supports the claim
-- FAIL: Evidence contradicts the claim
-- NA: Insufficient evidence to decide
+Think: Does the evidence clearly support or contradict this specific claim? If unclear and confident in being unclear, say NA. Respond with only one of the following labels: NA, PASS, or FAIL.
 
-IMPORTANT: Output ONLY the label (PASS, FAIL, or NA). Do NOT explain your reasoning. Do NOT write anything else. Just the single word label.
+Do not have question marks in your answer and always respond with a single label.
+
+For example it is incorrect to reply with ??? or any other text. Your assessment must be one of (LABEL=NA, LABEL=PASS, or LABEL=FAIL):
 
 LABEL="""
     def parse_output(self, text: str) -> tuple[str, bool]:
@@ -103,14 +143,14 @@ LABEL="""
                 valid = False
         return (label or "NA"), valid
     
-    async def classify_single(self, claim: str, evidence_texts: list[str]) -> tuple[str, str]:
+    async def classify_single(self, claim: str, evidence_texts: list[str]) -> tuple[str, str, bool]:
         """Classify a single claim asynchronously."""
         prompt = self.build_prompt(claim, evidence_texts)
         prompt_tokens = self.tokenizer.encode(prompt, add_special_tokens=True)
         model_input = types.ModelInput.from_ints(prompt_tokens)
         
         sampling_params = types.SamplingParams(
-            max_tokens=10, temperature=0.1, stop=["\n"]
+            max_tokens=21000, temperature=0.1, stop=["\n"]
         )
         
         result = await self.sampling_client.sample_async(
@@ -119,7 +159,7 @@ LABEL="""
         
         raw_response = self.tokenizer.decode(result.sequences[0].tokens, skip_special_tokens=True)
         label, valid = self.parse_output(raw_response)
-        return label, raw_response
+        return label, raw_response, valid
     
     async def classify_batch(self, examples: list[dict], wiki_reader: Optional[WikiReader], dataset: str) -> list[dict]:
         """Classify a batch of examples concurrently."""
@@ -133,7 +173,7 @@ LABEL="""
                 ev = example.get("evidence", "")
                 evidence_texts = [ev] if ev else []
             
-            predicted, raw = await self.classify_single(example["claim"], evidence_texts)
+            predicted, raw, valid = await self.classify_single(example["claim"], evidence_texts)
             
             # Convert golden label to simplified format
             golden_label = LABEL_MAP.get(example.get("label", ""), example.get("label", ""))
@@ -147,6 +187,7 @@ LABEL="""
                 "evidence_texts": evidence_texts,
                 "golden_label": golden_label,
                 "predicted_label": predicted,
+                "format_valid": valid,
                 "raw_response": raw.strip()
             }
         
@@ -154,7 +195,7 @@ LABEL="""
         return await asyncio.gather(*tasks)
 
 
-async def main(dataset: str = "fever"):
+async def main(dataset: str = "fever", checkpoint: str = DEFAULT_CHECKPOINT):
     SEED = 43  # Different from training seed (42) to get different examples
     random.seed(SEED)
     
@@ -166,8 +207,8 @@ async def main(dataset: str = "fever"):
         print("Loading Wikipedia evidence...")
         wiki_reader = WikiReader(download_wiki_pages())
     
-    print("Initializing openai/gpt-oss-20b...")
-    classifier = FEVERClassifier()
+    print("Initializing format-only baseline...")
+    classifier = FEVERClassifier(checkpoint_path=checkpoint)
     await classifier.initialize()
     
     print(f"Classifying {len(samples)} examples...")
@@ -179,9 +220,10 @@ async def main(dataset: str = "fever"):
     print(f"\nAccuracy: {accuracy:.1f}% ({correct}/{len(results)})")
     
     output = {
-        "model": "openai/gpt-oss-20b",
+        "model": MODEL,
         "source": f"sample_control_{dataset}",
         "dataset": dataset,
+        "checkpoint": checkpoint,
         "num_examples": len(results),
         "results": results
     }
@@ -195,4 +237,5 @@ async def main(dataset: str = "fever"):
 
 if __name__ == "__main__":
     dataset = sys.argv[1] if len(sys.argv) > 1 else "fever"
-    asyncio.run(main(dataset))
+    checkpoint = sys.argv[2] if len(sys.argv) > 2 else DEFAULT_CHECKPOINT
+    asyncio.run(main(dataset, checkpoint))
