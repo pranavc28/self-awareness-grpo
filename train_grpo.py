@@ -203,9 +203,9 @@ def load_mixed_dataset(
     # IMPROVED: More balanced dataset to combat NA class dominance
     # Original had 200-200-200 NA and 70-70-70 for PASS/FAIL (NA = 59%)
     # New: 120-120-120 gives roughly equal representation (NA = 35%)
-    fever_na: int = 120, fever_pass: int = 120, fever_fail: int = 100,
-    vitaminc_na: int = 120, vitaminc_pass: int = 120, vitaminc_fail: int = 100,
-    climatefever_na: int = 120, climatefever_pass: int = 120, climatefever_fail: int = 100,
+    fever_na: int = 100, fever_pass: int = 100, fever_fail: int = 80,
+    vitaminc_na: int = 180, vitaminc_pass: int = 180, vitaminc_fail: int = 150,
+    climatefever_na: int = 180, climatefever_pass: int = 180, climatefever_fail: int = 150,
 ):
     """
     Load a mixed dataset from FEVER, VitaminC, and ClimateFEVER for multi-domain training.
@@ -768,7 +768,7 @@ async def run_training():
         json.dump(metrics_history, f, indent=2)
     print(f"Saved training metrics to training_metrics.json")
     
-    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-regularization-v3")).result().path
+    final_path = (await training_client.save_weights_for_sampler_async(name="self-aware-grpo-mixed-regularization-v5")).result().path
     print(f"\nTraining complete. Final checkpoint: {final_path}")
     return final_path
 

@@ -2,7 +2,7 @@
   "model": "openai/gpt-oss-20b",
   "source": "sample_grpo_fever",
   "dataset": "fever",
-  "checkpoint": "tinker://834a2cd1-71b7-5696-950a-f3e95170ac66:train:0/sampler_weights/self-aware-grpo-mixed-regularization-v3",
+  "checkpoint": "tinker://77cbede0-5b51-563c-9fe1-088e5a606709:train:0/sampler_weights/self-aware-grpo-mixed-regularization-v5",
   "num_examples": 1000,
   "results": [
     {
@@ -57,9 +57,9 @@
         "[Microbiologist] Because microbiologists specialize in the investigation of microorganisms that typically cause infection , their research commonly promotes information found in immunology , pathology , and molecular biology .\timmunology\timmunology\tmicrobiologists\tList of prominent microbiologists"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 11276,
@@ -95,9 +95,9 @@
         "[Andrew_Kevin_Walker] He is known for having written Seven -LRB- 1995 -RRB- , for which he earned a nomination for the BAFTA Award for Best Original Screenplay , as well as several other films , including 8mm -LRB- 1999 -RRB- , Sleepy Hollow -LRB- 1999 -RRB- and many uncredited script rewrites .\tBAFTA\tBritish Academy of Film and Television Arts\tSeven\tSeven (1995 film)\tBAFTA Award for Best Original Screenplay\tBAFTA Award for Best Original Screenplay\t8mm\t8mm (film)\tSleepy Hollow\tSleepy Hollow (film)\tscript\tscreenplay"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 119942,
@@ -1062,9 +1062,9 @@
         "[Indian_Institute_of_Management_Bangalore] It offers Post Graduate , Doctoral and executive training programmes .\tPost Graduate\tPost Graduate\tDoctoral\tDoctoral"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": 101205,
@@ -1287,9 +1287,9 @@
         "[Sora_-LRB-Kingdom_Hearts-RRB-] Donald Duck and Goofy then recruit him in their journey across various worlds to aid King Mickey while Sora searches for his friends .\tDonald Duck\tDonald Duck\tGoofy\tGoofy\tKing Mickey\tMickey Mouse"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 88127,
@@ -2387,9 +2387,9 @@
         "[Blue_Jasmine] Blue Jasmine is a 2013 American black comedy-drama film written and directed by Woody Allen .\tWoody Allen\tWoody Allen\tblack\tblack comedy\tcomedy-drama film\tcomedy-drama film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 151572,
@@ -2407,9 +2407,9 @@
         "[Python_-LRB-programming_language-RRB-] Python features a dynamic type system and automatic memory management and supports multiple programming paradigms , including object-oriented , imperative , functional programming , and procedural styles .\tobject-oriented\tobject-oriented programming\timperative\timperative programming\tfunctional\tfunctional programming\tprocedural\tprocedural programming\tdynamic\tdynamic typing\tdynamic type\tdynamic type\tmemory management\tmemory management\tfunctional programming\tfunctional programming"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": 131562,
@@ -2556,9 +2556,9 @@
         "[Prowler_-LRB-comics-RRB-] Created by writer-editor Stan Lee , John Buscema and Jim Mooney , Prowler made his first appearance in The Amazing Spider-Man # 78 .\tThe Amazing Spider-Man\tThe Amazing Spider-Man\tStan Lee\tStan Lee\tJohn Buscema\tJohn Buscema\tJim Mooney\tJim Mooney\tSpider-Man\tSpider-Man"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 118420,
@@ -3188,9 +3188,9 @@
         "[Paramount_Pictures] In 2014 , Paramount Pictures became the first major Hollywood studio to distribute all of its films in digital form only .\tHollywood\tHollywood"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": 221072,
@@ -3494,9 +3494,9 @@
         "[Mariah_Carey] Referred to as the `` songbird supreme '' by the Guinness World Records , she has a five-octave vocal range , power , melismatic style and signature use of the whistle register .\tGuinness World Records\tGuinness World Records\tvocal range\tvocal range\tpower\tBelting (music)\twhistle register\twhistle register"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 181187,
@@ -3779,9 +3779,9 @@
         "[Vietnam] Vietnam -LRB- \u02cc ; -LSB- v\u00ee\u0259t n\u0101\u02d0m -RSB- -RRB- , officially the Socialist Republic of Vietnam -LRB- SRV ; , is the easternmost country on the Indochina Peninsula in Southeast Asia .\tIndochina Peninsula\tIndochina\tSoutheast Asia\tSoutheast Asia"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 216799,
@@ -4176,9 +4176,9 @@
         "[American_Sniper_-LRB-book-RRB-] With 255 kills , 160 of them officially confirmed by the Pentagon , Kyle is the deadliest marksman in U.S. military history ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": 67830,
@@ -4518,9 +4518,9 @@
         "[Lorelai_Gilmore] The dynamic of single parenthood and the tension between Lorelai and her wealthy parents , Richard -LRB- Edward Herrmann -RRB- and especially her controlling mother , Emily -LRB- Kelly Bishop -RRB- , form the main theme of the series story line .\tRichard\tRichard Gilmore\tEdward Herrmann\tEdward Herrmann\tEmily\tEmily Gilmore\tKelly Bishop\tKelly Bishop"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 194373,
@@ -4939,9 +4939,9 @@
         "[Always_-LRB-1989_film-RRB-] Always is a 1989 American romantic comedy-drama film directed by Steven Spielberg and starring Richard Dreyfuss , Holly Hunter , John Goodman , introducing Brad Johnson , and featuring Audrey Hepburn 's cameo in her final film appearance .\tSteven Spielberg\tSteven Spielberg\tRichard Dreyfuss\tRichard Dreyfuss\tHolly Hunter\tHolly Hunter\tJohn Goodman\tJohn Goodman\tBrad Johnson\tBrad Johnson (actor)\tAudrey Hepburn\tAudrey Hepburn\tromantic\tromantic film\tcomedy-drama\tcomedy-drama"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 106387,
@@ -5201,9 +5201,9 @@
         "[Wales] At the dawn of the Industrial Revolution , development of the mining and metallurgical industries transformed the country from an agricultural society into an industrial nation ; the South Wales Coalfield 's exploitation caused a rapid expansion of Wales ' population .\tcountry\tcountry\tIndustrial Revolution\tIndustrial Revolution\tmining\tmining in Wales\tmetallurgical\tmetallurgy\tSouth Wales Coalfield\tSouth Wales Coalfield"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": 206990,
@@ -5913,9 +5913,9 @@
         "[Aarhus] Aarhus -LRB- -LSB- \u02c8\u0252\u02d0hu\u02d0\u02c0s -RSB- ; officially spelled \u00c5rhus from 1948 until 31 December 2010 -RRB- is the second-largest city in Denmark and the seat of Aarhus municipality .\tAarhus\tAarhus Municipality\tDenmark\tDenmark\tAarhus municipality\tAarhus municipality"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 218241,
@@ -6385,9 +6385,9 @@
         "[Andrew_Carnegie] His 1889 article proclaiming `` The Gospel of Wealth '' called on the rich to use their wealth to improve society , and it stimulated a wave of philanthropy .\tThe Gospel of Wealth\tThe Gospel of Wealth"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 68001,
@@ -6621,9 +6621,9 @@
         "[Solanum] It also contains the nightshades and horse nettles , as well as numerous plants cultivated for their ornamental flowers and fruit ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 99833,
@@ -6871,9 +6871,9 @@
         "[Jenna_Jameson] Advertisements for her site and films , often bearing her picture , have towered on a 48-foot-tall billboard in New York City 's Times Square .\tTimes Square\tTimes Square"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 211290,
@@ -7491,9 +7491,9 @@
         "[Soyuz_-LRB-spacecraft-RRB-] Soyuz -LRB- \u0421\u043e\u044e\u0301\u0437 -LSB- s\u0250\u02c8j\u0289s -RSB- , `` Union '' , as in \u0421\u043e\u0432\u0435\u0301\u0442\u0441\u043a\u0438\u0439 \u0421\u043e\u044e\u0301\u0437 , `` Sovetskiy Soyuz '' , `` Soviet Union '' -RRB- is a series of spacecraft designed for the Soviet space programme by the Korolyov Design Bureau -LRB- now RKK Energia -RRB- in the 1960s that remains in service today .\tRKK Energia\tS.P. Korolev Rocket and Space Corporation Energia\tspacecraft\tspacecraft\tSoviet space programme\tSoviet space programme"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": 21179,
@@ -7573,9 +7573,9 @@
         "[Japan] The four largest are Honshu , Hokkaido , Kyushu and Shikoku , which make up about ninety-seven percent of Japan 's land area and often are referred to as home islands .\tHonshu\tHonshu\tHokkaido\tHokkaido\tKyushu\tKyushu\tShikoku\tShikoku"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 133218,
@@ -7683,9 +7683,9 @@
         "[The_Giver_-LRB-film-RRB-] It received a People 's Choice Award nomination for Favorite Dramatic Movie ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": 184092,
@@ -8079,9 +8079,9 @@
         "[Horse] The horse has evolved over the past 45 to 55 million years from a small multi-toed creature , Eohippus , into the large , single-toed animal of today .\tevolved\tevolution of the horse\tEohippus\tEohippus"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": 37432,
@@ -8656,9 +8656,9 @@
         "[Floyd_Mayweather_Jr.] Mayweather has generated approximately 19.5 million in PPV buys and $ 1.3 billion in revenue throughout his career , surpassing the likes of former top PPV attractions including Mike Tyson , Evander Holyfield , Lennox Lewis , Oscar De La Hoya , and Manny Pacquiao .\tMike Tyson\tMike Tyson\tEvander Holyfield\tEvander Holyfield\tLennox Lewis\tLennox Lewis\tOscar De La Hoya\tOscar De La Hoya\tManny Pacquiao\tManny Pacquiao"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 8383,
@@ -9404,9 +9404,9 @@
         "[Atlantic_Records] In 1967 , Atlantic Records became a wholly owned subsidiary of Warner Bros.-Seven Arts , now the Warner Music Group , and expanded into rock and pop music with releases by bands such as Led Zeppelin and Yes .\tWarner Bros.-Seven Arts\tWarner Bros.-Seven Arts\tWarner Music Group\tWarner Music Group\trock\trock music\tpop music\tpop music\tLed Zeppelin\tLed Zeppelin\tYes\tYes (band)"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 116129,
@@ -9639,9 +9639,9 @@
         "[Manmohan_Singh] The first Sikh in office , Singh was also the first prime minister since Jawaharlal Nehru to be re-elected after completing a full five-year term .\tSikh\tSikh\tJawaharlal Nehru\tJawaharlal Nehru"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 129819,
@@ -10346,9 +10346,9 @@
         "[Tool_-LRB-band-RRB-] Tool has won three Grammy Awards , performed worldwide tours , and produced albums topping the charts in several countries ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 142043,
@@ -10603,9 +10603,9 @@
         "[House_-LRB-TV_series-RRB-] On February 8 , 2012 , Fox announced that the eighth season , then in progress , would be its last .\tFox\tFox Broadcasting Company"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": 75301,
@@ -10663,9 +10663,9 @@
         "[Latvian_Soviet_Socialist_Republic] The Latvian Soviet Socialist Republic -LRB- Latvian SSR ; Latvijas Padomju Soci\u0101listisk\u0101 Republika \u041b\u0430\u0442\u0432\u0438\u0439\u0441\u043a\u0430\u044f \u0421\u043e\u0432\u0435\u0442\u0441\u043a\u0430\u044f \u0421\u043e\u0446\u0438\u0430\u043b\u0438\u0441\u0442\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u0420\u0435\u0441\u043f\u0443\u0431\u043b\u0438\u043a\u0430 , Latviyskaya Sovetskaya Sotsialisticheskaya Respublika -RRB- , also known as Soviet Latvia or Latvia , was a republic of the Soviet Union .\tSoviet Socialist Republic\tSoviet Socialist Republic\tSoviet Union\tSoviet Union\tLatvian\tLatvian language\tSSR\tSoviet Socialist Republic\tLatvia\tLatvia\trepublic of the Soviet Union\trepublic of the Soviet Union"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": 187317,

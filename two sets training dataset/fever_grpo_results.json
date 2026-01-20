@@ -2,7 +2,7 @@
   "model": "openai/gpt-oss-20b",
   "source": "sample_grpo_fever",
   "dataset": "fever",
-  "checkpoint": "tinker://834a2cd1-71b7-5696-950a-f3e95170ac66:train:0/sampler_weights/self-aware-grpo-mixed-regularization-v3",
+  "checkpoint": "tinker://23f631b0-5c28-50bb-9625-56a7bfb5b588:train:0/sampler_weights/self-aware-grpo-mixed-regularization-v4",
   "num_examples": 1000,
   "results": [
     {
@@ -12,9 +12,9 @@
         "[Ed_Decter] Edward I. `` Ed '' Decter -LRB- born May 19 , 1959 -RRB- is an American film director , film producer and screenwriter ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 1180,
@@ -23,9 +23,9 @@
         "[Renato_Balestra] Born in Trieste , Renato Balestra comes from a family of architects and engineers and after a childhood steeped in the Mid-European cultural environment of the area , he too began studying for a degree in civil engineering .\tTrieste\tTrieste"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 193907,
@@ -35,9 +35,9 @@
         "[Bea_Arthur] Bea Arthur -LRB- born Bernice Frankel ; May 13 , 1922 -- April 25 , 2009 -RRB- was an American actress , comedian , singer , and animal rights activist ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 194019,
@@ -46,9 +46,9 @@
         "[Kim_Jong-il] Kim Jong-il -LRB- , -LSB- kim.dz\u028c\u014b.il -RSB- or -LSB- kim -RSB- -LSB- ts\u028c\u014b.il -RSB- 16 February 1941/1942 -- 17 December 2011 -RRB- was the supreme leader of the Democratic People 's Republic of Korea -LRB- DPRK -RRB- , commonly referred to as North Korea , from 1994 to 2011 .\tsupreme leader\tList of leaders of North Korea"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 157517,
@@ -57,9 +57,9 @@
         "[Microbiologist] Because microbiologists specialize in the investigation of microorganisms that typically cause infection , their research commonly promotes information found in immunology , pathology , and molecular biology .\timmunology\timmunology\tmicrobiologists\tList of prominent microbiologists"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 11276,
@@ -95,9 +95,9 @@
         "[Andrew_Kevin_Walker] He is known for having written Seven -LRB- 1995 -RRB- , for which he earned a nomination for the BAFTA Award for Best Original Screenplay , as well as several other films , including 8mm -LRB- 1999 -RRB- , Sleepy Hollow -LRB- 1999 -RRB- and many uncredited script rewrites .\tBAFTA\tBritish Academy of Film and Television Arts\tSeven\tSeven (1995 film)\tBAFTA Award for Best Original Screenplay\tBAFTA Award for Best Original Screenplay\t8mm\t8mm (film)\tSleepy Hollow\tSleepy Hollow (film)\tscript\tscreenplay"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 119942,
@@ -133,9 +133,9 @@
         "[Muscarinic_acetylcholine_receptor] Muscarinic acetylcholine receptors , or mAChRs , are acetylcholine receptors that form G protein-receptor complexes in the cell membranes of certain neurons and other cells .\tG protein-receptor complexes\tG protein-coupled receptor\tneurons\tneurons\tcell\tCell (biology)\tacetylcholine\tacetylcholine"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 201817,
@@ -182,9 +182,9 @@
         "[Oscar_Isaac] He appeared in Star Wars : The Force Awakens -LRB- 2015 -RRB- , as X-wing pilot Poe Dameron , and in X-Men : Apocalypse -LRB- 2016 -RRB- , as the titular mutant supervillain Apocalypse .\tX-wing\tX-wing\tPoe Dameron\tPoe Dameron\tApocalypse\tApocalypse (comics)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 200263,
@@ -202,9 +202,9 @@
         "[James_VI_and_I] James was the son of Mary , Queen of Scots , and a great-great-grandson of Henry VII , King of England and Lord of Ireland , positioning him to eventually accede to all three thrones .\tKing of England\tList of English monarchs\tIreland\tMonarchy of Ireland\tEngland\tKingdom of England"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 57483,
@@ -263,9 +263,9 @@
         "[The_Hunchback_of_Notre_Dame_-LRB-1923_film-RRB-] The film is based on Victor Hugo 's 1831 novel of the same name , and is notable for the grand sets that recall 15th century Paris as well as for Chaney 's performance and make-up as the tortured hunchback Quasimodo .\tVictor Hugo\tVictor Hugo\t1831 novel of the same name\tThe Hunchback of Notre-Dame\tQuasimodo\tQuasimodo"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 162881,
@@ -286,9 +286,9 @@
         "[Sandra_Bullock] Sandra Annette Bullock -LRB- -LSB- 's \u00e6ndr\u0259_\u02c8b\u028al\u0259k -RSB- born July 26 , 1964 -RRB- is an American actress , producer , and philanthropist ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 58063,
@@ -333,9 +333,9 @@
         "[The_Man_in_the_Iron_Mask_-LRB-1998_film-RRB-] The Man in the Iron Mask is a 1998 American action drama film directed , produced , and written by Randall Wallace , and starring Leonardo DiCaprio in a dual role as the title character and villain , Jeremy Irons as Aramis , John Malkovich as Athos , Gerard Depardieu as Porthos , and Gabriel Byrne as D'Artagnan .\tRandall Wallace\tRandall Wallace\tLeonardo DiCaprio\tLeonardo DiCaprio\tJeremy Irons\tJeremy Irons\tJohn Malkovich\tJohn Malkovich\tGabriel Byrne\tGabriel Byrne\taction drama\taction film\tAramis\tAramis\tAthos\tAthos (character)\tGerard Depardieu\tG\u00e9rard Depardieu\tPorthos\tPorthos\tD'Artagnan\tCharles de Batz-Castelmore d'Artagnan\tMan in the Iron Mask\tMan in the Iron Mask"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 134473,
@@ -344,9 +344,9 @@
         "[The_Last_Song_-LRB-film-RRB-] Filming lasted from June 15 to August 18 , 2009 with much of it occurring on the island 's beach and pier ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 56129,
@@ -443,9 +443,9 @@
         "[The_Hunger_Games_-LRB-novel-RRB-] A film adaptation , directed by Gary Ross and co-written and co-produced by Collins herself , was released in 2012 .\tfilm adaptation\tThe Hunger Games (film)\tGary Ross\tGary Ross"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 65939,
@@ -472,9 +472,9 @@
         "[Sam_Claflin] He is known for portraying Finnick Odair in the The Hunger Games film series , Philip Swift in Pirates of the Caribbean : On Stranger Tides , and Will Traynor in Me Before You .\tFinnick Odair\tFinnick Odair\tMe Before You\tMe Before You (film)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 78360,
@@ -519,9 +519,9 @@
         "[George_Harrison] Harrison 's first marriage , to model Pattie Boyd in 1966 , ended in divorce in 1977 .\tPattie Boyd\tPattie Boyd"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 139077,
@@ -530,9 +530,9 @@
         "[Balibo_-LRB-film-RRB-] Balibo is a 2009 Australian war film that follows the story of the Balibo Five , a group of journalists who were captured and killed while reporting on activities just prior to the Indonesian invasion of East Timor of 1975 .\twar film\twar film\tBalibo Five\tBalibo Five\tinvasion\tIndonesian invasion of East Timor\tEast Timor\tEast Timor\tIndonesian invasion of East Timor\tIndonesian invasion of East Timor"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 42065,
@@ -550,9 +550,9 @@
         "[Cyclades] The Cyclades -LRB- -LSB- \u02c8s\u026akl\u0259di\u02d0z -RSB- \u039a\u03c5\u03ba\u03bb\u03ac\u03b4\u03b5\u03c2 , -LSB- cik\u02c8la\u00f0es -RSB- -RRB- are an island group in the Aegean Sea , southeast of mainland Greece and a former administrative prefecture of Greece .\tisland group\tisland group\tAegean Sea\tAegean Sea\tprefecture\tprefectures of Greece"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 37105,
@@ -593,9 +593,9 @@
         "[Sonny_Digital] Sonny Corey Uwaezuoke -LRB- born March 5 , 1991 -RRB- , professionally known as Sonny Digital , is an American record producer , rapper and DJ from Atlanta , Georgia , who rose to prominence after producing YC 's hit single `` Racks '' in 2011 .\trapper\trapper\tDJ\tdisk jockey\trecord producer\trecord producer\tYC\tYC (rapper)\tRacks\tRacks (song)"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 180693,
@@ -645,9 +645,9 @@
         "[Andrew_Moray] He led the rising in north Scotland in the summer of 1297 against the occupation by King Edward I of England , successfully regaining control of the area for King John Balliol .\tScotland\tScotland\tEdward I of England\tEdward I of England\tJohn Balliol\tJohn Balliol"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 31132,
@@ -705,9 +705,9 @@
         "[The_Beach_-LRB-film-RRB-] It was filmed on the Thai island Koh Phi Phi .\tThai\tThailand\tKoh Phi Phi\tKoh Phi Phi"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 161165,
@@ -738,9 +738,9 @@
         "[Acid_house] The style was defined primarily by the deep basslines and `` squelching '' sounds of the Roland TB-303 electronic synthesizer-sequencer .\tRoland TB-303\tRoland TB-303"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 201606,
@@ -749,9 +749,9 @@
         "[Thunderstorm] A thunderstorm , also known as an electrical storm , lightning storm , or thundershower , is a storm characterized by the presence of lightning and its acoustic effect on the Earth 's atmosphere , known as thunder .\tlightning\tlightning\tthunder\tthunder\tstorm\tstorm\tacoustic\tacoustics"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 143855,
@@ -769,9 +769,9 @@
         "[Faroe_Islands] Between 1035 and 1814 , the Faeroes were part of the Hereditary Kingdom of Norway .\tNorway\tNorway\tHereditary Kingdom of Norway\tKingdom of Norway (872\u20131397)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 202772,
@@ -829,9 +829,9 @@
         "[Barcelona] Barcelona -LRB- -LSB- b\u0251rs\u0259\u02c8lo\u028an\u0259 -RSB- , -LSB- b\u0259\u027es\u0259\u02c8lon\u0259 -RSB- , -LSB- bar\u03b8e\u02c8lona -RSB- -RRB- is the capital city of the autonomous community of Catalonia in the Kingdom of Spain , as well as the country 's second most populous municipality , with a population of 1.6 million within city limits .\tSpain\tSpain\tCatalonia\tCatalonia\tBarcelona\tProvince of Barcelona\tautonomous community\tAutonomous communities of Spain\tKingdom of Spain\tSpain\tsecond most populous municipality\tList of municipalities of Spain"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 96213,
@@ -849,9 +849,9 @@
         "[Joe_Walsh] As a member of the Eagles , Walsh was inducted into the Rock and Roll Hall of Fame in 1998 , and into the Vocal Group Hall of Fame in 2001 .\tEagles\tEagles (band)\tRock and Roll Hall of Fame\tRock and Roll Hall of Fame\tVocal Group Hall of Fame\tVocal Group Hall of Fame"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 63431,
@@ -871,9 +871,9 @@
         "[Fred_Seibert] He has produced live action and animated programs for cable television , and the internet , and began his professional career as a jazz and blues record producer .\tcable television\tcable television"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 201119,
@@ -913,9 +913,9 @@
         "[George_H._W._Bush] Another member of the Bush family , Bush 's second son Jeb Bush , served as the 43rd Governor of Florida -LRB- 1999 -- 2007 -RRB- and sought the Republican presidential nomination in 2016 .\tBush family\tBush family\tJeb\tJeb Bush\tJeb Bush\tJeb Bush\t43rd\tList of Governors of Florida\tsought\tJeb Bush presidential campaign, 2016\t2016\tUnited States presidential election, 2016"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 53062,
@@ -985,9 +985,9 @@
         "[Norman_Bates] Norman Bates is a fictional character created by Robert Bloch as the main antagonist in his 1959 novel Psycho , and portrayed by Anthony Perkins in the 1960 film of the same name directed by Alfred Hitchcock and its sequels , and by Freddie Highmore in the television series Bates Motel .\tPsycho\tPsycho (novel)\tAnthony Perkins\tAnthony Perkins\tBates Motel\tBates Motel (TV series)\tFreddie Highmore\tFreddie Highmore\tRobert Bloch\tRobert Bloch\tantagonist\tantagonist\tthe 1960 film of the same name\tPsycho (1960 film)\tAlfred Hitchcock\tAlfred Hitchcock\tsequels\tPsycho (franchise)"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 162661,
@@ -1015,9 +1015,9 @@
         "[2_Hearts_-LRB-Kylie_Minogue_song-RRB-] `` 2 Hearts '' is a song recorded by Australian singer Kylie Minogue for her tenth studio album , X -LRB- 2007 -RRB- .\tKylie Minogue\tKylie Minogue\tX\tX (Kylie Minogue album)"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 3808,
@@ -1035,9 +1035,9 @@
         "[Girl_-LRB-Pharrell_Williams_album-RRB-] Girl -LRB- stylized as G I R L -RRB- is the second studio album by American singer and record producer Pharrell Williams .\tPharrell Williams\tPharrell Williams"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 63313,
@@ -1047,9 +1047,9 @@
         "[Solar_System] The Solar System is located in the Orion Arm , 26,000 light-years from the center of the Milky Way .\tMilky Way\tMilky Way\tOrion Arm\tOrion Arm"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 8603,
@@ -1062,9 +1062,9 @@
         "[Indian_Institute_of_Management_Bangalore] It offers Post Graduate , Doctoral and executive training programmes .\tPost Graduate\tPost Graduate\tDoctoral\tDoctoral"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 101205,
@@ -1082,9 +1082,9 @@
         "[Antigua] Antigua -LRB- -LSB- \u00e6n\u02c8ti\u02d0\u0261\u0259 -RSB- -RRB- , also known as Waladli or Wadadli by the native population , is an island in the West Indies .\tWest Indies\tWest Indies\tpopulation\tpopulation"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 48209,
@@ -1177,9 +1177,9 @@
         "[Eric_Bana] Eric Banadinovi\u0107 -LRB- born 9 August 1968 -RRB- , known professionally as Eric Bana , is an Australian actor and comedian ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 130246,
@@ -1197,9 +1197,9 @@
         "[Robert_Palmer_-LRB-writer-RRB-] He is best known for his books , including Deep Blues ; his music journalism for the New York Times and Rolling Stone magazine ; his work producing blues recordings and the soundtrack of the film Deep Blues ; and his clarinet playing in the 1960s band the Insect Trust .\tNew York\tNew York (state)\tblues\tblues\tDeep Blues\tDeep Blues: A Musical Pilgrimage to the Crossroads\tNew York Times\tThe New York Times\tRolling Stone\tRolling Stone\tsoundtrack\tsoundtrack\tclarinet\tclarinet\tInsect Trust\tThe Insect Trust"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 168927,
@@ -1208,9 +1208,9 @@
         "[Boeing_767] In the 1990s , the 767 became the most frequently used airliner for transatlantic flights between North America and Europe .\tNorth America\tNorth America\tEurope\tEurope"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 213940,
@@ -1219,9 +1219,9 @@
         "[Gray_Matter_Interactive] Gray Matter Interactive Studios , Inc. was a computer game developer founded in 1994 , and acquired by Activision in January 2002 .\tActivision\tActivision\tcomputer game developer\tcomputer game developer"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 178894,
@@ -1239,9 +1239,9 @@
         "[DodgeBall-COLON-_A_True_Underdog_Story] DodgeBall : A True Underdog Story is a 2004 American sports comedy film written and directed by Rawson Marshall Thurber and starring Vince Vaughn and Ben Stiller .\tRawson Marshall Thurber\tRawson Marshall Thurber\tBen Stiller\tBen Stiller\tVince Vaughn\tVince Vaughn\tsports\tsports film\tcomedy film\tcomedy film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 87768,
@@ -1287,9 +1287,9 @@
         "[Sora_-LRB-Kingdom_Hearts-RRB-] Donald Duck and Goofy then recruit him in their journey across various worlds to aid King Mickey while Sora searches for his friends .\tDonald Duck\tDonald Duck\tGoofy\tGoofy\tKing Mickey\tMickey Mouse"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 88127,
@@ -1307,9 +1307,9 @@
         "[Microbiologist] Because microbiologists specialize in the investigation of microorganisms that typically cause infection , their research commonly promotes information found in immunology , pathology , and molecular biology .\timmunology\timmunology\tmicrobiologists\tList of prominent microbiologists"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 117998,
@@ -1318,9 +1318,9 @@
         "[SZA_-LRB-singer-RRB-] SZA is a Neo Soul singer whose music is described as Alternative R&B , with elements of soul , hip hop , minimalist R&B , cloud rap , ethereal R&B , witch house and chillwave .\tR&B\tR&B\thip hop\thip hop\tNeo Soul\tNeo soul\tAlternative R&B\tAlternative R&B\tsoul\tsoul music\twitch house\twitch house (music genre)\tchillwave\tchillwave"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 159580,
@@ -1329,9 +1329,9 @@
         "[Dan_O'Bannon] Daniel Thomas `` Dan '' O'Bannon -LRB- September 30 , 1946 -- December 17 , 2009 -RRB- was an American film screenwriter , director , visual effects supervisor , and occasional actor , usually in the science fiction and horror genres .\tscreenwriter\tscreenwriter\tdirector\tfilm director\tvisual effects supervisor\tvisual effects supervisor\tscience fiction\tscience fiction\thorror\tHorror fiction"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 48119,
@@ -1378,9 +1378,9 @@
         "[The_Disaster_Artist_-LRB-film-RRB-] It is scheduled to be released in a limited release on December 1 , 2017 , by A24 .\tA24\tA24 (company)\tlimited release\tlimited release"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 50298,
@@ -1399,9 +1399,9 @@
         "[Men_in_Black_II] The film is a sequel to the 1997 film Men in Black and was followed by Men in Black 3 , released in 2012 .\tMen in Black\tMen in Black (film)\tMen in Black 3\tMen in Black 3"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 169996,
@@ -1423,9 +1423,9 @@
         "[The_Suite_Life_of_Zack_&_Cody] The Suite Life of Zack & Cody is an American sitcom created by Danny Kallis and Jim Geoghan .\tDanny Kallis\tDanny Kallis\tsitcom\tsitcom"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 72680,
@@ -1446,9 +1446,9 @@
         "[Henry_III_of_England] The son of King John and Isabella of Angoul\u00eame , Henry assumed the throne when he was only nine in the middle of the First Barons ' War .\tJohn\tJohn, King of England\tKing John\tJohn, King of England\tIsabella of Angoul\u00eame\tIsabella of Angoul\u00eame"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 122421,
@@ -1475,9 +1475,9 @@
         "[Columbia_River] To aid ship and barge navigation , locks have been built along the lower Columbia and its tributaries , and dredging has opened , maintained , and enlarged shipping channels .\tlocks\tLock (water transport)\tdredging\tdredging\tshipping channels\tChannel (geography)#Nautical channels"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 194446,
@@ -1526,9 +1526,9 @@
         "[Battle_of_the_Trebia] The battle took place in the flat country of the Province of Piacenza on the left bank of the Trebbia River , a shallow , braided stream , not far south from its confluence -LRB- from the south -RRB- with the Po river .\tTrebbia River\tTrebbia River\tTrebbia\tTrebbia\tPiacenza\tPiacenza\tProvince of Piacenza\tProvince of Piacenza\tPo river\tPo river"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 189711,
@@ -1549,9 +1549,9 @@
         "[Natural_Born_Killers] The film is based on an original screenplay by Quentin Tarantino that was heavily revised by writer David Veloz , associate producer Richard Rutowski , and director Stone ; Tarantino received story credit .\tQuentin Tarantino\tQuentin Tarantino"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 219157,
@@ -1569,9 +1569,9 @@
         "[Buffy_Summers] Buffy was portrayed by Kristy Swanson in the film , and later by Sarah Michelle Gellar in the television series .\tSarah Michelle Gellar\tSarah Michelle Gellar\tKristy Swanson\tKristy Swanson\tthe television series\tBuffy the Vampire Slayer"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 17915,
@@ -1616,9 +1616,9 @@
         "[Chile] Chile , is a South American country occupying a long , narrow strip of land between the Andes to the east and the Pacific Ocean to the west .\tAndes\tAndes"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 156950,
@@ -1648,9 +1648,9 @@
         "[Colosseum] It is one of Rome 's most popular tourist attractions and also has links to the Roman Catholic Church , as each Good Friday the Pope leads a torchlit `` Way of the Cross '' procession that starts in the area around the Colosseum .\tRome\tRome\tRoman Catholic Church\tRoman Catholic Church\tGood Friday\tGood Friday\tPope\tPope"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 125309,
@@ -1659,9 +1659,9 @@
         "[The_Invisible_Man_-LRB-film-RRB-] The Invisible Man is an American 1933 Pre-Code science fiction horror film based on H. G. Wells ' science fiction novel The Invisible Man , published in 1897 , as adapted by R.C. Sherriff , Philip Wylie and Preston Sturges , whose work was considered unsatisfactory and who was taken off the project .\tThe Invisible Man\tThe Invisible Man\tPre-Code\tPre-Code\tscience fiction\tscience fiction\thorror film\thorror film\tH. G. Wells\tH. G. Wells\tR.C. Sherriff\tR.C. Sherriff\tPhilip Wylie\tPhilip Wylie\tPreston Sturges\tPreston Sturges"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 23590,
@@ -1696,9 +1696,9 @@
         "[Temple_Grandin_-LRB-film-RRB-] Temple Grandin is a 2010 biopic directed by Mick Jackson and starring Claire Danes as Temple Grandin , an autistic woman who revolutionized practices for the humane handling of livestock on cattle ranches and slaughterhouses .\tTemple Grandin\tTemple Grandin\tMick Jackson\tMick Jackson (director)\tClaire Danes\tClaire Danes\tbiopic\tbiopic\tautistic\tautism-spectrum"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 208898,
@@ -1739,9 +1739,9 @@
         "[Firefox] An additional version , Firefox for iOS , was released in late 2015 , but this version does not use Gecko due to Apple 's restrictions limiting third-party web browsers to the WebKit-based layout engine built into iOS .\tiOS\tiOS\tGecko\tGecko (layout engine)\tWebKit\tWebKit\tlayout engine\tlayout engine\tFirefox for iOS\tFirefox for iOS\tApple\tApple Inc."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 25818,
@@ -1759,9 +1759,9 @@
         "[Qui-Gon_Jinn] Qui-Gon Jinn is a fictional character in the Star Wars franchise , portrayed by Liam Neeson as the main protagonist of the 1999 film Star Wars : Episode I -- The Phantom Menace '' .\tLiam Neeson\tLiam Neeson\tThe Phantom Menace\tStar Wars: Episode I \u2013 The Phantom Menace\tStar Wars\tStar Wars\tfictional character\tfictional character"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 181984,
@@ -1789,9 +1789,9 @@
         "[Patricia_Highsmith] Patricia Highsmith -LRB- January 19 , 1921 -- February 4 , 1995 -RRB- was an American novelist and short story writer , known for her psychological thrillers , which led to more than two dozen film adaptations .\tshort story writer\tshort story writer\tpsychological thrillers\tpsychological thrillers"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 141131,
@@ -1865,9 +1865,9 @@
         "[Brubaker] Brubaker is a 1980 American prison drama film directed by Stuart Rosenberg .\tStuart Rosenberg\tStuart Rosenberg\tprison\tprison film\tdrama film\tdrama film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 202439,
@@ -1916,9 +1916,9 @@
         "[Raja_Hindustani] Raja Hindustani -LRB- translation : Indian King -RRB- is a 1996 Indian blockbuster Hindi-language drama romance film directed by Dharmesh Darshan .\tDharmesh Darshan\tDharmesh Darshan\ttranslation\tIndian English\tHindi-language\tHindi-language\tdrama\tdrama film\tromance film\tromance film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 64143,
@@ -1975,9 +1975,9 @@
         "[Gaius_Julius_Caesar_-LRB-proconsul-RRB-] Caesar died suddenly in 85 BC , in Rome , while putting on his shoes one morning ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 168629,
@@ -2058,9 +2058,9 @@
         "[Randy_Savage] He was recognizable by wrestling fans for his distinctively deep and raspy voice , his flamboyant ring attire , intensity exhibited in and out of the ring , using `` Pomp and Circumstance '' as his entrance music , and his signature catch phrase , `` Oooh yeah ! ''\tPomp and Circumstance\tPomp and Circumstance Marches#March No. 1 in D"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 217685,
@@ -2114,9 +2114,9 @@
         "[Diana,_Princess_of_Wales] Media attention and public mourning were extensive after her death in a car crash in Paris on 31 August 1997 and subsequent televised funeral .\tParis\tParis\ther death in a car crash\tDeath of Diana, Princess of Wales\ttelevised funeral\tFuneral of Diana, Princess of Wales"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 192766,
@@ -2134,9 +2134,9 @@
         "[Caleb_McLaughlin] Caleb McLaughlin -LRB- born October 13 , 2001 -RRB- is an American actor ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 20429,
@@ -2145,9 +2145,9 @@
         "[Agent_Raghav_\u2013_Crime_Branch] The serial received Indian Telly Awards in the category of Best Thriller and Horror Show and was also nominated for Best Weekend Show .\tIndian Telly Awards\tIndian Telly Awards"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 99655,
@@ -2230,9 +2230,9 @@
         "[Fabian_Nicieza] Fabian Nicieza -LRB- born 31 December 1961 -RRB- is an Argentine-American comic book writer and editor who is best known for his work on Marvel titles such as X-Men , X-Force , New Warriors , Cable and Deadpool , and Thunderbolts , for all of which he helped create numerous characters .\tNew Warriors\tNew Warriors\tThunderbolts\tThunderbolts (comics)\tX-Men\tX-Men\tX-Force\tX-Force\tDeadpool\tDeadpool\teditor\tediting\tCable and Deadpool\tCable and Deadpool"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 225264,
@@ -2272,9 +2272,9 @@
         "[Homer_Hickam] Hickam has also written a number of best-selling memoirs and novels including the `` Josh Thurlow '' historical fiction novels ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 225267,
@@ -2365,9 +2365,9 @@
         "[Don_Bradman] Even after he became reclusive in his declining years his opinion was highly sought , and his status as a national icon was still recognised -- more than 50 years after his retirement as a Test player , in 2001 , Prime Minister John Howard of Australia called him the `` greatest living Australian '' .\tTest\tTest cricket\tAustralian\tAustralian national cricket team\tJohn Howard\tJohn Howard"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 221076,
@@ -2387,9 +2387,9 @@
         "[Blue_Jasmine] Blue Jasmine is a 2013 American black comedy-drama film written and directed by Woody Allen .\tWoody Allen\tWoody Allen\tblack\tblack comedy\tcomedy-drama film\tcomedy-drama film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 151572,
@@ -2474,9 +2474,9 @@
         "[The_Dark_Tower_-LRB-2017_film-RRB-] A continuation of Stephen King 's novel series of the same name , the film stars Idris Elba as Roland Deschain , a gunslinger on a quest to protect the Dark Tower -- a mythical structure which supports all realities -- and Matthew McConaughey as his nemesis , Walter Padick .\tStephen King\tStephen King\tIdris Elba\tIdris Elba\tMatthew McConaughey\tMatthew McConaughey\tnovel series of the same name\tThe Dark Tower (series)\tRoland Deschain\tRoland Deschain\tWalter Padick\tRandall Flagg"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 187573,
@@ -2530,9 +2530,9 @@
         "[Nottingham_Forest_F.C.] Nottingham Forest Football Club is a professional association football club based in Nottingham , England .\tassociation football\tassociation football\tNottingham\tNottingham"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 145012,
@@ -2556,9 +2556,9 @@
         "[Prowler_-LRB-comics-RRB-] Created by writer-editor Stan Lee , John Buscema and Jim Mooney , Prowler made his first appearance in The Amazing Spider-Man # 78 .\tThe Amazing Spider-Man\tThe Amazing Spider-Man\tStan Lee\tStan Lee\tJohn Buscema\tJohn Buscema\tJim Mooney\tJim Mooney\tSpider-Man\tSpider-Man"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 118420,
@@ -2580,9 +2580,9 @@
         "[Jens_Stoltenberg] Stoltenberg served as Prime Minister of Norway from 2000 to 2001 and from 2005 to 2013 .\tPrime Minister of Norway\tPrime Minister of Norway\tNorway\tNorway"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 211783,
@@ -2591,9 +2591,9 @@
         "[Brick_-LRB-film-RRB-] Brick is a 2005 American neo-noir mystery film written and directed by Rian Johnson in his directorial debut , starring Joseph Gordon-Levitt .\tRian Johnson\tRian Johnson\tJoseph Gordon-Levitt\tJoseph Gordon-Levitt\tneo-noir\tneo-noir\tmystery\tMystery film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 14730,
@@ -2631,9 +2631,9 @@
         "[Greek_language] The language is spoken by at least 13.2 million people today in Greece , Cyprus , Italy , Albania , Turkey , and the Greek diaspora .\tGreece\tGreece\tGreek diaspora\tGreek diaspora"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 90733,
@@ -2644,9 +2644,9 @@
         "[Half_Girlfriend_-LRB-film-RRB-] Principal photography commenced in June 2016 and filming locations include Delhi , Mumbai , Patna , Dumraon , Varanasi , New York City and Cape Town .\tPrincipal photography\tPrincipal photography\tDelhi\tDelhi\tMumbai\tMumbai\tPatna\tPatna\tDumraon\tDumraon\tVaranasi\tVaranasi\tNew York City\tNew York City\tCape Town\tCape Town"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 1932,
@@ -2696,9 +2696,9 @@
         "[Temple_of_Venus_and_Roma] The Temple of Venus and Roma Latin : Templum Veneris et Romae is thought to have been the largest temple in Ancient Rome .\tLatin\tLatin\ttemple\tRoman temple\tAncient Rome\tAncient Rome"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 18497,
@@ -2708,9 +2708,9 @@
         "[Maria_Theresa] Charles VI paved the way for her accession with the Pragmatic Sanction of 1713 and spent his entire reign securing it .\tPragmatic Sanction of 1713\tPragmatic Sanction of 1713"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 97783,
@@ -2719,9 +2719,9 @@
         "[Lithuanians] Lithuanians '' ' -LRB- lietuviai , singular lietuvis/lietuv \u0117 '' -RRB- are a Baltic ethnic group , native to Lithuania , where they number around 2,561,300 people .\tLithuania\tLithuania\tBaltic\tBalts\tethnic group\tethnic group"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 177524,
@@ -2730,9 +2730,9 @@
         "[Brick_Mansions] Brick Mansions is a 2014 English-language French-Canadian crime-thriller film starring Paul Walker , David Belle and RZA .\tPaul Walker\tPaul Walker\tDavid Belle\tDavid Belle\tRZA\tRza\tFrench-Canadian\tFrench Canadian\tcrime\tcrime film\tthriller film\tthriller (genre)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 70670,
@@ -2741,9 +2741,9 @@
         "[Floppy_disk] A floppy disk , also called a floppy , diskette or just disk , is a type of disk storage composed of a disk of thin and flexible magnetic storage medium , sealed in a rectangular plastic enclosure lined with fabric that removes dust particles .\tdisk storage\tdisk storage\tmagnetic storage\tmagnetic storage"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 165233,
@@ -2763,9 +2763,9 @@
         "[Emperor_Norton] Norton has been immortalized as the basis of characters in the literature of writers Mark Twain , Robert Louis Stevenson , Christopher Moore , Morris and Goscinny , Selma Lagerl\u00f6f , and Neil Gaiman .\tMark Twain\tMark Twain\tRobert Louis Stevenson\tRobert Louis Stevenson\tChristopher Moore\tChristopher Moore (author)\tMorris\tMorris (comics)\tGoscinny\tGoscinny\tSelma Lagerl\u00f6f\tSelma Lagerl\u00f6f\tNeil Gaiman\tNeil Gaiman"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 155839,
@@ -2794,9 +2794,9 @@
         "[Sensitive_Skin_-LRB-UK_TV_series-RRB-] Series 1 aired in Australia on ABC TV in mid-2007 -LRB- repeated 2009 -RRB- ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 202467,
@@ -2861,9 +2861,9 @@
         "[Shane_McMahon] As a wrestler , he won the European Championship once and the Hardcore Championship once , and has wrestled in the main event of multiple WWE pay per views .\tWWE\tWWE\tEuropean Championship\tWWE European Championship\tonce\tList of WWE Hardcore Champions\tHardcore Championship\tWWE Hardcore Championship"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 62703,
@@ -2882,9 +2882,9 @@
         "[Cars_3] It is being directed by Brian Fee , a storyboard artist on Cars -LRB- 2006 -RRB- and Cars 2 -LRB- 2011 -RRB- .\tBrian Fee\tBrian Fee\tCars\tCars (film)\tCars 2\tCars 2\tstoryboard artist\tstoryboard artist"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 33840,
@@ -2896,9 +2896,9 @@
         "[Byron_Howard] He was nominated for a Golden Globe Award for Tangled and won for Zootopia .\tTangled\tTangled\tZootopia\tZootopia\tGolden Globe Award\tGolden Globe Award"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 216396,
@@ -2947,9 +2947,9 @@
         "[The_Wonder_Years] The Wonder Years is an American television comedy-drama created by Neal Marlens and Carol Black .\tNeal Marlens\tNeal Marlens\tCarol Black\tCarol Black\tcomedy-drama\tcomedy-drama"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 192013,
@@ -2967,9 +2967,9 @@
         "[Ingushetia] It was established on June 4 , 1992 after the Chechen-Ingush Autonomous Soviet Socialist Republic was split in two .\tIngush\tIngush people\tChechen-Ingush Autonomous Soviet Socialist Republic\tChechen-Ingush Autonomous Soviet Socialist Republic"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 121683,
@@ -3003,9 +3003,9 @@
         "[Danielle_Cormack] Danielle Cormack -LRB- born 26 December 1970 -RRB- is a stage and screen actress from New Zealand .\tNew Zealand\tNew Zealand"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 101505,
@@ -3063,9 +3063,9 @@
         "[Aldous_Huxley] Mid career and later , he published travel writing , film stories , and scripts ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 50038,
@@ -3092,9 +3092,9 @@
         "[Mikhail_Prokhorov] He is the former chairman of Polyus Gold , Russia 's largest gold producer , and the former President of Onexim Group .\tPolyus Gold\tPolyus Gold\tOnexim Group\tOnexim Group"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 133165,
@@ -3170,9 +3170,9 @@
         "[Playboy] Playboy is an American men 's lifestyle and entertainment magazine .\tlifestyle\tLifestyle magazine"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 20703,
@@ -3188,9 +3188,9 @@
         "[Paramount_Pictures] In 2014 , Paramount Pictures became the first major Hollywood studio to distribute all of its films in digital form only .\tHollywood\tHollywood"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 221072,
@@ -3211,9 +3211,9 @@
         "[AMGTV] AMGTV is an American family-oriented television network featuring television programming consisting of drama , sports , movies , entertainment , how-to , hunting and fishing , children 's shows , and other features ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 10496,
@@ -3270,9 +3270,9 @@
         "[Tottenham_Hotspur_F.C.] In the 1970s Tottenham won the League Cup on two occasions and were the inaugural winner of the UEFA Cup in 1972 , becoming the first British club to win two different major European trophies .\tTottenham\tTottenham\tUEFA\tUEFA\tLeague Cup\tFootball League Cup\tUEFA Cup\tUEFA Cup"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 131756,
@@ -3283,9 +3283,9 @@
         "[Tremont_Street_Subway] Park Street , Scollay Square , and Haymarket stations were altered over the next two decades as transfers were added to the Cambridge-Dorchester Subway , East Boston Tunnel , and Main Line Elevated -LRB- now part of the Red , Blue , and Orange Lines , respectively -RRB- .\tPark Street\tPark Street (MBTA station)\tScollay Square\tScollay Square (BERy station)\tHaymarket\tHaymarket (MBTA station)\tCambridge-Dorchester Subway\tCambridge-Dorchester Subway\tEast Boston Tunnel\tEast Boston Tunnel\tMain Line Elevated\tMain Line Elevated\tRed\tRed Line (MBTA)\tBlue\tBlue Line (MBTA)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 13882,
@@ -3297,9 +3297,9 @@
         "[American_Civil_War] The North and South quickly raised volunteer and conscription armies that fought mostly in the South over four years ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 75629,
@@ -3315,9 +3315,9 @@
         "[Seohyun] She also starred in the drama `` Moon Lovers : Scarlet Heart Ryeo '' ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 185224,
@@ -3394,9 +3394,9 @@
         "[Battle_of_France] The Battle of France , also known as the Fall of France , was the German invasion of France and the Low Countries during the Second World War .\tFrance\tFrance\tGerman\tNazi Germany\tLow Countries\tLow Countries\tSecond World War\tWorld War II\tinvasion of France\tItalian invasion of France"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 43522,
@@ -3405,9 +3405,9 @@
         "[Billboard_Dad] Billboard Dad -LRB- film -RRB- is a 1998 American direct-to-video comedy film , directed by Alan Metter starring Mary-Kate and Ashley Olsen .\tAlan Metter\tAlan Metter\tMary-Kate and Ashley Olsen\tMary-Kate and Ashley Olsen\tAmerican\tCinema of the United States\tdirect-to-video\tdirect-to-video\tcomedy film\tcomedy film"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 182906,
@@ -3475,9 +3475,9 @@
         "[Lars_von_Trier] Lars von Trier -LRB- Lars Trier , 30 April 1956 -RRB- is a Danish film director and screenwriter .\tfilm director\tfilm director\tscreenwriter\tscreenwriter"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 160832,
@@ -3494,9 +3494,9 @@
         "[Mariah_Carey] Referred to as the `` songbird supreme '' by the Guinness World Records , she has a five-octave vocal range , power , melismatic style and signature use of the whistle register .\tGuinness World Records\tGuinness World Records\tvocal range\tvocal range\tpower\tBelting (music)\twhistle register\twhistle register"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 181187,
@@ -3527,9 +3527,9 @@
         "[Georgians] Georgians arose from the ancient Colchian and Iberian civilizations .\tColchian\tColchis\tIberian\tKingdom of Iberia"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 191873,
@@ -3585,9 +3585,9 @@
         "[Richard_Kuklinski] His family was apparently unaware of Kuklinski 's double life and crimes .\tdouble life\tdouble life"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 142984,
@@ -3597,9 +3597,9 @@
         "[Frederik_Du_Chau] Frederik Du Chau -LRB- born 15 May 1965 -RRB- is a Belgian film director , screenwriter and animator .\tfilm director\tfilm director\tscreenwriter\tscreenwriter\tanimator\tanimator"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 49385,
@@ -3707,9 +3707,9 @@
         "[The_Good_Wife] The Good Wife is an American legal and political drama television series that aired on CBS from September 22 , 2009 , to May 8 , 2016 .\tCBS\tCBS\tThe Good Wife\tThe Good Wife (2016 TV series)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 119435,
@@ -3738,9 +3738,9 @@
         "[Tool_-LRB-band-RRB-] Due to Tool 's incorporation of visual arts and very long and complex releases , the band is generally described as a style-transcending act and part of progressive rock , psychedelic rock , and art rock .\tart rock\tart rock\tprogressive rock\tprogressive rock\trock\trock music\tvisual arts\tvisual arts\tpsychedelic rock\tpsychedelic rock"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 104983,
@@ -3779,9 +3779,9 @@
         "[Vietnam] Vietnam -LRB- \u02cc ; -LSB- v\u00ee\u0259t n\u0101\u02d0m -RSB- -RRB- , officially the Socialist Republic of Vietnam -LRB- SRV ; , is the easternmost country on the Indochina Peninsula in Southeast Asia .\tIndochina Peninsula\tIndochina\tSoutheast Asia\tSoutheast Asia"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 216799,
@@ -3790,9 +3790,9 @@
         "[Timur] Timur also decisively defeated the Christian Knights Hospitaller at the Siege of Smyrna , styling himself a ghazi .\tKnights Hospitaller\tKnights Hospitaller\tSiege of Smyrna\tSiege of Smyrna\tghazi\tghazi (warrior)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 61001,
@@ -3826,9 +3826,9 @@
         "[Ellen_DeGeneres] Ellen Lee DeGeneres -LRB- -LSB- d\u1d7b\u02c8d\u0292\u025bn\u0259r\u1d7bs -RSB- born January 26 , 1958 -RRB- is an American comedian , television host , actress , writer , and producer .\ttelevision\ttelevision\tEllen\tEllen (TV series)"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 207339,
@@ -3871,9 +3871,9 @@
         "[Estonia] In 2005 Estonia became the first nation to hold elections over the Internet , and in 2014 the first nation to provide E-residency .\tInternet\tElectronic voting in Estonia\tE-residency\tE-residency of Estonia"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 41656,
@@ -3965,9 +3965,9 @@
         "[Nestor_Carbonell] Carbonell also portrayed Sheriff Alex Romero on A&E 's drama-thriller series Bates Motel .\tBates Motel\tBates Motel (TV series)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 77911,
@@ -4013,9 +4013,9 @@
         "[Danger_UXB] Danger UXB is a 1979 British ITV television series set during the Second World War developed by John Hawkesworth and starring Anthony Andrews as Lieutenant Brian Ash , an officer in the Royal Engineers .\tJohn Hawkesworth\tJohn Hawkesworth (producer)\tAnthony Andrews\tAnthony Andrews\tITV\tITV (TV network)\tSecond World War\tWorld War II\tRoyal Engineers\tRoyal Engineers"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 88196,
@@ -4033,9 +4033,9 @@
         "[Romani_people_in_the_Republic_of_Macedonia] According to the last census from 2002 , there were 53 879 people counted as Romani in the Republic of Macedonia '' ' , or 2.66 % of the population .\tRomani\tRomani language\tRepublic of Macedonia\tRepublic of Macedonia"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 170430,
@@ -4074,9 +4074,9 @@
         "[Estonia] The territory of Estonia consists of a mainland and 2,222 islands and islets in the Baltic Sea , covering 45339 km2 of land and water , and is influenced by a humid continental climate .\tBaltic Sea\tBaltic Sea\thumid continental climate\thumid continental climate"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 161534,
@@ -4086,9 +4086,9 @@
         "[Nicole_Kidman] Nicole Mary Kidman , AC -LRB- born June 20 , 1967 -RRB- is an Australian actress and film producer .\tAC\tOrder of Australia"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 17731,
@@ -4118,9 +4118,9 @@
         "[Middle_East] Most of the countries that border the Persian Gulf have vast reserves of crude oil , with monarchs of the Arabian Peninsula in particular benefiting economically from petroleum exports .\tPersian\tPersian language\tPersian Gulf\tPersian Gulf\tcrude oil\tcrude oil\tArabian Peninsula\tArabian Peninsula"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 198039,
@@ -4176,9 +4176,9 @@
         "[American_Sniper_-LRB-book-RRB-] With 255 kills , 160 of them officially confirmed by the Pentagon , Kyle is the deadliest marksman in U.S. military history ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 67830,
@@ -4312,9 +4312,9 @@
         "[Edmund_H._North] Edmund Hall North -LRB- March 12 , 1911 -- August 28 , 1990 -RRB- , was an American screenwriter who shared an Academy Award for Best Original Screenplay with Francis Ford Coppola in 1970 for their script for Patton .\tAmerican\tUnited States\tscreenwriter\tscreenwriter\tAcademy Award\tAcademy Award\tBest Original Screenplay\tAcademy Award for Best Original Screenplay\tFrancis Ford Coppola\tFrancis Ford Coppola\tPatton\tPatton (film)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 11915,
@@ -4376,9 +4376,9 @@
         "[House_of_Balloons] House of Balloons is the debut mixtape by Canadian singer The Weeknd .\tThe Weeknd\tThe Weeknd\tmixtape\tmixtape"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 189884,
@@ -4415,9 +4415,9 @@
         "[Patton_-LRB-film-RRB-] It was directed by Franklin J. Schaffner from a script by Francis Ford Coppola and Edmund H. North , who based their screenplay on the biography Patton : Ordeal and Triumph by Ladislas Farago and Omar Bradley 's memoir A Soldier 's Story .\tFranklin J. Schaffner\tFranklin J. Schaffner\tFrancis Ford Coppola\tFrancis Ford Coppola\tEdmund H. North\tEdmund H. North\tLadislas Farago\tLadislas Farago\tOmar Bradley\tOmar Bradley"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 124050,
@@ -4518,9 +4518,9 @@
         "[Lorelai_Gilmore] The dynamic of single parenthood and the tension between Lorelai and her wealthy parents , Richard -LRB- Edward Herrmann -RRB- and especially her controlling mother , Emily -LRB- Kelly Bishop -RRB- , form the main theme of the series story line .\tRichard\tRichard Gilmore\tEdward Herrmann\tEdward Herrmann\tEmily\tEmily Gilmore\tKelly Bishop\tKelly Bishop"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 194373,
@@ -4561,9 +4561,9 @@
         "[Wales] Wales -LRB- -LSB- \u02c8we\u026alz -RSB- Cymru -LSB- \u02c8k\u0259m.r\u0268 -RSB- -RRB- is a country that is part of the United Kingdom and the island of Great Britain .\tcountry\tcountry\tpart\tCountries of the United Kingdom\tUnited Kingdom\tUnited Kingdom\tGreat Britain\tGreat Britain"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 228430,
@@ -4658,9 +4658,9 @@
         "[Ron_Dennis] He is the Global Consultant for the state owned China Minsheng Investment Group and also the chairman for the UK Summit ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 110760,
@@ -4729,9 +4729,9 @@
         "[Brazilian_jiu-jitsu] Brazilian Jiu-Jitsu was formed from Kodokan judo ground fighting -LRB- newaza -RRB- fundamentals that were taught by a number of individuals including Takeo Yano , Mitsuyo Maeda and Soshihiro Satake .\tMitsuyo Maeda\tMitsuyo Maeda\tSoshihiro Satake\tSoshihiro Satake\tground fighting\tground fighting\tKodokan judo\tJudo\tnewaza\tnewaza\tTakeo Yano\tTakeo Yano\tjudo\tjudo"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 119636,
@@ -4749,9 +4749,9 @@
         "[Ding_Yanyuhang] He currently plays for the Shandong Golden Stars of the Chinese Basketball Association -LRB- CBA -RRB- .\tChinese Basketball Association\tChinese Basketball Association\tShandong Golden Stars\tShandong Golden Stars\tCBA\tChinese Basketball Association"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 89310,
@@ -4770,9 +4770,9 @@
         "[US_Airways_Flight_1549] The pilots and flight attendants were awarded the Master 's Medal of the Guild of Air Pilots and Air Navigators in recognition of their `` heroic and unique aviation achievement '' .\tGuild of Air Pilots and Air Navigators\tGuild of Air Pilots and Air Navigators"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 111920,
@@ -4790,9 +4790,9 @@
         "[Absinthe] Recent studies have shown that absinthe 's psychoactive properties -LRB- apart from that of the alcohol -RRB- have been exaggerated ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 134787,
@@ -4801,9 +4801,9 @@
         "[A_View_to_a_Kill] A View to a Kill -LRB- 1985 -RRB- is the fourteenth spy film of the James Bond series , and the seventh and last to star Roger Moore as the fictional MI6 agent James Bond .\tJames Bond\tJames Bond filmography\tRoger Moore\tRoger Moore\tspy film\tspy film\tMI6\tSecret Intelligence Service\tA View to a Kill\tA View to a Kill (song)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 184067,
@@ -4812,9 +4812,9 @@
         "[Kenneth_Lonergan] Kenneth Lonergan -LRB- born October 16 , 1962 -RRB- is an American playwright , screenwriter , and director ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 171631,
@@ -4823,9 +4823,9 @@
         "[Dave_Gibbons] David Chester `` Dave '' Gibbons -LRB- born 14 April 1949 -RRB- is an English comic book artist , writer and sometimes letterer .\tletterer\tletterer"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 133803,
@@ -4834,9 +4834,9 @@
         "[General_Motors] In addition to brands selling assembled vehicles , GM has also had various automotive-component and non-automotive brands , many of which it divested in the 1980s through 2000s .\tdivested\tdivestment"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 55208,
@@ -4939,9 +4939,9 @@
         "[Always_-LRB-1989_film-RRB-] Always is a 1989 American romantic comedy-drama film directed by Steven Spielberg and starring Richard Dreyfuss , Holly Hunter , John Goodman , introducing Brad Johnson , and featuring Audrey Hepburn 's cameo in her final film appearance .\tSteven Spielberg\tSteven Spielberg\tRichard Dreyfuss\tRichard Dreyfuss\tHolly Hunter\tHolly Hunter\tJohn Goodman\tJohn Goodman\tBrad Johnson\tBrad Johnson (actor)\tAudrey Hepburn\tAudrey Hepburn\tromantic\tromantic film\tcomedy-drama\tcomedy-drama"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 106387,
@@ -4950,9 +4950,9 @@
         "[Electric_chair] As of 2014 , electrocution is an optional form of execution in Alabama , Florida , South Carolina and Virginia .\texecution\tcapital punishment\tAlabama\tAlabama\tFlorida\tFlorida\tSouth Carolina\tSouth Carolina\tVirginia\tVirginia"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 54383,
@@ -5019,9 +5019,9 @@
         "[White_House_Press_Secretary] The White House Press Secretary is a senior White House official whose primary responsibility is to act as spokesperson for the executive branch of the United States government administration , especially with regard to the President , senior executives , and policies .\tWhite House\tWhite House\tgovernment\tFederal government of the United States\tadministration\tAdministration (government)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 107520,
@@ -5030,9 +5030,9 @@
         "[Moonlight_-LRB-2016_film-RRB-] Filmed in Miami , Florida , beginning in 2015 , Moonlight premiered at the Telluride Film Festival on September 2 , 2016 .\tTelluride\tTelluride Film Festival\tTelluride Film Festival\tTelluride Film Festival"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 91336,
@@ -5088,9 +5088,9 @@
         "[Boxing_Helena] After receiving an NC-17 rating by the MPAA , the film was given an R-rating on appeal and released in the United States in September 1993 , but received critical backlash and was a financial failure .\tNC-17\tNC-17\tMPAA\tMPAA"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 183141,
@@ -5177,9 +5177,9 @@
         "[Practical_Magic] Practical Magic is a 1998 American romantic comedy film based on the 1995 novel of the same name by Alice Hoffman .\tPractical Magic\tPractical Magic (novel)\tAlice Hoffman\tAlice Hoffman\tromantic comedy film\tromantic comedy film\tnovel of the same name\tPractical Magic (novel)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 12,
@@ -5190,9 +5190,9 @@
         "[Carlos_Santana] He experienced a resurgence of popularity and critical acclaim in the late 1990s ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 123925,
@@ -5201,9 +5201,9 @@
         "[Wales] At the dawn of the Industrial Revolution , development of the mining and metallurgical industries transformed the country from an agricultural society into an industrial nation ; the South Wales Coalfield 's exploitation caused a rapid expansion of Wales ' population .\tcountry\tcountry\tIndustrial Revolution\tIndustrial Revolution\tmining\tmining in Wales\tmetallurgical\tmetallurgy\tSouth Wales Coalfield\tSouth Wales Coalfield"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 206990,
@@ -5241,9 +5241,9 @@
         "[Western_Conference_-LRB-NBA-RRB-] This necessitated the move of the New Orleans Pelicans from the Eastern Conference 's Central Division to the newly created Southwest Division of the Western Conference .\tSouthwest Division\tNBA Southwest Division\tEastern Conference\tEastern Conference (NBA)\tNew Orleans Pelicans\tNew Orleans Pelicans"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 32942,
@@ -5264,9 +5264,9 @@
         "[AMGTV] AMGTV also syndicates several movie packages and music specials to stations outside their affiliate base ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 108240,
@@ -5285,9 +5285,9 @@
         "[Pharmacology] Pharmacology , a biomedical science , deals with the research , discovery , and characterization of chemicals which show biological effects and the elucidation of cellular and organismal function in relation to these chemicals ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 178161,
@@ -5383,9 +5383,9 @@
         "[The_Winds_of_Winter] The Winds of Winter is the forthcoming sixth novel in the epic fantasy series A Song of Ice and Fire by George R. R. Martin .\tGeorge R. R. Martin\tGeorge R. R. Martin\tA Song of Ice and Fire\tA Song of Ice and Fire\tfantasy\tfantasy"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 49293,
@@ -5407,9 +5407,9 @@
         "[Eurotas_-LRB-river-RRB-] The Eurotas or Evrotas -LRB- Greek : \u0395\u03c5\u03c1\u03ce\u03c4\u03b1\u03c2 -RRB- is the main river of Laconia and one of the major rivers of the Peloponnese , in Greece .\tPeloponnese\tPeloponnese\tGreece\tGreece\tLaconia\tLaconia"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 224567,
@@ -5419,9 +5419,9 @@
         "[Vampire_Academy_-LRB-film-RRB-] Vampire Academy -LRB- also known as Vampire Academy : Blood Sisters -RRB- is a 2014 American fantasy comedy film based on Richelle Mead 's 2007 best-selling novel of the same name , directed by Mark Waters , and scripted by Daniel Waters .\tMark Waters\tMark Waters (director)\tDaniel Waters\tDaniel Waters (screenwriter)\tVampire Academy\tVampire Academy (novel)\tRichelle Mead\tRichelle Mead\tfantasy\tFantasy film\tcomedy film\tcomedy film\tnovel of the same name\tVampire Academy (novel)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 110334,
@@ -5481,9 +5481,9 @@
         "[Matthias_Corvinus] Matthias patronized art and science ; his royal library , the Bibliotheca Corviniana , was one of the largest collections of books in Europe .\tBibliotheca Corviniana\tBibliotheca Corviniana"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 220458,
@@ -5577,9 +5577,9 @@
         "[Soul_Food_-LRB-film-RRB-] Soul Food is a 1997 American comedy-drama film produced by Kenneth `` Babyface '' Edmonds , Tracey Edmonds and Robert Teitel and released by Fox 2000 Pictures .\tRobert Teitel\tRobert Teitel\tcomedy-drama film\tcomedy-drama film\tTracey Edmonds\tTracey Edmonds\tFox 2000 Pictures\tFox 2000 Pictures"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 46641,
@@ -5647,9 +5647,9 @@
         "[Angelsberg] Angelsberg is a small town in the commune of Fischbach , in central Luxembourg .\tLuxembourg\tLuxembourg\tFischbach\tFischbach, Mersch\tcommune\tCommunes of Luxembourg"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 7727,
@@ -5671,9 +5671,9 @@
         "[Robert_Singer_-LRB-producer-RRB-] He also served as a producer for the film Cujo\tCujo\tCujo (film)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 131634,
@@ -5806,9 +5806,9 @@
         "[Mike_Huckabee] Michael Dale Huckabee -LRB- born August 24 , 1955 -RRB- is an American politician , Christian minister , author , musician , and commentator who served as the 44th Governor of Arkansas from 1996 to 2007 .\tArkansas\tArkansas\t44th Governor of Arkansas\tList of Governors of Arkansas\tHuckabee\tHuckabee\tminister\tMinister (Christianity)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 111643,
@@ -5835,9 +5835,9 @@
         "[Brick_-LRB-film-RRB-] Brick is a 2005 American neo-noir mystery film written and directed by Rian Johnson in his directorial debut , starring Joseph Gordon-Levitt .\tRian Johnson\tRian Johnson\tJoseph Gordon-Levitt\tJoseph Gordon-Levitt\tneo-noir\tneo-noir\tmystery\tMystery film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 50860,
@@ -5882,9 +5882,9 @@
         "[Prague_Castle] Prague Castle -LRB- -LSB- cz : Pra\u017esk\u00fd hrad , Pra\u017esk\u00fd hrad -RSB- -RRB- is a castle complex in Prague , Czech Republic , dating from the 9th century .\tCzech Republic\tCzech Republic\tcastle\tcastle\tPrague\tPrague"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 194370,
@@ -5913,9 +5913,9 @@
         "[Aarhus] Aarhus -LRB- -LSB- \u02c8\u0252\u02d0hu\u02d0\u02c0s -RSB- ; officially spelled \u00c5rhus from 1948 until 31 December 2010 -RRB- is the second-largest city in Denmark and the seat of Aarhus municipality .\tAarhus\tAarhus Municipality\tDenmark\tDenmark\tAarhus municipality\tAarhus municipality"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 218241,
@@ -5974,9 +5974,9 @@
         "[Chile] Chile , is a South American country occupying a long , narrow strip of land between the Andes to the east and the Pacific Ocean to the west .\tAndes\tAndes"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 7982,
@@ -6019,9 +6019,9 @@
         "[Two_and_a_Half_Men] Sheen 's contract was terminated the following month and he was confirmed not to be returning to the series ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 87072,
@@ -6030,9 +6030,9 @@
         "[Anne_Boleyn] Anne returned to England in early 1522 , to marry her Irish cousin James Butler , 9th Earl of Ormond ; the marriage plans were broken up by Cardinal Wolsey , and instead she secured a post at court as maid of honour to Henry VIII 's wife , Catherine of Aragon .\tmaid of honour\tmaid of honour\tCardinal Wolsey\tThomas Wolsey\tCatherine of Aragon\tCatherine of Aragon"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 201612,
@@ -6092,9 +6092,9 @@
         "[Leslie_Alexander_-LRB-businessman-RRB-] He is a former bond trader from New Jersey who owns the National Basketball Association -LRB- NBA -RRB- team Houston Rockets .\tNew Jersey\tNew Jersey\tHouston Rockets\tHouston Rockets\tNational Basketball Association\tNational Basketball Association"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 37390,
@@ -6125,9 +6125,9 @@
         "[Soul_Surfer_-LRB-film-RRB-] Soul Surfer is a 2011 American biographical drama film directed by Sean McNamara , based on the 2004 autobiography Soul Surfer : A True Story of Faith , Family , and Fighting to Get Back on the Board by Bethany Hamilton about her life as a surfer after a horrific shark attack and her recovery .\tSean McNamara\tSean McNamara (director)\tBethany Hamilton\tBethany Hamilton\tbiographical\tbiographical film\tdrama film\tdrama film\tshark attack\tshark attack"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 207524,
@@ -6145,9 +6145,9 @@
         "[Gray_Matter_Interactive] Gray Matter Interactive Studios , Inc. was a computer game developer founded in 1994 , and acquired by Activision in January 2002 .\tActivision\tActivision\tcomputer game developer\tcomputer game developer"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 114514,
@@ -6221,9 +6221,9 @@
         "[Tenacious_D] Tenacious D is an American comedy rock duo that was formed in Los Angeles , California in 1994 .\tLos Angeles\tLos Angeles\tCalifornia\tCalifornia\tAmerican\tUnited States\tcomedy rock\tcomedy rock\tduo\tdouble act\tTenacious D\tTenacious D (album)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 111424,
@@ -6244,9 +6244,9 @@
         "[Foot_Locker] Foot Locker Retail , Inc. is an American sportswear and footwear retailer , with its headquarters in Midtown Manhattan , New York City , and operating in 28 countries worldwide .\tNew York City\tNew York City\tNew York\tNew York (state)\tAmerican\tUnited States\tMidtown Manhattan\tMidtown Manhattan"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 208916,
@@ -6262,9 +6262,9 @@
         "[The_Monster_-LRB-song-RRB-] Eminem and Rihanna performed the song live at the 2014 MTV Movie Awards .\tEminem\tEminem\tRihanna\tRihanna\t2014 MTV Movie Awards\t2014 MTV Movie Awards"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 39493,
@@ -6320,9 +6320,9 @@
         "[Jonah_Hill] Hill is known for his comedic roles in films such as Accepted -LRB- 2006 -RRB- , Grandma 's Boy -LRB- 2006 -RRB- , Superbad -LRB- 2007 -RRB- , Knocked Up -LRB- 2007 -RRB- , Forgetting Sarah Marshall -LRB- 2008 -RRB- , Get Him to the Greek -LRB- 2010 -RRB- , 21 Jump Street -LRB- 2012 -RRB- , This Is the End -LRB- 2013 -RRB- , 22 Jump Street -LRB- 2014 -RRB- and War Dogs -LRB- 2016 -RRB- , as well as his performances in Moneyball -LRB- 2011 -RRB- and The Wolf of Wall Street -LRB- 2013 -RRB- , for which he received Academy Award nominations for Best Supporting Actor .\tAccepted\tAccepted (film)\tSuperbad\tSuperbad (film)\tKnocked Up\tKnocked Up\tForgetting Sarah Marshall\tForgetting Sarah Marshall\tGet Him to the Greek\tGet Him to the Greek\t21 Jump Street\t21 Jump Street (film)\tThis Is the End\tThis Is the End\t22 Jump Street\t22 Jump Street\tWar Dogs\tWar Dogs (2016 film)\tMoneyball\tMoneyball (film)\tThe Wolf of Wall Street\tThe Wolf of Wall Street (2013 film)\tAcademy Award\tAcademy Awards\tBest Supporting Actor\tAcademy Award for Best Supporting Actor"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 188647,
@@ -6331,9 +6331,9 @@
         "[Foot_Locker] Foot Locker Retail , Inc. is an American sportswear and footwear retailer , with its headquarters in Midtown Manhattan , New York City , and operating in 28 countries worldwide .\tNew York City\tNew York City\tNew York\tNew York (state)\tAmerican\tUnited States\tMidtown Manhattan\tMidtown Manhattan"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 142728,
@@ -6362,9 +6362,9 @@
         "[Elizabeth_I_of_England] Elizabeth was the daughter of Henry VIII and Anne Boleyn , his second wife , who was executed two-and-a-half years after Elizabeth 's birth .\tHenry VIII\tHenry VIII of England\tAnne Boleyn\tAnne Boleyn"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 161556,
@@ -6374,9 +6374,9 @@
         "[Hugh_Jackman] Hugh Michael Jackman -LRB- born 12 October 1968 -RRB- is an Australian actor , singer , and producer ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 207693,
@@ -6385,9 +6385,9 @@
         "[Andrew_Carnegie] His 1889 article proclaiming `` The Gospel of Wealth '' called on the rich to use their wealth to improve society , and it stimulated a wave of philanthropy .\tThe Gospel of Wealth\tThe Gospel of Wealth"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 68001,
@@ -6423,9 +6423,9 @@
         "[Planet_Hollywood_Las_Vegas] It is owned and operated by Caesars Entertainment Corporation .\tCaesars Entertainment Corporation\tCaesars Entertainment Corporation"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 59550,
@@ -6452,9 +6452,9 @@
         "[Grease_-LRB-film-RRB-] Its soundtrack album ended 1978 as the second-best selling album of the year in the United States , behind the soundtrack of Saturday Night Fever .\tIts soundtrack album\tGrease: The Original Soundtrack from the Motion Picture\tsecond-best selling album of the year in the United States\tBest-selling albums by year in the United States#1970s\tsoundtrack\tSaturday Night Fever: The Original Movie Sound Track\tSaturday Night Fever\tSaturday Night Fever"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 61226,
@@ -6472,9 +6472,9 @@
         "[Angela_Bassett] Angela Evelyn Bassett -LRB- born August 16 , 1958 -RRB- is an American actress ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 215215,
@@ -6484,9 +6484,9 @@
         "[Dreamer_-LRB-2005_film-RRB-] Dreamer is a 2005 American sports drama film written and directed by John Gatins in his directorial debut .\tJohn Gatins\tJohn Gatins\tsports\tsports film\tdrama film\tdrama film\tdirectorial debut\tList of directorial debuts"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 28656,
@@ -6499,9 +6499,9 @@
         "[San_Diego_Comic-Con] It was founded as the Golden State Comic Book Convention in 1970 by a group of San Diegans that included Shel Dorf , Richard Alf , Ken Krueger and Mike Towry ; later , it was called the `` San Diego Comic Book Convention '' .\tSan Diego\tSan Diego\tShel Dorf\tShel Dorf\tRichard Alf\tRichard Alf\tKen Krueger\tKen Krueger\tMike Towry\tMike Towry"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 177492,
@@ -6605,9 +6605,9 @@
         "[Boyhood_-LRB-film-RRB-] Richard Linklater 's daughter Lorelei plays Mason 's sister , Samantha .\tRichard Linklater\tRichard Linklater"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 76783,
@@ -6621,9 +6621,9 @@
         "[Solanum] It also contains the nightshades and horse nettles , as well as numerous plants cultivated for their ornamental flowers and fruit ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 99833,
@@ -6688,9 +6688,9 @@
         "[Designated_Survivor_-LRB-TV_series-RRB-] Designated Survivor is an American political drama television series created by David Guggenheim , starring Kiefer Sutherland , airing on ABC .\tKiefer Sutherland\tKiefer Sutherland\tABC\tAmerican Broadcasting Company\tpolitical drama\tpolitical drama"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 140139,
@@ -6703,9 +6703,9 @@
         "[Tangled] The film was released on Blu-ray and DVD on March 29 , 2011 ; a short film , Tangled Ever After , was released later in 2012 and a television series premiered in 2017 .\tBlu-ray\tBlu-ray Disc\tTangled Ever After\tTangled Ever After\ttelevision series\tTangled: The Series"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 24795,
@@ -6781,9 +6781,9 @@
         "[X-Men-COLON-_Apocalypse] X-Men : Apocalypse is a 2016 American superhero film based on the fictional X-Men characters that appear in Marvel Comics .\tsuperhero film\tsuperhero film\tX-Men\tX-Men\tMarvel Comics\tMarvel Comics"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 11916,
@@ -6814,9 +6814,9 @@
         "[Residenz_Theatre] The Residence Theatre -LRB- in German : Residenztheater -RRB- or New Residence Theatre -LRB- Neues Residenztheater -RRB- of the Residence in Munich was built from 1950 to 1951 by Karl Hocheder .\tResidence\tResidenz, Munich\tMunich\tMunich\tKarl Hocheder\tKarl Hocheder"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 174578,
@@ -6836,9 +6836,9 @@
         "[Due_Date] The film was shot in Las Cruces , New Mexico , Atlanta , Georgia , and Tuscaloosa , Alabama .\tAtlanta\tAtlanta\tGeorgia\tGeorgia (U.S. state)\tTuscaloosa\tTuscaloosa, Alabama\tAlabama\tAlabama (U.S. state)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 90469,
@@ -6871,9 +6871,9 @@
         "[Jenna_Jameson] Advertisements for her site and films , often bearing her picture , have towered on a 48-foot-tall billboard in New York City 's Times Square .\tTimes Square\tTimes Square"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 211290,
@@ -6883,9 +6883,9 @@
         "[The_Closer] On Monday , July 11 , 2011 , the series began its seventh and final season , having finished its sixth season as cable 's highest rated drama ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 10204,
@@ -6969,9 +6969,9 @@
         "[Christian_Gottlob_Neefe] Christian Gottlob Neefe -LRB- -LSB- \u02c8ne\u02d0f\u0259 -RSB- ; 5 February 1748 -- 28 January 1798 -RRB- was a German opera composer and conductor .\topera\topera\tcomposer\tcomposer\tconductor\tConducting"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 32700,
@@ -6989,9 +6989,9 @@
         "[Quran] The Quran -LRB- -LSB- k\u0254r\u02c8\u0251\u02d0n -RSB- ; \u0627\u0644\u0642\u0631\u0622\u0646 , literally meaning `` the recitation '' ; also romanized Qur ` an or Koran -RRB- is the central religious text of Islam , which Muslims believe to be a revelation from God -LRB- Allah -RRB- .\tIslam\tIslam\tromanized\tRomanization of Arabic\treligious text\treligious text\trevelation\trevelation\tGod\tGod in Islam\tAllah\tAllah"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 82548,
@@ -7091,9 +7091,9 @@
         "[TV_Choice] It features weekly TV broadcast programming listings , running from Saturday to Friday , and goes on sale every Tuesday .\tbroadcast programming\tbroadcast programming"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 136413,
@@ -7123,9 +7123,9 @@
         "[In_a_Lonely_Place] The script was adapted by Edmund North from the 1947 novel of the same name by Dorothy B. Hughes .\tDorothy B. Hughes\tDorothy B. Hughes\tnovel of the same name\tIn a Lonely Place (novel)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 220980,
@@ -7136,9 +7136,9 @@
         "[Group_of_15] Chile , Iran and Kenya have since joined the Group of 15 , whereas Yugoslavia is no longer part of the group ; Peru , a founding member-state , decided to leave the G-15 in 2011 .\tYugoslavia\tSocialist Federal Republic of Yugoslavia"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 60399,
@@ -7196,9 +7196,9 @@
         "[Monk] A monk -LRB- -LSB- m\u028c\u014bk -RSB- , from \u03bc\u03bf\u03bd\u03b1\u03c7\u03cc\u03c2 , monachos , `` single , solitary '' and Latin monachus -RRB- is a person who practices religious asceticism by monastic living , either alone or with any number of other monks .\tLatin\tLatin\tasceticism\tasceticism\tmonastic \tmonastic "
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 204338,
@@ -7227,9 +7227,9 @@
         "[Touch_My_Body] `` Touch My Body '' was released as the album 's lead single on February 12 , 2008 .\tlead single\tlead single"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 74298,
@@ -7268,9 +7268,9 @@
         "[General_Motors] These have included Euclid and Terex -LRB- earthmoving/construction/mining equipment & vehicles -RRB- ; Electro-Motive Diesel -LRB- locomotive , marine , and industrial diesel engines -RRB- ; Detroit Diesel -LRB- automotive and industrial diesel engines -RRB- ; Allison -LRB- Aircraft engines , transmissions , gas turbine engines -RRB- ; Frigidaire -LRB- Appliances including refrigeration and air conditioning -RRB- ; New Departure -LRB- bearings -RRB- ; Delco Electronics and ACDelco -LRB- electrical and electronic components -RRB- ; GMAC -LRB- finance -RRB- ; General Aviation and North American Aviation -LRB- airplanes -RRB- ; GM Defense -LRB- military vehicles -RRB- ; and Electronic Data Systems -LRB- information technology -RRB- .\tDetroit\tDetroit\tACDelco\tACDelco\tAmerican\tUnited States\tEuclid\tEuclid Trucks\tTerex\tTerex\tElectro-Motive Diesel\tElectro-Motive Diesel\tDetroit Diesel\tDetroit Diesel\tAllison\tAllison Transmission\ttransmissions\ttransmission (mechanics)\tFrigidaire\tFrigidaire\trefrigeration\trefrigeration\tair conditioning\tair conditioning\tbearings\tbearing (mechanical)\tDelco Electronics\tDelco Electronics\tGMAC\tAlly Financial\tfinance\tfinance\tGeneral Aviation\tAtlantic Aircraft\tNorth American Aviation\tNorth American Aviation\tGM Defense\tGM Defense\tElectronic Data Systems\tElectronic Data Systems\tinformation technology\tinformation technology"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 206466,
@@ -7328,9 +7328,9 @@
         "[Rome] Rome -LRB- -LSB- \u02c8ro\u028am -RSB- ; Roma -LSB- \u02c8ro\u02d0.ma -RSB- , R\u014dma -RRB- is a special comune -LRB- named Comune di Roma Capitale -RRB- and the capital of Italy .\tComune\tComune\tcomune\tcomune\tcapital\tCapital city\tItaly\tItaly"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 208422,
@@ -7351,9 +7351,9 @@
         "[Crips] They were founded in Los Angeles , California in 1969 mainly by Raymond Washington and Stanley Williams .\tRaymond Washington\tRaymond Washington\tStanley Williams\tStanley Williams"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 75277,
@@ -7362,9 +7362,9 @@
         "[Kate_Walsh_-LRB-actress-RRB-] Her roles include Dr. Addison Montgomery on the ABC television dramas Grey 's Anatomy and Private Practice , Rebecca Wright on the short-lived NBC sitcom Bad Judge , and Olivia Baker on the Netflix drama series 13 Reasons Why .\tAddison Montgomery\tAddison Forbes Montgomery\tABC\tAmerican Broadcasting Company\tPrivate Practice\tPrivate Practice (TV series)\tNBC\tNBC\tBad Judge\tBad Judge\tNetflix\tNetflix\t13 Reasons Why\t13 Reasons Why"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 64449,
@@ -7377,9 +7377,9 @@
         "[B._R._Ambedkar] His later life was marked by his political activities ; he became involved in campaigning and negotiations for India 's independence , publishing journals , advocating political rights and social freedom for Dalits , and contributing significantly to the establishment of the state of India .\tIndia\tIndia"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 162207,
@@ -7418,9 +7418,9 @@
         "[Bloods] The Bloods are a primarily , though not exclusively , African American street gang founded in Los Angeles , California .\tAfrican American\tAfrican American\tgang\tgang"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 155413,
@@ -7441,9 +7441,9 @@
         "[Jerome_Flynn] Jerome Patrick Flynn -LRB- born 16 March 1963 -RRB- is an English actor and singer ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 68122,
@@ -7480,9 +7480,9 @@
         "[Lil_Wayne] Dwayne Michael Carter Jr. -LRB- born September 27 , 1982 -RRB- , known professionally as Lil Wayne , is an American hip hop recording artist .\thip hop\tHip hop music"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 33368,
@@ -7491,9 +7491,9 @@
         "[Soyuz_-LRB-spacecraft-RRB-] Soyuz -LRB- \u0421\u043e\u044e\u0301\u0437 -LSB- s\u0250\u02c8j\u0289s -RSB- , `` Union '' , as in \u0421\u043e\u0432\u0435\u0301\u0442\u0441\u043a\u0438\u0439 \u0421\u043e\u044e\u0301\u0437 , `` Sovetskiy Soyuz '' , `` Soviet Union '' -RRB- is a series of spacecraft designed for the Soviet space programme by the Korolyov Design Bureau -LRB- now RKK Energia -RRB- in the 1960s that remains in service today .\tRKK Energia\tS.P. Korolev Rocket and Space Corporation Energia\tspacecraft\tspacecraft\tSoviet space programme\tSoviet space programme"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 21179,
@@ -7520,9 +7520,9 @@
         "[Bermuda_Triangle] The Bermuda Triangle , also known as the Devil 's Triangle , is a loosely-defined region in the western part of the North Atlantic Ocean , where a number of aircraft and ships are said to have disappeared under mysterious circumstances .\tAtlantic Ocean\tAtlantic Ocean\taircraft\taircraft\tships\tSurface ship"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 95094,
@@ -7551,9 +7551,9 @@
         "[Saturn_Corporation] The Saturn Corporation , also known as Saturn LLC , is a registered trademark established on January 7 , 1985 , as a subsidiary of General Motors .\tGeneral Motors\tGeneral Motors\tLLC\tLimited liability company"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 49834,
@@ -7573,9 +7573,9 @@
         "[Japan] The four largest are Honshu , Hokkaido , Kyushu and Shikoku , which make up about ninety-seven percent of Japan 's land area and often are referred to as home islands .\tHonshu\tHonshu\tHokkaido\tHokkaido\tKyushu\tKyushu\tShikoku\tShikoku"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 133218,
@@ -7683,9 +7683,9 @@
         "[The_Giver_-LRB-film-RRB-] It received a People 's Choice Award nomination for Favorite Dramatic Movie ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 184092,
@@ -7721,9 +7721,9 @@
         "[Stephen_Hillenburg] Born in Lawton , Oklahoma and raised in Anaheim , California , Hillenburg became fascinated with the ocean as a child and also developed an interest in art ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 181195,
@@ -7811,9 +7811,9 @@
         "[Betsy_Hodges] Hodges won the 2013 Minneapolis mayoral election and was inaugurated on January 2 , 2014 .\t2013 Minneapolis mayoral election\tMinneapolis mayoral election, 2013"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 194353,
@@ -7840,9 +7840,9 @@
         "[Blue_Jasmine] Blue Jasmine is a 2013 American black comedy-drama film written and directed by Woody Allen .\tWoody Allen\tWoody Allen\tblack\tblack comedy\tcomedy-drama film\tcomedy-drama film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 64500,
@@ -7861,9 +7861,9 @@
         "[Monosodium_glutamate] MSG is used in the food industry as a flavor enhancer with an umami taste that intensifies the meaty , savory flavor of food , as naturally occurring glutamate does in foods such as stews and meat soups .\tumami\tumami"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 147821,
@@ -7939,9 +7939,9 @@
         "[Tenth_Doctor] He eventually parts ways with them all by the end of the 2008 series finale , `` Journey 's End '' , after which he attempts to travel alone for the duration of the 2008 -- 2010 specials before being accompanied by Donna Noble 's grandfather Wilfred Mott on his final adventure in The End of Time .\tThe End of Time\tThe End of Time (Doctor Who)\tDonna Noble\tDonna Noble\tWilfred Mott\tWilfred Mott"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 194754,
@@ -7980,9 +7980,9 @@
         "[Padua] Padua -LRB- -LSB- \u02c8p\u00e6dju.\u0259 -RSB- or -LSB- \u02c8p\u00e6d\u0292u.\u0259 -RSB- , Padova -LSB- \u02c8pa\u02d0dova -RSB- ; P\u00e0dova -RRB- is a city and comune in Veneto , northern Italy .\tVeneto\tVeneto\tPadua\tProvince of Padua\tcomune\tcomune"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 111388,
@@ -8015,9 +8015,9 @@
         "[St._Anger] It is also the final collaboration between Metallica and producer Bob Rock , whose relationship began with the band 's fifth studio album , 1991 's Metallica .\tMetallica\tMetallica (album)\tBob Rock\tBob Rock"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 212322,
@@ -8044,9 +8044,9 @@
         "[Practical_Magic] Practical Magic is a 1998 American romantic comedy film based on the 1995 novel of the same name by Alice Hoffman .\tPractical Magic\tPractical Magic (novel)\tAlice Hoffman\tAlice Hoffman\tromantic comedy film\tromantic comedy film\tnovel of the same name\tPractical Magic (novel)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 220442,
@@ -8068,9 +8068,9 @@
         "[Justine_Bateman] Until recently , Bateman ran a production and consulting company , SECTION 5 ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 10379,
@@ -8079,9 +8079,9 @@
         "[Horse] The horse has evolved over the past 45 to 55 million years from a small multi-toed creature , Eohippus , into the large , single-toed animal of today .\tevolved\tevolution of the horse\tEohippus\tEohippus"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 37432,
@@ -8101,9 +8101,9 @@
         "[Shane_Black] Shane Black -LRB- born December 16 , 1961 -RRB- is an American screenwriter , director , producer and actor , known for writing the 1987 action film hit Lethal Weapon , and his directorial debut with the film Kiss Kiss Bang Bang in 2005 .\taction film\taction film\tLethal Weapon\tLethal Weapon\tKiss Kiss Bang Bang\tKiss Kiss Bang Bang"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 69298,
@@ -8139,9 +8139,9 @@
         "[Jefferson_Davis] Davis was born in Kentucky to a moderately prosperous farmer , and grew up on his older brother Joseph 's large cotton plantations in Mississippi and Louisiana .\tMississippi\tMississippi\tKentucky\tKentucky\tJoseph\tJoseph Emory Davis\tLouisiana\tLouisiana"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 123342,
@@ -8160,9 +8160,9 @@
         "[Naalakkersuisut] The Naalakkersuisut is the government of Greenland , a `` constituent country '' -LRB- land -RRB- of the Kingdom of Denmark , takes place in a framework of a parliamentary representative democratic country , whereby the prime minister is the head of government , and of a multi-party system .\tGreenland\tGreenland\tKingdom of Denmark\tKingdom of Denmark\tparliamentary\tparliamentary system\trepresentative democratic\trepresentative democracy\tcountry\tcountry\tprime minister\tPrime Minister of Greenland\thead of government\thead of government\tmulti-party system\tmulti-party system\tgovernment\tgovernment"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 27754,
@@ -8189,9 +8189,9 @@
         "[Kyle_MacLachlan] MacLachlan has won a Golden Globe Award for Best Actor -- Television Series Drama and has been nominated for two Emmy Awards , all for Twin Peaks .\tTwin Peaks\tTwin Peaks\tEmmy Awards\tEmmy Awards"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 45180,
@@ -8249,9 +8249,9 @@
         "[Death_Note_-LRB-2015_TV_series-RRB-] is a Japanese television drama series based on the manga series of the same name by Tsugumi Ohba and Takeshi Obata .\tJapanese television drama\tJapanese television drama\tmanga\tmanga\tof the same name\tDeath Note\tTsugumi Ohba\tTsugumi Ohba\tTakeshi Obata\tTakeshi Obata"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 129985,
@@ -8359,9 +8359,9 @@
         "[Caesar_-LRB-Mercury_Theatre-RRB-] Caesar is the title of Orson Welles 's innovative 1937 adaptation of William Shakespeare 's Julius Caesar , a modern-dress bare-stage production that evoked comparison to contemporary Fascist Italy and Nazi Germany .\tOrson Welles\tOrson Welles\tWilliam Shakespeare\tWilliam Shakespeare\tJulius Caesar\tJulius Caesar (play)\tFascist\tFascism\tNazi Germany\tNazi Germany"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 71510,
@@ -8370,9 +8370,9 @@
         "[T2_Trainspotting] T2 Trainspotting is a 2017 British comedy drama film , set in and around Edinburgh , Scotland .\tTrainspotting\tTrainspotting (film)\tEdinburgh\tEdinburgh\tcomedy\tcomedy\tdrama film\tDrama (film and television)"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 120352,
@@ -8391,9 +8391,9 @@
         "[Civilization_IV] Sid Meier 's Civilization IV is a turn-based strategy computer game and the fourth installment of the Civilization series .\tSid Meier\tSid Meier\tCivilization\tCivilization (series)\tturn-based strategy\tturn-based strategy\tcomputer game\tPC game"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 95431,
@@ -8535,9 +8535,9 @@
         "[Zac_Efron] Zachary David Alexander Efron -LRB- born October 18 , 1987 -RRB- is an American actor and singer .\tAmerican\tAmericans"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 98123,
@@ -8555,9 +8555,9 @@
         "[Fred_Seibert] He has produced live action and animated programs for cable television , and the internet , and began his professional career as a jazz and blues record producer .\tcable television\tcable television"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 143144,
@@ -8566,9 +8566,9 @@
         "[Henri_Kontinen] He is currently ranked as world number 1 in doubles rankings after winning the Australian Open men 's doubles championship ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 80362,
@@ -8586,9 +8586,9 @@
         "[Birmingham] Birmingham -LRB- -LSB- \u02c8b\u025c\u02d0m\u026a\u014b\u0259m -RSB- -RRB- is a city and metropolitan borough in the West Midlands , England .\tWest Midlands\tWest Midlands (county)\tBirmingham\tBirmingham Airport\tcity\tcity status in the United Kingdom\tmetropolitan borough\tmetropolitan borough\tEngland\tEngland"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 126650,
@@ -8624,9 +8624,9 @@
         "[Birthday_Song_-LRB-2_Chainz_song-RRB-] The song , which features fellow American rapper Kanye West , was produced by Sonny Digital , West , BWheezy , Anthony Kilhoffer , Lifted and Mike Dean .\tKanye West\tKanye West\tMike Dean\tMike Dean (producer)\trapper\trapper\tproduced\tHip hop production\tSonny Digital\tSonny Digital"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 131928,
@@ -8644,9 +8644,9 @@
         "[Annabelle_-LRB-doll-RRB-] The doll resides in a glass box at The Warrens ' Occult Museum in Monroe , Connecticut ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 134099,
@@ -8656,9 +8656,9 @@
         "[Floyd_Mayweather_Jr.] Mayweather has generated approximately 19.5 million in PPV buys and $ 1.3 billion in revenue throughout his career , surpassing the likes of former top PPV attractions including Mike Tyson , Evander Holyfield , Lennox Lewis , Oscar De La Hoya , and Manny Pacquiao .\tMike Tyson\tMike Tyson\tEvander Holyfield\tEvander Holyfield\tLennox Lewis\tLennox Lewis\tOscar De La Hoya\tOscar De La Hoya\tManny Pacquiao\tManny Pacquiao"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 8383,
@@ -8781,9 +8781,9 @@
         "[Mutiny_on_the_Bounty_-LRB-1962_film-RRB-] The film was heavily panned , and was considered a box office bomb , having lost over $ 6 million .\tbox office bomb\tbox office bomb"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 150981,
@@ -8889,9 +8889,9 @@
         "[Lizzy_Caplan] Caplan also starred in television shows The Class , True Blood , and Party Down .\tThe Class\tThe Class (TV series)\tTrue Blood\tTrue Blood\tParty Down\tParty Down"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 124087,
@@ -8900,9 +8900,9 @@
         "[Ayananka_Bose] Ayananka Bose is an Indian cinematographer of Bollywood movies .\tcinematographer\tcinematographer\tBollywood\tBollywood"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 47680,
@@ -8924,9 +8924,9 @@
         "[A_Good_Day_to_Die_Hard] The film was directed by John Moore and written by Skip Woods , and stars Bruce Willis as John McClane .\tJohn Moore\tJohn Moore (director)\tSkip Woods\tSkip Woods\tBruce Willis\tBruce Willis\tJohn McClane\tJohn McClane"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 73281,
@@ -9022,9 +9022,9 @@
         "[Pay-per-view] Pay-per-view -LRB- PPV -RRB- is a type of pay television service by which a subscriber of a television service provider can purchase events to view via private telecast .\tpay television\tpay television"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 76199,
@@ -9034,9 +9034,9 @@
         "[Helmand_Province] Helmand -LRB- -LSB- \u02c8h\u025blm\u0259nd -RSB- ; Pashto/Dari : \u0647\u0644\u0645\u0646\u062f -RRB- , also known as Hillmand , and , in ancient times , as Hermand and Hethumand is one of the 34 provinces of Afghanistan , in the south of the country .\tPashto\tPashto language\tDari\tDari language\tprovinces\tprovinces of Afghanistan\tAfghanistan\tAfghanistan"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 357,
@@ -9155,9 +9155,9 @@
         "[Chris_Eubank_Jr.] Christopher Livingstone `` Chris '' Eubank Jr. -LRB- born 18 September 1989 -RRB- is a British professional boxer .\tprofessional boxer\tprofessional boxer\tBritish\tBritish Boxing Board of Control"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 182679,
@@ -9283,9 +9283,9 @@
         "[Billie_Joe_Armstrong] Billie Joe Armstrong -LRB- born February 17 , 1972 -RRB- is an American musician , singer , songwriter and actor who is best known as the lead vocalist , primary songwriter , and guitarist of the punk rock band Green Day , which he co-founded with Mike Dirnt .\tGreen Day\tGreen Day\tpunk rock\tpunk rock\tMike Dirnt\tMike Dirnt"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 159574,
@@ -9296,9 +9296,9 @@
         "[Dan_O'Bannon] Daniel Thomas `` Dan '' O'Bannon -LRB- September 30 , 1946 -- December 17 , 2009 -RRB- was an American film screenwriter , director , visual effects supervisor , and occasional actor , usually in the science fiction and horror genres .\tscreenwriter\tscreenwriter\tdirector\tfilm director\tvisual effects supervisor\tvisual effects supervisor\tscience fiction\tscience fiction\thorror\tHorror fiction"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 140857,
@@ -9393,9 +9393,9 @@
         "[No_Way_Out_-LRB-Puff_Daddy_album-RRB-] No Way Out is the debut studio album by American hip hop recording artist , songwriter and record producer Puff Daddy .\tPuff Daddy\tSean Combs\tstudio album\tstudio album\thip hop\tHip hop music\trecording artist\trecording artist\tsongwriter\tsongwriter\trecord producer\trecord producer"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 17283,
@@ -9404,9 +9404,9 @@
         "[Atlantic_Records] In 1967 , Atlantic Records became a wholly owned subsidiary of Warner Bros.-Seven Arts , now the Warner Music Group , and expanded into rock and pop music with releases by bands such as Led Zeppelin and Yes .\tWarner Bros.-Seven Arts\tWarner Bros.-Seven Arts\tWarner Music Group\tWarner Music Group\trock\trock music\tpop music\tpop music\tLed Zeppelin\tLed Zeppelin\tYes\tYes (band)"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 116129,
@@ -9426,9 +9426,9 @@
         "[Caroline_Kennedy] Caroline Bouvier Kennedy -LRB- born November 27 , 1957 -RRB- is an American author , attorney , and diplomat who served as the United States Ambassador to Japan from 2013 to 2017 .\tUnited States Ambassador to Japan\tUnited States Ambassador to Japan"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 161908,
@@ -9469,9 +9469,9 @@
         "[Yoga] Yoga -LRB- -LSB- \u02c8jo\u028ag\u0259 -RSB- Sanskrit , \u092f\u094b\u0917 Listen -RRB- is a group of physical , mental , and spiritual practices or disciplines which originated in ancient India .\tSanskrit\tSanskrit\tphysical\tHuman body\tmental\tmind\tspiritual\tsoul\tancient India\tancient India\tIndia\tIndia\tYoga\tYoga (philosophy)"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 201104,
@@ -9530,9 +9530,9 @@
         "[Daggering] It is of recent origin , associated with the 2006 wave of dancehall music .\tdancehall\tdancehall"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 7682,
@@ -9639,9 +9639,9 @@
         "[Manmohan_Singh] The first Sikh in office , Singh was also the first prime minister since Jawaharlal Nehru to be re-elected after completing a full five-year term .\tSikh\tSikh\tJawaharlal Nehru\tJawaharlal Nehru"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 129819,
@@ -9699,9 +9699,9 @@
         "[Highway_to_Heaven] Highway to Heaven is an American television drama series which ran on NBC from 1984 to 1989 .\tNBC\tNBC"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 74365,
@@ -9859,9 +9859,9 @@
         "[Weekly_Idol] Weekly Idol is a South Korean variety show , which airs Wednesdays , 6PM KST , on MBC Every1 , MBC 's cable and satellite network for comedy and variety shows .\tMBC Every1\tMBC Every 1\tvariety show\tvariety show\tMBC\tMunhwa Broadcasting Corporation"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 118917,
@@ -9871,9 +9871,9 @@
         "[Stomp_the_Yard] Stomp the Yard is a 2007 dance drama film produced by Rainforest Films and released through Sony Pictures ' Screen Gems division on January 12 , 2007 .\tRainforest Films\tRainforest Films\tScreen Gems\tScreen Gems\tdance\tdance\tdrama\tdrama film\tSony Pictures\tSony Pictures"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 154989,
@@ -9976,9 +9976,9 @@
         "[Bea_Arthur] Bea Arthur -LRB- born Bernice Frankel ; May 13 , 1922 -- April 25 , 2009 -RRB- was an American actress , comedian , singer , and animal rights activist ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 194177,
@@ -10035,9 +10035,9 @@
         "[Monk] A monk -LRB- -LSB- m\u028c\u014bk -RSB- , from \u03bc\u03bf\u03bd\u03b1\u03c7\u03cc\u03c2 , monachos , `` single , solitary '' and Latin monachus -RRB- is a person who practices religious asceticism by monastic living , either alone or with any number of other monks .\tLatin\tLatin\tasceticism\tasceticism\tmonastic \tmonastic "
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 112152,
@@ -10068,9 +10068,9 @@
         "[Shannon_Lee] Shannon Emery Lee -LRB- born April 19 , 1969 -RRB- is an American actress , martial artist and businesswoman ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 19074,
@@ -10079,9 +10079,9 @@
         "[House_of_Balloons] House of Balloons is the debut mixtape by Canadian singer The Weeknd .\tThe Weeknd\tThe Weeknd\tmixtape\tmixtape"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 127415,
@@ -10102,9 +10102,9 @@
         "[Miranda_Otto] The daughter of actors Barry and Lindsay Otto , and the sister of actress Gracie Otto , Brisbane-born Miranda began her acting career at age 18 in 1986 , and has appeared in a variety of independent and major studio films .\tBrisbane\tBrisbane\tactress\tactress\tBarry and Lindsay Otto\tBarry Otto\tGracie Otto\tGracie Otto"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 137968,
@@ -10113,9 +10113,9 @@
         "[Simon_Pegg] Simon John Pegg -LRB- n\u00e9 Beckingham ; born 14 February 1970 -RRB- is an English actor , comedian , screenwriter , and producer ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 217390,
@@ -10153,9 +10153,9 @@
         "[Prescott,_Arizona] Prescott -LRB- -LSB- \u02c8pr\u025bsk\u0259t -RSB- ; \u02bcWi : kwatha Ksik\u02bcita -RRB- is a city in Yavapai County , Arizona , United States .\tYavapai County\tYavapai County, Arizona\tArizona\tArizona\tCounty\tList of counties in Arizona\tUnited States\tUnited States\tYavapai\tYavapai County, Arizona\tcity\tcity"
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 66628,
@@ -10202,9 +10202,9 @@
         "[Duke_of_York] Prince Andrew currently has no male heirs and has been unmarried since his 1996 divorce .\tPrince Andrew\tPrince Andrew, Duke of York"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 116930,
@@ -10255,9 +10255,9 @@
         "[Hush_-LRB-2016_film-RRB-] Hush is a 2016 American horror film directed and edited by Mike Flanagan , starring Kate Siegel , and written by both .\tMike Flanagan\tMike Flanagan (director)\tKate Siegel\tKate Siegel\thorror film\thorror film"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 226883,
@@ -10326,9 +10326,9 @@
         "[Chumlee] Austin Lee Russell -LRB- born September 8 , 1982 -RRB- , better known by his stage name of Chumlee , is an American actor , businessman and reality television personality , known as a cast member on the History Channel television show Pawn Stars , which depicts the daily business at the Gold and Silver Pawn Shop in Las Vegas where Russell works as an employee .\tAmerican\tAmericans\treality television\treality television\tHistory Channel\tHistory (U.S. TV channel)\tPawn Stars\tPawn Stars\tLas Vegas\tLas Vegas"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 24934,
@@ -10346,9 +10346,9 @@
         "[Tool_-LRB-band-RRB-] Tool has won three Grammy Awards , performed worldwide tours , and produced albums topping the charts in several countries ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 142043,
@@ -10357,9 +10357,9 @@
         "[Kesha] Kesha Rose Sebert -LRB- -LSB- \u02c8k\u025b\u0283\u0259_ro\u028az_\u02c8s\u025bb\u0259rt -RSB- ; born March 1 , 1987 ; formerly stylized as Ke $ ha -RRB- is an American singer , songwriter , and rapper ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 43731,
@@ -10426,9 +10426,9 @@
         "[The_Road_to_El_Dorado] The film stars Kevin Kline , Kenneth Branagh , Armand Assante , Jim Cummings , Edward James Olmos , Tobin Bell and Rosie Perez .\tKevin Kline\tKevin Kline\tKenneth Branagh\tKenneth Branagh\tArmand Assante\tArmand Assante\tJim Cummings\tJim Cummings\tEdward James Olmos\tEdward James Olmos\tTobin Bell\tTobin Bell\tRosie Perez\tRosie Perez"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 179267,
@@ -10471,9 +10471,9 @@
         "[John_Deighton] Next , Deighton worked a gold claim in California , along with many others , until February 1858 when there was news of gold further north in a British territory known as New Caledonia .\tNew Caledonia\tNew Caledonia (Canada)"
       ],
       "golden_label": "PASS",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 139670,
@@ -10504,9 +10504,9 @@
         "[Indian_National_Congress] It was founded in Bombay in late December 1885 , during the British Raj in India .\tBombay\tBombay\tBritish Raj\tBritish Raj"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 157430,
@@ -10524,9 +10524,9 @@
         "[Chris_Mullin_-LRB-basketball-RRB-] Thereafter , Mullin played with the Indiana Pacers from 1997 until the 1999 -- 2000 season .\tIndiana Pacers\tIndiana Pacers"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 27496,
@@ -10556,9 +10556,9 @@
         "[Pirates_of_the_Caribbean_-LRB-attraction-RRB-] The original version at Disneyland , which opened in 1967 , was the last attraction whose construction was overseen by Walt Disney ; he died three months before it opened .\tDisneyland\tDisneyland\tWalt Disney\tWalt Disney"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 7025,
@@ -10603,9 +10603,9 @@
         "[House_-LRB-TV_series-RRB-] On February 8 , 2012 , Fox announced that the eighth season , then in progress , would be its last .\tFox\tFox Broadcasting Company"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": 75301,
@@ -10663,9 +10663,9 @@
         "[Latvian_Soviet_Socialist_Republic] The Latvian Soviet Socialist Republic -LRB- Latvian SSR ; Latvijas Padomju Soci\u0101listisk\u0101 Republika \u041b\u0430\u0442\u0432\u0438\u0439\u0441\u043a\u0430\u044f \u0421\u043e\u0432\u0435\u0442\u0441\u043a\u0430\u044f \u0421\u043e\u0446\u0438\u0430\u043b\u0438\u0441\u0442\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u0420\u0435\u0441\u043f\u0443\u0431\u043b\u0438\u043a\u0430 , Latviyskaya Sovetskaya Sotsialisticheskaya Respublika -RRB- , also known as Soviet Latvia or Latvia , was a republic of the Soviet Union .\tSoviet Socialist Republic\tSoviet Socialist Republic\tSoviet Union\tSoviet Union\tLatvian\tLatvian language\tSSR\tSoviet Socialist Republic\tLatvia\tLatvia\trepublic of the Soviet Union\trepublic of the Soviet Union"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": 187317,

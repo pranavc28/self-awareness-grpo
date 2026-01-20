@@ -2,7 +2,7 @@
   "model": "openai/gpt-oss-20b",
   "source": "sample_grpo_vitaminc",
   "dataset": "vitaminc",
-  "checkpoint": "tinker://834a2cd1-71b7-5696-950a-f3e95170ac66:train:0/sampler_weights/self-aware-grpo-mixed-regularization-v3",
+  "checkpoint": "tinker://77cbede0-5b51-563c-9fe1-088e5a606709:train:0/sampler_weights/self-aware-grpo-mixed-regularization-v5",
   "num_examples": 1000,
   "results": [
     {
@@ -23,9 +23,9 @@
         "The party is broadly centrist , and has been attributed both centre-leftFocus on Gordhan and Manuel , John Matisonn , 29 April 2009 , `` Many DA policies are to the left of Cope [ itself a centre-left party ] '' and centre-rightA critique of the Democratic Alliance , Frans Cronje , South African Institute of Race Relations , november 2008 `` the DA whose centre-right position in South African politics could now face a credible challenge for the first time '' policies ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932cc9e77c0008ccb245_2",
@@ -34,9 +34,9 @@
         "First case of pandemic was identified by health authorities in Wuhan , Hubei , China in December 2019 and later recognized as a pandemic by the World Health Organization ( WHO ) on 11 March 2020 ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50882c9e77c000848f36a_3",
@@ -89,9 +89,9 @@
         "Experts refuted conspiracy theories that the virus was genetically engineered."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3949bc9e77c0008cd01c0_1",
@@ -100,9 +100,9 @@
         "In 2013 , the album sold 2.3 million copies worldwide according to the International Federation of the Phonographic Industry ( IFPI ) and was the ninth best selling album of the year ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec7d50fc9e77c0008443090_2",
@@ -166,9 +166,9 @@
         "RoboCop subsequently heads to OCP headquarters alone , barges in on an executive meeting where the Old Man and Jones are present , and shows them the video of Jones ' confession ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebbf32bc9e77c0009295845_2",
@@ -210,9 +210,9 @@
         "The evolutions of the genre 's production and instrumentation have spurred the successes of performers such as Beyonc\ufffd , Usher , John Legend , Frank Ocean , Pharrell Williams , Miguel , Janelle Mon\ufffde , Chris Brown , Tamar Braxton , The Weeknd , Ariana Grande , Tinashe , Ne-Yo , Rihanna , Brandy and K. Michelle , who have embraced new electronic influences and kept R & B 's original feel ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9463c9e77c00084673ce_2",
@@ -364,9 +364,9 @@
         "After an argument with Tom over the use of violence , Jack runs off and is caught by Fogarty ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7acffc9e77c00084a5bf3_1",
@@ -397,9 +397,9 @@
         "Plummer was also nominated for Best Actor in a Supporting Role at the 71st British Academy Film Awards and Best Supporting Actor at the 90th Academy Awards."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec284fcc9e77c0008415bb7_2",
@@ -485,9 +485,9 @@
         "A full-time director , she is the one who directed the drama Moon Lovers : Scarlet Heart Ryeo ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5eb29888c9e77c0008d9342f_4",
@@ -562,9 +562,9 @@
         "A cluster of cases was later detected , starting with 16 confirmed cases in Lombardy on 21 February ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebe6f32c9e77c00084099cd_1",
@@ -584,9 +584,9 @@
         "AMGTV is an American pharmaceutical company with laboratories in Salem , Oregon ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5eafed81c9e77c0009ce1a88_3",
@@ -639,9 +639,9 @@
         "In 2008 , Considine starred in My Zinc Bed a TV film for BBC / HBO ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50881c9e77c000848e15e_3",
@@ -694,9 +694,9 @@
         "The album received mixed reviews from critics , many of whom felt that it does not properly differentiate the double-discs ' contrasts and goals ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec284fcc9e77c0008415ef2_1",
@@ -716,9 +716,9 @@
         "On 21 April , Taraba State government announced a total lockdown of their state from 21 April , restricting movement of individuals and vehicles."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": "5ed50882c9e77c000848f115_4",
@@ -760,9 +760,9 @@
         "During Talbot 's immolation , Sinclair manages to escape with another prisoner , Cally ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebbf32bc9e77c00092954dd_2",
@@ -815,9 +815,9 @@
         "In 2010 , founders RayShawn Ivory and Darin Dean decided to revamp the brand through a new venture known as Ruff Ryders Indy , as a Fontana/Universal affiliated distribution company ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": "5ec284fec9e77c000841768f_1",
@@ -969,9 +969,9 @@
         "Tamwar Masood is a fictional character from the BBC soap opera EastEnders , played by Himesh Patel ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39329c9e77c0008cc90d9_2",
@@ -1134,9 +1134,9 @@
         "Dhammapala wrote commentaries on the Pali Canon texts which Buddhaghosa had omitted and also wrote a commentary called the Paramathamanjusa on Buddhaghosa 's Visuddhimagga. Over much of the early history of Buddhism in Sri Lanka , three subdivisions of Therav\u0101da existed in Sri Lanka , consisting of the monks of the Mah\u0101vih\u0101ra , Abhayagiri vih\u0101ra and JetavanaWarder , A. K. Indian Buddhism ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9461c9e77c0008465ea3_2",
@@ -1189,9 +1189,9 @@
         "As of December 14 , 2018 , it has received over 3.9 billion views and 22.3 million likes , making it the site 's third most viewed and second most liked video ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebe6f2fc9e77c0008407f79_3",
@@ -1244,9 +1244,9 @@
         "They have released a live album , Trainwreck Live , and were working on recording a studio album with producer John King ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec5598dc9e77c000842c431_3",
@@ -1596,9 +1596,9 @@
         "On 30 July 2010 , Mbokani signed a deal with French side AS Monaco ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ea2d97dc9e77c0009cdad78_1",
@@ -1651,9 +1651,9 @@
         "But when he tells the others , he is n't believed and punished severely by his parents for leaving them ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9462c9e77c0008466c44_1",
@@ -1706,9 +1706,9 @@
         "It has been a major transport hub of the country since at least 618 when it was the `` Nine Provinces ' Thoroughfare '' ( ) , and the Wuhan Railway Hub is one of the four most important railway hubs in China ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5ec5598dc9e77c000842c599_1",
@@ -1959,9 +1959,9 @@
         "Meanwhile , Nigel survives the plane accident but is ridiculed for his loss of feathers , and the smugglers are sent to jail."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee393b6c9e77c0008ccb9da_1",
@@ -2025,9 +2025,9 @@
         "It leads Latin American nations in rankings of human development , competitiveness , income per capita , globalization , state of peace , economic freedom , and low perception of corruption ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9461c9e77c00084663ce_3",
@@ -2212,9 +2212,9 @@
         "1 confirmed case , a 50-year-old business woman works in Wuhan ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932ac9e77c0008cc9d4d_1",
@@ -2278,9 +2278,9 @@
         "Brandon Richard Flowers ( born June 21 , 1981 ) is an American singer , songwriter , and multi-instrumentalist ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5eb29886c9e77c0008d92956_3",
@@ -2520,9 +2520,9 @@
         "As of 20 March , there have been 10 confirmed cases in Jersey , two of which are believed to have been contracted within in the island ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932ac9e77c0008cc9b1b_1",
@@ -2718,9 +2718,9 @@
         "In the United States , the song became Swift 's highest-charting single on the Billboard Hot 100 at the time and has become Swift 's third best-selling single ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932bc9e77c0008cca620_2",
@@ -2817,9 +2817,9 @@
         "They learn that much of his research has been reverse engineered from the damaged CPU and the right arm of the The Terminator ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39419c9e77c0008ccfb6f_3",
@@ -2839,9 +2839,9 @@
         "The next day , two cases of coronavirus were diagnosed on Formentera , Balearic Islands , leaving the island of La Graciosa ( Canary Islands ) as the only territory with no cases detected ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7ad02c9e77c00084a6bb6_1",
@@ -3037,9 +3037,9 @@
         "When Rosa asks Liesel to take the laundry to the mayor 's house , she realizes that the woman who saw her taking the book is the mayor 's wife ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50880c9e77c000848d670_1",
@@ -3059,9 +3059,9 @@
         "In , Escobar appeared in the All-Star Futures Game as the starting shortstop for the World team ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39419c9e77c0008ccf97f_1",
@@ -3191,9 +3191,9 @@
         "It is the state 's flagship university and largest in the state , and is ranked among the fastest-growing universities in the nation as documented by the Almanac of Higher Education ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39329c9e77c0008cc9442_1",
@@ -3323,9 +3323,9 @@
         "Jahron Anthony Brathwaite ( born January 3 , 1987 ) , better known under the stage name PartyNextDoor ( stylized as PARTYNEXTDOOR ) , is a Canadian rapper , singer , songwriter and record producer ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": "5ee393b7c9e77c0008ccc31d_2",
@@ -3444,9 +3444,9 @@
         "Later , the Bruins would win the 2011 Stanley Cup Finals , the Red Sox win in the 2013 World Series , and the Patriots would win again in Super Bowl XLIX.The Celtics won this series by winning Games 1 , 2 , 4 , and 6 ; coincidentally , the last time the two teams met in , the Lakers won that series in identical fashion ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5ee39419c9e77c0008ccfab4_2",
@@ -3510,9 +3510,9 @@
         "After the ball had been partially cleared , it was played back in to the feet of Ryan Giggs who sent a low volley into the path of Sheringham , whose scuffed shot squeezed low inside the post ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee393b7c9e77c0008cccb4b_1",
@@ -3664,9 +3664,9 @@
         "On the third day , the film collected \u20b97.80 crore , taking the total opening weekend collection to \u20b918.15 crore. ,"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7ad02c9e77c00084a6b8a_2",
@@ -3741,9 +3741,9 @@
         "Networks and times for Sunday games from Weeks 5\u201317 are subject to change as a result of flexible scheduling. < ! --"
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932cc9e77c0008ccab86_1",
@@ -3752,9 +3752,9 @@
         "In Canary Islands a new case in San Cristobal de la Laguna was reported , rising the total to 7 active cases . *"
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50882c9e77c000848ecc0_3",
@@ -3785,9 +3785,9 @@
         "The game is a reboot of the Doom franchise , disregarding storylines of the previous Doom video games ( however according to the Doom RPG website they are all part of the same universe , it places Doom RPG as a sequel to Doom 3 , and prequel to Doom/Doom II all starring the same marine character ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932bc9e77c0008cc9fbf_4",
@@ -3851,9 +3851,9 @@
         "more than 5,300 deaths have been attributed to COVID-19 ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5ee39329c9e77c0008cc9192_3",
@@ -4082,9 +4082,9 @@
         "The genre was influential in Britain in shaping politics , national policies and popular perceptions in the years leading up to the First World War , and remains a part of popular culture to this day ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932cc9e77c0008ccb28e_3",
@@ -4170,9 +4170,9 @@
         "As of February 24 , 2019 , the video has received over 4 billion views on YouTube making it the third most viewed video on the website ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39418c9e77c0008ccf52b_2",
@@ -4269,9 +4269,9 @@
         "On review aggregator website Rotten Tomatoes , the film has an approval rating of 89 % , based on 27 reviews , with an average rating of 6.5/10 ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": "5ed4de09c9e77c000848ac23_3",
@@ -4302,9 +4302,9 @@
         "They finished their debut season in eighth place ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9462c9e77c0008466b63_2",
@@ -4379,9 +4379,9 @@
         "Ayoze scored Newcastle 's first in a 2\u20132 draw with title holders Chelsea on 26 September 2015 ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932ac9e77c0008cc9d28_2",
@@ -4412,9 +4412,9 @@
         "Mikami is a Japanese video game director and developer ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39329c9e77c0008cc91b0_2",
@@ -4456,9 +4456,9 @@
         "The band performed at 1969 's famed Woodstock Festival ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5eb29887c9e77c0008d92d16_1",
@@ -4566,9 +4566,9 @@
         "Pitched an Immaculate Inning ( September 11 , 2004 ) } } LaTroy Hawkins ( born December 21 , 1972 ) is a Major League Baseball relief pitcher who currently plays for the Los Angeles Angels of Anaheim ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5eb29887c9e77c0008d92dbb_2",
@@ -4698,9 +4698,9 @@
         "Flowers is expected to perform at the Royal Variety Performance ( 2015 ) at Royal Albert Hall ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebe6f30c9e77c00084089fd_2",
@@ -4731,9 +4731,9 @@
         "John Dolmayan is the chef of the bands `` Indicator '' and `` Scars on Broadway . ''"
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7ad02c9e77c00084a6c57_2",
@@ -4918,9 +4918,9 @@
         "Undergraduate enrollment in environmental , geological , and mechanical engineering all rank in the top eight nationally , and the scientific and technical communication program is one of the nation \u2019 s largest."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50882c9e77c000848f1ee_2",
@@ -5039,9 +5039,9 @@
         "The average rating for each of the season 's individual episodes is 87 % ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5ed50880c9e77c000848cff1_4",
@@ -5116,9 +5116,9 @@
         "Boston City Council named October 16 , 2013 `` Janelle Mona\u0301e Day `` in the city of Boston , Massachusetts , in recognition of her artistry and social leadership ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec284fbc9e77c00084158a7_4",
@@ -5138,9 +5138,9 @@
         "The outbreak is thought to have contributed to a drop in Australia 's currency ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9461c9e77c0008465b5b_3",
@@ -5259,9 +5259,9 @@
         "Mathis would also break Freeney 's franchise record of 16 sacks in a season the following season , too."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5ee393b6c9e77c0008ccb9b6_1",
@@ -5380,9 +5380,9 @@
         "John Dolmayan is the biggest bear of the New York Zoo ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5eafed80c9e77c0009ce10bd_3",
@@ -5424,9 +5424,9 @@
         "Esquire named her the Sexiest Woman Alive in 2014.During the 2014 Israel\u2013Gaza conflict , Cruz along with her husband signed an open letter , denouncing Israel 's actions as a `` genocide '' , ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50881c9e77c000848df32_1",
@@ -5479,9 +5479,9 @@
         "Cellular received an approval rating of 55 % on Rotten Tomatoes ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5ee3932bc9e77c0008cca24b_3",
@@ -5523,9 +5523,9 @@
         "The novel , which was first published in 1929 , is a first-person account of American Frederic Henry , serving as an Lieutenant ( `` Tenente '' ) in the ambulance corps in the Italian Army ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932bc9e77c0008cca6b4_2",
@@ -5567,9 +5567,9 @@
         "On 23 March , mainland China had gone five days with only one case transmitted domestically , in this instance via a traveller returning to Guangzhou from Istanbul ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebe6f30c9e77c00084086f1_2",
@@ -5589,9 +5589,9 @@
         "As of 14 February 2020 , the number of severe cases is 10,627 ( 16 % ) out of 64,470 with 7,168 having recovered."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5ed7ad02c9e77c00084a6ccd_2",
@@ -5633,9 +5633,9 @@
         "Ghost '' was rereleased as the lead single from Badlands , and three new singles were released after , all of which were certified Platinum and achieved minor commercial success ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebe6f32c9e77c000840988f_2",
@@ -5809,9 +5809,9 @@
         "As of October 5 , 2019 , the video has received over 4.2 billion views on YouTube making it the third most viewed video on the website ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932dc9e77c0008ccb7ae_1",
@@ -5831,9 +5831,9 @@
         "1 confirmed case , a 50-year-old business woman works in Wuhan ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50882c9e77c000848fcdf_1",
@@ -5875,9 +5875,9 @@
         "He has built a reputation as a versatile character actor appearing in such high-profile films as Road to Perdition , The Phantom of the Opera , Munich , There Will Be Blood , Harry Potter and the Deathly Hallows \u2013 Part 2 , The Woman in Black and Tinker Tailor Soldier Spy ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39419c9e77c0008ccfcc5_2",
@@ -5897,9 +5897,9 @@
         "He is also a seven-time Cuban national champion at bantamweight ( 2000\u20132006 ) , finishing his amateur career with a record of nearly 475 fights with 12 losses ; the last of these losses occurring in 2003 ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50881c9e77c000848e11a_3",
@@ -5952,9 +5952,9 @@
         "She has also served as Chairman of SPE \u2019 s Motion Picture Group since December 2003 ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed4de0ac9e77c000848ae83_2",
@@ -5963,9 +5963,9 @@
         "Rothfuss has also publicly declared that he would financially assist Nathan Fillion in buying the rights to the `` Firefly '' Televison series from Fox ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50882c9e77c000848f389_4",
@@ -6018,9 +6018,9 @@
         "On May 3 , 2016 , Scott Stapp announced that he would replace Scott Weiland ( who died on December 3 , 2015 ) as the lead singer of Art of Anarchy. ``"
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9463c9e77c000846779c_3",
@@ -6040,9 +6040,9 @@
         "Most notable were his successful spells at Juventus , Atl\u00e9tico Madrid , Lazio and Inter , clubs with which he won several honours ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7acffc9e77c00084a5c3f_4",
@@ -6161,9 +6161,9 @@
         "Eminem also collaborated with artists such as Pink , Lil Wayne , Slaughterhouse and Rihanna for the album ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50880c9e77c000848d79c_4",
@@ -6216,9 +6216,9 @@
         "As of September 24 , 2019 , the video has received over 4.2 billion views on YouTube making it the third most viewed video on the website ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ec284ffc9e77c0008417dca_2",
@@ -6568,9 +6568,9 @@
         "They are mainly used in stews and sauces , as well as marinades for meats and chicken."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39329c9e77c0008cc90ef_1",
@@ -6678,9 +6678,9 @@
         "She achieved international recognition when she appeared as Sibylla , Queen of Jerusalem in Ridley Scott 's historical epic Kingdom of Heaven -LRB- 2005 -RRB- , and portrayed Bond girl Vesper Lynd in the James Bond film Casino Royale -LRB- 2006 -RRB- ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5eb29886c9e77c0008d929a3_2",
@@ -7096,9 +7096,9 @@
         "He lost his place in the team in 2012\u201313 after a falling-out with manager Paolo Di Canio , before returning to the first team under Gus Poyet ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932bc9e77c0008cca290_1",
@@ -7107,9 +7107,9 @@
         "Questions raised include whether the virus has been circulating for longer than previously thought and whether Wuhan really is the center of the outbreak or simply the place it was first identified with ongoing surveillance and testing ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932ac9e77c0008cc9d95_1",
@@ -7305,9 +7305,9 @@
         "According to the Middle East Media Research Institute , numerous writers in the Arabic media have promoted the conspiracy theory that COVID-19 was deliberately created and spread by the United States , as `` part of an economic and psychological war waged by the US against China with the aim of weakening it and presenting it as a backward country and a source of diseases '' ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed4de03c9e77c00084892a3_1",
@@ -7371,9 +7371,9 @@
         "During its first week on sale in Japan , it sold 277,000 units , and by the end of 2013 become the 17th best-selling game of the year ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50881c9e77c000848dee2_3",
@@ -7459,9 +7459,9 @@
         "Like North and Tooth , Sandy does not begrudge Jack his place among the Guardians , nor does he seem to hold any genuine ill will towards Jack for any past encounters , and Jack seems to be completely at ease with Sandy from the very start of the film even though he initially rejects the offer of becoming a Guardian ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3949bc9e77c0008cd00b1_1",
@@ -7514,9 +7514,9 @@
         "As of December 21 , 2018 , it has received over 3.9 billion views and 22.4 million likes , making it the site 's third most viewed and second most liked video ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ede072fc9e77c00084d315b_2",
@@ -7558,9 +7558,9 @@
         "The Closer is an American television comedy , starring Kyra Sedgwick as Brenda Leigh Johnson , a Los Angeles Police Department Deputy Chief ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7ad02c9e77c00084a6b5e_2",
@@ -7844,9 +7844,9 @@
         "The 38-year-old man was asymptomatic for weeks , reportedly led an active social life and potentially interacted with dozens of people before spreading the virus at Codogno Hospital ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee393b6c9e77c0008ccbe03_2",
@@ -7855,9 +7855,9 @@
         "Questions raised include whether the virus has been circulating for longer than previously thought and whether Wuhan really is the center of the outbreak or simply the place it was first identified with ongoing surveillance and testing ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ec5598ec9e77c000842c817_4",
@@ -7888,9 +7888,9 @@
         "Twelvers make majorities in Iran , Azerbaijan , Iraq , Bahrain ; Lebanon ; and significant minorities in Nigeria , Chad , Bangladesh , Tanzania , Kuwait , India , Pakistan , Afghanistan , Qatar , UAE , Saudi Arabia ,   International Crisis Group ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed4de07c9e77c000848a1b4_4",
@@ -7965,9 +7965,9 @@
         "Marjorie Gross was a television director and producer ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5eafed81c9e77c0009ce1a9b_3",
@@ -7998,9 +7998,9 @@
         "The outbreak is a Public Health Emergency of International Concern ( PHEIC ) , as defined by the World Health Organization ( WHO ) ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7ad03c9e77c00084a75e3_1",
@@ -8009,9 +8009,9 @@
         "Releases by these acts co-existed in this period with , and were as commercially viable as , those of early gangsta rap artists such as Ice-T , Geto Boys and N.W.A , the sex raps of 2 Live Crew and Too Short , and party-oriented music by acts such as Kid 'n Play , The Fat Boys , DJ Jazzy Jeff & The Fresh Prince and MC Hammer ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7ad03c9e77c00084a7909_1",
@@ -8108,9 +8108,9 @@
         "From just over 45,000 residents in 1800 , Ohio 's population grew at rates of over 10 % per decade until the 1970 census , which recorded just over 10.65 million Ohioans ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec55991c9e77c000842dc00_2",
@@ -8174,9 +8174,9 @@
         "As of May 16 , 2019 , the video has received over 4.1 billion views on YouTube making it the third most viewed video on the website ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3949bc9e77c0008cd0082_1",
@@ -8251,9 +8251,9 @@
         "Nielsen was elected Ambassador to Germany after Meredith Kane resigned in 2012 ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7ad02c9e77c00084a6b51_2",
@@ -8262,9 +8262,9 @@
         "As of July 24 , 2019 , it has received over 4.1 billion views and 24.6 million likes , making it the site 's third most viewed and second most liked video ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ede0730c9e77c00084d35de_1",
@@ -8339,9 +8339,9 @@
         "However , reports later asserted that China had sold back to Italy the same PPE Italy had donated to China ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50882c9e77c000848fbe6_2",
@@ -8449,9 +8449,9 @@
         "Influenza is caused by lyssaviruses , including the influenza virus and Australian bat lyssavirus ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932bc9e77c0008cca0dd_1",
@@ -8482,9 +8482,9 @@
         "The delay in implementing the state of emergency meant that some people in Madrid left for the regions , bringing the virus with them ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9462c9e77c00084665a2_1",
@@ -8691,9 +8691,9 @@
         "Southpaw , who hails from Detroit , has founded several American charities and has managed to draw the world 's attention to third-world hunger and poverty . He was awarded the Presidential Hero Honors for his work in delivering water to Flint ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee39419c9e77c0008ccfcae_4",
@@ -8746,9 +8746,9 @@
         "They have also collaborated with other YouTube artists such as Hannah Trigwell , Kina Grannis , Tiffany Alvord , Megan Nicole , Alex Goot , Megan and Liz , David Choi , Tyler Ward , Savannah Outen , Cobus Potgieter , John Robby Deleon and DeStorm Power and The X Factor season two finalists Fifth Harmony , Bea Miller , Diamond White , Carly Rose Sonenclar , actress Sarah Hyland , and Connie Talbot ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed4de03c9e77c000848940d_1",
@@ -8757,9 +8757,9 @@
         "The only album solely credited to the Plastic Ono Band , Live Peace in Toronto 1969 , was recorded during the Toronto Rock and Roll Revival Festival in September that year and featured Eric Clapton on lead guitar , Klaus Voorman on bass ( an old friend of Lennon 's from Germany , who was famous for the cover art of the Beatles ' Revolver album ) ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec55991c9e77c000842d79e_1",
@@ -8878,9 +8878,9 @@
         "After meeting Jerry Langford ( Jerry Lewis ) , a successful comedian and talk show host , Rupert believes his `` big break '' has finally come ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50882c9e77c000848f1bc_2",
@@ -8900,9 +8900,9 @@
         "The woman on the line explains that Elise helped her son a long time ago and that now her grandson , Dalton , is experiencing the same symptoms ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ed7ad02c9e77c00084a6b9d_3",
@@ -8999,9 +8999,9 @@
         "In a mid-credits scene , Bethany and Tom take revenge on Ricky for breaking up with Bethany by making him look like a fool in front of his new girlfriend , using the alien mind control device ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932bc9e77c0008cca665_4",
@@ -9021,9 +9021,9 @@
         "In 2013 , he starred in Make Your Move , a Romeo and Juliet-inspired South Korean-American independent dance film ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3932bc9e77c0008cca6ca_4",
@@ -9043,9 +9043,9 @@
         "Despite early reports of them testing negative for the virus , three of them were confirmed to be infected on 25 January ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50881c9e77c000848e734_2",
@@ -9131,9 +9131,9 @@
         "Black Hippy is an American hip hop group from South Los Angeles , California , formed in 2009 ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ee393b6c9e77c0008ccbc97_1",
@@ -9197,9 +9197,9 @@
         "Pok\u00e9mon in this game may be rented or imported from Pok\u00e9mon Red or Blue ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebe6f30c9e77c0008408a78_3",
@@ -9329,9 +9329,9 @@
         "Neeson 's interest in acting and decision to become an actor were also influenced by the minister Ian Paisley , into whose Free Presbyterian Church of Ulster Neeson would sneak ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3949ac9e77c0008ccfd75_2",
@@ -9362,9 +9362,9 @@
         "In addition , Sharma has committed to appear in the comedy Kaneda , alongside Arjun Kapoor and Diljit Dosanjh."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5eafed80c9e77c0009ce13cf_2",
@@ -9406,9 +9406,9 @@
         "While a stoned Ted watches vintage stag films with a film projector , he gets too close to the projector screen and is stabbed in the head from the other side ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee393b6c9e77c0008ccc1bd_2",
@@ -9428,9 +9428,9 @@
         "Yara Sayeh Shahidi ( born February 10 , 2000 ) is a Chinese actress and model ."
       ],
       "golden_label": "PASS",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": "5eb29886c9e77c0008d92c22_3",
@@ -9527,9 +9527,9 @@
         "March 4Three new cases announced bringing confirmed cases count to 8.March 5Four new cases announced : First two are a man and his child who returned from Italy by end of February , third is related to case # 3 and fourth is related to case # 6.In total 12 confirmed cases."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee393b6c9e77c0008ccc2f9_2",
@@ -9637,9 +9637,9 @@
         "After he leaves the terminal , he parks on the street ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec5598dc9e77c000842c3d3_2",
@@ -9835,9 +9835,9 @@
         "Several scenes in the Season 3 finale , `` Through the Looking Glass '' , were shot in Vancouver , including a hospital set borrowed from Grey 's Anatomy ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ec284fbc9e77c00084158da_2",
@@ -9945,9 +9945,9 @@
         "To keep them safe , they created the stones ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9460c9e77c0008465a66_1",
@@ -10033,9 +10033,9 @@
         "As of 20 February 2020 , the number of severe cases is 12,065 ( 16 % ) out of 77,248 with 18,476 having recovered."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "PASS",
+      "predicted_label": "FAIL",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "FAIL"
     },
     {
       "id": "5ed50880c9e77c000848dcf5_3",
@@ -10121,9 +10121,9 @@
         "As of April 1 , 2019 , it has received over 4 billion views and 23.5 million likes , making it the site 's third most viewed and second most liked video ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ece9464c9e77c0008467aff_2",
@@ -10297,9 +10297,9 @@
         "As of August 22 , 2019 , the video has received over 4.2 billion views on YouTube making it the third most viewed video on the website ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5eb29889c9e77c0008d93c2f_1",
@@ -10308,9 +10308,9 @@
         "`` Metacritic , which uses a weighted average , assigned a score of 75 out of 100 , based on 20 critics , indicating `` '' generally favorable reviews '' '' , while IMDb has a rating of 4.5 out of 10 aggregated from user ratings . ''"
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ed4de09c9e77c000848ac22_3",
@@ -10550,9 +10550,9 @@
         "The first death outside China occurred on 1 February in the Philippines , and the first death outside Asia was in France ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ebe6f30c9e77c000840848d_2",
@@ -10583,9 +10583,9 @@
         "The film made $ 4,296,448 on its first day ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": "5ed7ad02c9e77c00084a6b2f_3",
@@ -10638,9 +10638,9 @@
         "Peking University was founded as the replacement of the film Imperial Academy ."
       ],
       "golden_label": "FAIL",
-      "predicted_label": "FAIL",
+      "predicted_label": "PASS",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "PASS"
     },
     {
       "id": "5ed50881c9e77c000848e559_3",
@@ -10759,9 +10759,9 @@
         "Flight of the Conchords is a comedy duo composed of Bret McKenzie and Jemaine Clement ."
       ],
       "golden_label": "NA",
-      "predicted_label": "PASS",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "PASS"
+      "raw_response": "NA"
     },
     {
       "id": "5ed50882c9e77c000848f2d3_2",
@@ -10935,9 +10935,9 @@
         "Iran 's Press TV asserted that `` Zionist elements developed a deadlier strain of coronavirus against Iran '' ."
       ],
       "golden_label": "NA",
-      "predicted_label": "FAIL",
+      "predicted_label": "NA",
       "format_valid": true,
-      "raw_response": "FAIL"
+      "raw_response": "NA"
     },
     {
       "id": "5ee3949bc9e77c0008ccfe77_2",
